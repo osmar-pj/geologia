@@ -12,7 +12,15 @@ const goToPage = (page) => {
   active.value = page;
 };
 const name = ref("");
-name.value = store.state.name;
+name.value = store.state.name
+const logout = async () => {
+  try {
+    await store.dispatch("auth_logout");
+    router.push({ name: "Login" });
+  } catch (error) {
+    console.log(error);
+  }
+};
 </script>
 
 <template>
@@ -99,7 +107,7 @@ name.value = store.state.name;
     <div class="sidebar-footer">
       <div className="s-footer-logout">
         <MySvg />
-        <h4>Salir</h4>
+        <a href="" @click.prevent="logout"><h4>Salir</h4></a>
       </div>
       <span>Version: 1.20.12</span>
     </div>

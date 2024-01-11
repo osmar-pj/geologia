@@ -16,7 +16,7 @@ const cities = ref([
   { name: 'City2', value: 'city12' },
 ])
 
-const props = defineProps(['showActionsColumn', 'title']);
+const props = defineProps(['showActionsColumn', 'title', 'data']);
 const formattedDate = ref('');
 
 onMounted(() => {
@@ -28,8 +28,6 @@ onMounted(() => {
 
   formattedDate.value = `${weekday}, ${today.toLocaleDateString('es-ES', options).replace(/\//g, '.')}`;
 });
-const title = "Viajes realizados, Listos";
-
 
 </script>
 
@@ -81,6 +79,8 @@ const title = "Viajes realizados, Listos";
           <tr>
             <th>#</th>
             <th>Fecha</th>
+            <th>Turno</th>
+            <th>Mina</th>
             <th>Operador</th>
             <th>Placa</th>
             <th>Vagones</th>
@@ -88,11 +88,11 @@ const title = "Viajes realizados, Listos";
             <th>Mineral</th>
             <th>Tajo</th>
             <th>Tableta</th>
-            <th v-if="showActionsColumn">Acciones</th>
+            <th v-if="props.showActionsColumn">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="index in 50" :key="index">
+          <tr v-for="(d, index) in props.data" :key="index">
             <td>
               <div class="td-user">
                 <div class="t-name">
@@ -100,20 +100,22 @@ const title = "Viajes realizados, Listos";
                 </div>
               </div>
             </td>
-            <td>12/12/2024</td>
+            <td> {{ d.fecha }} </td>
+            <td> {{ d.turno }} </td>
+            <td> {{ d.mina }} </td>
             <td>
               <div class="td-user">
                 <span class="t-siglas" style="{spanStyle}"> CP </span>
                 <div class="t-name">
-                  <h4>Carlos Pablo</h4>
-                  <h5 class="t-2">Pedro Solis</h5>
+                  <h4> {{ d.operador }} </h4>
+                  <h5 class="t-2"> {{ d.operador }} </h5>
                 </div>
               </div>
             </td>
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4>LOC .#26</h4>
+                  <h4> {{ d.vehiculo }} </h4>
                   <h5>automovil</h5>
                 </div>
               </div>
@@ -121,7 +123,7 @@ const title = "Viajes realizados, Listos";
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4>30</h4>
+                  <h4> {{ d.vagones }} </h4>
                   <h5>vagones</h5>
                 </div>
               </div>
@@ -129,7 +131,7 @@ const title = "Viajes realizados, Listos";
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4>80</h4>
+                  <h4> {{ d.ton }} </h4>
                   <h5>toneladas</h5>
                 </div>
               </div>
@@ -137,7 +139,7 @@ const title = "Viajes realizados, Listos";
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4>80</h4>
+                  <h4> {{ d.tonh }} </h4>
                   <h5>toneladas</h5>
                 </div>
               </div>
@@ -145,16 +147,16 @@ const title = "Viajes realizados, Listos";
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4>TJ345_2P</h4>
-                  <h5>tajo</h5>
+                  <h4> {{ d.tajo }} </h4>
+                  <h5> {{ d.tipo }} </h5>
                 </div>
               </div>
             </td>
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4>245</h4>
-                  <h5>#tableta</h5>
+                  <h4> {{ d.tableta }} </h4>
+                  <h5> {{ d.tableta ? '#tableta' : '' }} </h5>
                 </div>
               </div>
             </td>
