@@ -1,5 +1,13 @@
 <script setup>
-import MySvg from "../icons/MySvg.vue";
+import MySvg from "../icons/MySvg.vue"
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+const router = useRouter()
+const active = ref("/")
+const goToPage = (page) => {
+  router.push(page)
+  active.value = page
+};
 </script>
 
 <template>
@@ -26,23 +34,23 @@ import MySvg from "../icons/MySvg.vue";
         </div>
       </div>
       <ul class="s-content-menu">
-        <li>
+        <li @click.prevent="goToPage('/')" :class="active == '/' ? 'active': ''">
           <div class="nav-select"><MySvg /></div>
           <span>Dashboard</span>
         </li>
-        <li>
+        <li @click.prevent="goToPage('list')" :class="active == 'list' ? 'active': ''">
           <div class="nav-select"><MySvg /></div>
           <span>Lista</span>
         </li>
-        <li>
-          <div class="nav-select"><MySvg /></div>
-          <span>Control de Calidad</span>
-        </li>
-        <li>
+        <li @click.prevent="goToPage('oreControl')" :class="active == 'oreControl' ? 'active': ''">
           <div class="nav-select"><MySvg /></div>
           <span>Ore Control</span>
         </li>
-        <li>
+        <li @click.prevent="goToPage('controlCalidad')" :class="active == 'controlCalidad' ? 'active': ''">
+          <div class="nav-select"><MySvg /></div>
+          <span>Control de Calidad</span>
+        </li>
+        <li @click.prevent="goToPage('programacion')" :class="active == 'programacion' ? 'active': ''">
           <div class="nav-select"><MySvg /></div>
           <span>Programación</span>
         </li>
