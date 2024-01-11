@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Saira:wght@100;200;300;400;500;600;700&display=swap');
 
 /*//////////////////////////////////////////////////////////////////
 [ MIXINS ]*/
@@ -105,7 +105,10 @@ body {
   background: var(--grey-light-1);
     height: 100vh;
   // cursor: none;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Saira', sans-serif;
+
+
+
 }
 
 blockquote,
@@ -252,7 +255,10 @@ p {
 }
 
 input {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Saira', sans-serif;
+
+
+
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   outline: none;
@@ -284,7 +290,10 @@ input[type="search"]::placeholder {
 
 select{
   
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Saira', sans-serif;
+
+
+
   font-weight: 100;
   border: none;
   padding: 0 .5rem;
@@ -301,7 +310,10 @@ select{
 textarea {
   resize: none;
   color: var(--black);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Saira', sans-serif;
+
+
+
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   outline: none;
@@ -327,7 +339,10 @@ textarea {
 }
 
 button {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Saira', sans-serif;
+
+
+
   transition: all 0.5s ease-out;
   cursor: pointer;
   border: none;

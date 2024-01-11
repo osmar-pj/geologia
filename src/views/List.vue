@@ -43,6 +43,16 @@ const title = "Viajes realizados, Listos";
           <option>Descendente</option>
           <option>15</option>
         </select>
+        <select>
+          <option>Ascendente</option>
+          <option>Descendente</option>
+          <option>15</option>
+        </select>
+        <select>
+          <option>Ascendente</option>
+          <option>Descendente</option>
+          <option>15</option>
+        </select>
       </div>
     </div>
 
