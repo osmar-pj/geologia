@@ -2,12 +2,17 @@
 import MySvg from "../icons/MySvg.vue"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
+import { useStore } from "vuex"
 const router = useRouter()
+const store = useStore()
 const active = ref("/")
 const goToPage = (page) => {
   router.push(page)
   active.value = page
-};
+}
+const name = ref('')
+name.value = store.state.name
+
 </script>
 
 <template>
@@ -25,7 +30,7 @@ const goToPage = (page) => {
     <div class="sidebar-content">
       <div class="s-content-title">
         <div class="s-c-t-general">
-          <h1>Menu</h1>
+          <h1> {{ name }} </h1>
           <span>12</span>
         </div>
         <div class="s-c-t-info">

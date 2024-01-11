@@ -1,13 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import Dropdown from 'primevue/dropdown';
-
-
-let selectedCity = null;
-let cities = [
+const selectedCity = ref(null);
+const cities = ref([
   { name: 'City1', value: 'city1' },
   { name: 'City2', value: 'city2' },
-];
+])
 
 const props = defineProps(['showActionsColumn', 'title']);
 const formattedDate = ref('');

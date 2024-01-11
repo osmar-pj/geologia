@@ -1,10 +1,20 @@
 import { createApp } from 'vue'
-import './style.scss'
 import App from './App.vue'
 import router from './router/router'
+import PrimeVue from 'primevue/config'
+import store from './store/store'
+import './style.scss'
+import 'primevue/resources/primevue.min.css'
+
+
+import Dropdown from 'primevue/dropdown'
 
 const app = createApp(App)
 
 app.use(router)
+app.use(store)
+app.use(PrimeVue, {ripple: true})
+
+app.component('Dropdown', Dropdown)
 
 app.mount('#app')
