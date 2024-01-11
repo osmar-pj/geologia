@@ -4,6 +4,16 @@ const selectedCity = ref(null);
 const cities = ref([
   { name: 'City1', value: 'city1' },
   { name: 'City2', value: 'city2' },
+  { name: 'City1', value: 'city3' },
+  { name: 'City2', value: 'city4' },
+  { name: 'City1', value: 'city5' },
+  { name: 'City2', value: 'city6' },
+  { name: 'City1', value: 'city7' },
+  { name: 'City2', value: 'city8' },
+  { name: 'City1', value: 'city9' },
+  { name: 'City2', value: 'city10' },
+  { name: 'City1', value: 'city11' },
+  { name: 'City2', value: 'city12' },
 ])
 
 const props = defineProps(['showActionsColumn', 'title']);
@@ -59,7 +69,9 @@ const title = "Viajes realizados, Listos";
         />
       </div>
       <div class="c-c-filters-items">
-        <Dropdown v-model="selectedCity" editable :options="cities" optionLabel="name" placeholder="Select a City" class="w-full md:w-14rem" />
+        <Dropdown class="p-dropdown" v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Seleccionar"  />
+        <Dropdown class="p-dropdown" v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Seleccionar"  />
+        <Dropdown class="p-dropdown" v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Seleccionar"  />
       </div>
     </div>
 
@@ -80,7 +92,7 @@ const title = "Viajes realizados, Listos";
           </tr>
         </thead>
         <tbody>
-          <tr v-for="index in 10" :key="index">
+          <tr v-for="index in 50" :key="index">
             <td>
               <div class="td-user">
                 <div class="t-name">
@@ -234,8 +246,6 @@ const title = "Viajes realizados, Listos";
 }
 
 .c-global-c-content {
-  background-color: var(--white);
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
   padding: 2.5rem;
@@ -344,7 +354,7 @@ const title = "Viajes realizados, Listos";
     }
 
     td {
-      padding: 13px 15px;
+      padding: 9px 12px;
 
       // @include md {
       //   padding: 15px;
@@ -353,6 +363,7 @@ const title = "Viajes realizados, Listos";
 
     tbody tr {
       z-index: 99;
+      background-color: var(--white);
     }
   }
   .users-c-c-footer {
@@ -455,6 +466,7 @@ const title = "Viajes realizados, Listos";
     h5 {
       text-transform: lowercase;
       font-size: clamp(6px, 8vw, 12px);
+      line-height: .8rem;
       //   @include md {
       //     font-size: clamp(6px, 8vw, 12px);
       //   }
@@ -498,330 +510,3 @@ const title = "Viajes realizados, Listos";
 }
 </style>
 
-
-<style lang="scss">
-.c-global-header {
-  width: 100%;
-  padding: 1.5rem 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  .global-h-title {
-    span {
-      color: var(--grey-1);
-      font-size: clamp(6px, 8vw, 14px);
-      line-height: 1.1rem;
-      font-weight: 400;
-    }
-  }
-  .global-h-button {
-    .radio-inputs {
-      position: relative;
-      display: flex;
-      flex-wrap: wrap;
-      border-radius: 0.5rem;
-      background-color: var(--grey-light-1);
-      box-sizing: border-box;
-
-      padding: 0.25rem;
-      width: 300px;
-      font-size: 14px;
-    }
-
-    .radio-inputs .radio {
-      flex: 1 1 auto;
-      text-align: center;
-    }
-
-    .radio-inputs .radio input {
-      display: none;
-    }
-
-    .radio-inputs .radio .name {
-      display: flex;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      border-radius: 0.5rem;
-      border: none;
-      padding: 0.5rem 0;
-      color: var(--grey-1);
-      transition: all 0.15s ease-in-out;
-    }
-
-    .radio-inputs .radio input:checked + .name {
-      background-color: var(--primary);
-      color: var(--white);
-      font-weight: 600;
-    }
-  }
-  //   @include md {
-  //     padding: 1.5rem 5rem;
-  //   }
-}
-
-.c-global-c-content {
-  background-color: var(--white);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  padding: 2.5rem;
-  padding-top: 0;
-  gap: 1rem;
-  flex: 1 1;
-  overflow: auto;
-  .users-c-c-filters {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    .c-c-filters-search {
-      display: flex;
-      position: relative;
-      max-width: 300px;
-      width: 100%;
-      img {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 15px;
-        width: 1rem;
-      }
-    }
-    .c-c-filters-type {
-      flex: 1 1 250px;
-      label {
-        font-size: clamp(5px, 8vw, 10px);
-        font-weight: 500;
-        //   @include md {
-        //     font-size: clamp(6px, 8vw, 12px);
-        //   }
-      }
-      .imputs-i-input {
-        position: relative;
-        img {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          left: 15px;
-          width: 1rem;
-        }
-      }
-    }
-    .c-c-filters-items {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: clamp(6px, 8vw, 14px);
-      // @include md {
-      //   font-size: clamp(6px, 8vw, 13px);
-      // }
-    }
-  }
-  .users-c-c-table {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    overflow: auto;
-
-    table {
-      width: 100%;
-      color: var(--black);
-      font-size: clamp(6px, 8vw, 14px);
-      line-height: 0.7rem;
-      font-weight: 500;
-      border-collapse: collapse;
-      white-space: nowrap;
-      // @include md {
-      //   font-size: clamp(6px, 8vw, 14px);
-      //   line-height: 1.1rem;
-      // }
-    }
-
-    thead {
-      color: var(--grey-1);
-      text-align: left;
-      background-color: var(--grey-light-1);
-      font-size: clamp(6px, 8vw, 11px);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      // @include md {
-      //   font-size: clamp(6px, 8vw, 12px);
-      // }
-    }
-
-    th {
-      padding: 15px;
-      font-weight: normal !important;
-      div {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        img {
-          width: 0.5rem;
-          // @include md {
-          //   width: 0.6rem;
-          // }
-        }
-        //   @include md {
-        //     gap: 0.5rem;
-        //   }
-      }
-    }
-
-    td {
-      padding: 13px 15px;
-
-      // @include md {
-      //   padding: 15px;
-      // }
-    }
-
-    tbody tr {
-      z-index: 99;
-    }
-  }
-  .users-c-c-footer {
-    display: flex;
-    justify-content: space-between;
-    .c-c-footer-page {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      button {
-        height: 30px;
-        width: 30px;
-        padding: 0;
-        border: 0.5px solid var(--grey-light-2);
-        display: grid;
-        place-items: center;
-        border-radius: 5px;
-        img {
-          width: 0.7rem;
-        }
-        &:nth-child(1) {
-          img {
-            transform: rotate(90deg);
-          }
-        }
-        &:nth-child(3) {
-          img {
-            transform: rotate(270deg);
-          }
-        }
-        &:hover {
-          background-color: #f3f3f4;
-        }
-      }
-      span {
-        display: flex;
-        gap: 0.5rem;
-        font-size: clamp(6px, 8vw, 12px);
-        //   @include md {
-        //     font-size: clamp(6px, 8vw, 13px);
-        //   }
-      }
-    }
-  }
-  // @include md {
-  //   padding: 3rem;
-  // }
-}
-//   @include md {
-//     gap: 1.5rem;
-//     padding: 1.5rem 5rem;
-//   }
-
-.btns {
-  display: flex;
-  gap: 1rem;
-  button {
-    padding: 0;
-    width: auto;
-    display: grid;
-    place-items: center;
-    background-color: var(--white);
-    padding: 8px 14px;
-    border-radius: 12px;
-    color: var(--primary);
-    border: 1px solid var(--primary);
-    font-weight: 500;
-    img {
-      width: 1rem;
-    }
-    &:hover {
-      background-color: var(--primary);
-      color: var(--white);
-    }
-  }
-}
-
-.td-user {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  .t-siglas {
-    width: 35px;
-    height: 35px;
-    background-color: #00b47e;
-    color: var(--white);
-    text-transform: uppercase;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: clamp(7px, 8vw, 16px);
-  }
-  .t-name {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    h4 {
-      text-transform: capitalize;
-    }
-    h5 {
-      text-transform: lowercase;
-      font-size: clamp(6px, 8vw, 12px);
-      //   @include md {
-      //     font-size: clamp(6px, 8vw, 12px);
-      //   }
-    }
-    h4 {
-      font-weight: 500;
-      font-size: clamp(6px, 8vw, 14px);
-      //   @include md {
-      //     font-size: clamp(6px, 8vw, 14px);
-      //   }
-    }
-    .t-2 {
-      text-transform: capitalize;
-    }
-  }
-}
-
-.td-cot {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  img {
-    width: 1.1rem;
-  }
-  h4 {
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: clamp(6px, 8vw, 12px);
-    // @include md {
-    //   font-size: clamp(6px, 8vw, 14px);
-    // }
-  }
-}
-
-.t-cort {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 150px;
-  font-size: clamp(6px, 8vw, 14px);
-}
-</style>

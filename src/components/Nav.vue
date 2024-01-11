@@ -1,18 +1,17 @@
 <script setup>
-import MySvg from "../icons/MySvg.vue"
-import { ref } from "vue"
-import { useRouter } from "vue-router"
-import { useStore } from "vuex"
-const router = useRouter()
-const store = useStore()
-const active = ref("/")
+import MySvg from "../icons/MySvg.vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+const router = useRouter();
+const store = useStore();
+const active = ref("/");
 const goToPage = (page) => {
-  router.push(page)
-  active.value = page
-}
-const name = ref('')
-name.value = store.state.name
-
+  router.push(page);
+  active.value = page;
+};
+const name = ref("");
+name.value = store.state.name;
 </script>
 
 <template>
@@ -30,7 +29,7 @@ name.value = store.state.name
     <div class="sidebar-content">
       <div class="s-content-title">
         <div class="s-c-t-general">
-          <h1> {{ name }} </h1>
+          <h1>{{ name }}</h1>
           <span>12</span>
         </div>
         <div class="s-c-t-info">
@@ -39,23 +38,38 @@ name.value = store.state.name
         </div>
       </div>
       <ul class="s-content-menu">
-        <li @click.prevent="goToPage('/')" :class="active == '/' ? 'active': ''">
+        <li
+          @click.prevent="goToPage('/')"
+          :class="active == '/' ? 'active' : ''"
+        >
           <div class="nav-select"><MySvg /></div>
           <span>Dashboard</span>
         </li>
-        <li @click.prevent="goToPage('list')" :class="active == 'list' ? 'active': ''">
+        <li
+          @click.prevent="goToPage('list')"
+          :class="active == 'list' ? 'active' : ''"
+        >
           <div class="nav-select"><MySvg /></div>
           <span>Lista</span>
         </li>
-        <li @click.prevent="goToPage('oreControl')" :class="active == 'oreControl' ? 'active': ''">
+        <li
+          @click.prevent="goToPage('oreControl')"
+          :class="active == 'oreControl' ? 'active' : ''"
+        >
           <div class="nav-select"><MySvg /></div>
           <span>Ore Control</span>
         </li>
-        <li @click.prevent="goToPage('controlCalidad')" :class="active == 'controlCalidad' ? 'active': ''">
+        <li
+          @click.prevent="goToPage('controlCalidad')"
+          :class="active == 'controlCalidad' ? 'active' : ''"
+        >
           <div class="nav-select"><MySvg /></div>
           <span>Control de Calidad</span>
         </li>
-        <li @click.prevent="goToPage('programacion')" :class="active == 'programacion' ? 'active': ''">
+        <li
+          @click.prevent="goToPage('programacion')"
+          :class="active == 'programacion' ? 'active' : ''"
+        >
           <div class="nav-select"><MySvg /></div>
           <span>Programación</span>
         </li>
@@ -159,6 +173,9 @@ name.value = store.state.name
       background-color: #1b1f22;
       border: 1px solid #1b1f22;
       color: var(--white);
+      &:focus{
+        border: 1px solid var(--grey-2);
+      }
     }
   }
   .sidebar-content {
@@ -201,18 +218,18 @@ name.value = store.state.name
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.5rem;
+      gap: 0.3rem;
       padding-top: 2rem;
       li {
         border-radius: 10px;
-        padding: 0.8rem 1rem;
+        padding: 0.7rem 1rem;
         width: 100%;
         cursor: pointer;
         transition: all 0.5s ease-in-out;
         display: flex;
         align-items: center;
         gap: 1rem;
-
+        height: 45px;
         .nav-select {
           display: grid;
           place-items: center;
@@ -230,6 +247,10 @@ name.value = store.state.name
         span {
           color: var(--white);
           font-size: clamp(5px, 8vw, 14px);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 160px;
         }
       }
     }

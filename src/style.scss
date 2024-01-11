@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Saira:wght@100;200;300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Saira:wght@100;200;300;400;500;600;700&display=swap");
 
 /*//////////////////////////////////////////////////////////////////
 [ MIXINS ]*/
@@ -67,8 +67,6 @@ $break-desktop: 1540px;
 /*//////////////////////////////////////////////////////////////////
 [ IMPORTS]*/
 
-
-
 /*//////////////////////////////////////////////////////////////////
 [ RESTYLE TAG ]*/
 
@@ -103,12 +101,11 @@ html,
 body {
   margin: 0;
   background: var(--grey-light-1);
-    height: 100vh;
+  height: 100vh;
   // cursor: none;
-  font-family: 'Saira', sans-serif;
-
-
-
+  font-family: "Saira", sans-serif;
+  background-image: url('../public/img/Fondo2.svg');
+  background-color: #fafafa;
 }
 
 blockquote,
@@ -133,14 +130,14 @@ pre {
   --secondary: #26d452;
   --tertiary: #fafafa1c;
   --white: #fff;
-  --black: #1A1A1A;
+  --black: #1a1a1a;
   --grey-1: #898989;
   --grey-2: #777777;
-  --grey-light-1: #F2F2F2;
-  --grey-light-11: #F5F5F5;
-  --grey-light-2:#D0D0D0;
-  --grey-light-22:#E6E6E6;
-  --grey-light-3:#B3B3B3;
+  --grey-light-1: #f2f2f2;
+  --grey-light-11: #f5f5f5;
+  --grey-light-2: #d0d0d0;
+  --grey-light-22: #e6e6e6;
+  --grey-light-3: #b3b3b3;
 }
 
 /*//////////////////////////////////////////////////////////////////
@@ -149,11 +146,10 @@ pre {
 ::-webkit-scrollbar {
   width: 4px !important;
   height: 4px !important;
-  
 }
 
 html[dir] .dark ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.16);
+  background-color: var(--grey-light-2);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -166,7 +162,7 @@ html[dir] .dark ::-webkit-scrollbar-track {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--white);
+  background: transparent;
 }
 
 /*//////////////////////////////////////////////////////////////////
@@ -174,7 +170,7 @@ html[dir] .dark ::-webkit-scrollbar-track {
 
 h1 {
   color: var(--black);
-  font-size: clamp(10px, 8vw, 20px);  
+  font-size: clamp(10px, 8vw, 20px);
   line-height: 1.6rem;
   font-weight: 600;
   @include md {
@@ -256,48 +252,43 @@ p {
 }
 
 input {
-  font-family: 'Saira', sans-serif;
-
-
+  font-family: "Saira", sans-serif;
 
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   outline: none;
-  background-color: var(--white);  
+  background-color: var(--white);
   border: none;
   height: 40px;
   width: 100%;
   text-align: left;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 14px 20px 14px 40px;
   font-size: clamp(5.5px, 8vw, 12px);
   font-style: 100;
   border: 1.5px solid var(--grey-light-2);
+  transition: all 0.25s ease-out;
   @include md {
     height: 45px;
     font-size: clamp(7px, 8vw, 14px);
   }
-  
+
   &:focus {
     border: 1.5px solid #26d452;
     color: var(--black);
   }
 }
 
-
 input[type="search"]::placeholder {
-  color:var(--grey-1);
+  color: var(--grey-1);
 }
 
-select{
-  
-  font-family: 'Saira', sans-serif;
-
-
+select {
+  font-family: "Saira", sans-serif;
 
   font-weight: 100;
   border: none;
-  padding: 0 .5rem;
+  padding: 0 0.5rem;
   border-radius: 5px;
   border: 0.5px solid var(--grey-light-2);
   height: 30px;
@@ -305,20 +296,17 @@ select{
     border: 0.5px solid var(--grey-light-2);
     color: var(--black);
   }
-  
 }
 
 textarea {
   resize: none;
   color: var(--black);
-  font-family: 'Saira', sans-serif;
-
-
+  font-family: "Saira", sans-serif;
 
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   outline: none;
-  background-color: var(--white);  
+  background-color: var(--white);
   border: none;
   width: 100%;
   height: 100%;
@@ -329,10 +317,9 @@ textarea {
   font-style: 100;
   border: 1px solid var(--grey-light-2);
   @include md {
-   
     font-size: clamp(7px, 8vw, 14px);
   }
-  
+
   &:focus {
     border: 1.5px solid var(--secondary);
     color: var(--black);
@@ -340,26 +327,23 @@ textarea {
 }
 
 button {
-  font-family: 'Saira', sans-serif;
-
-
+  font-family: "Saira", sans-serif;
 
   transition: all 0.5s ease-out;
   cursor: pointer;
   border: none;
   color: var(--white);
   border: none;
-  width: 100%;  
+  width: 100%;
   text-align: center;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: clamp(5.5px, 8vw, 12px);
   background-color: var(--grey);
   padding: 0.7rem 1rem;
   @include md {
-    padding: .8rem 1rem;
+    padding: 0.8rem 1rem;
     font-size: clamp(6.5px, 8vw, 14px);
   }
-  
 }
 
 input[type="radio"] {
@@ -384,82 +368,109 @@ section {
   min-height: 100vh;
 }
 
-ul, li {
+ul,
+li {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-
 /*//////////////////////////////////////////////////////////////////
 [ ERROR 404]*/
 
-.content{
+.content {
   width: 100%;
   height: 100vh;
   display: flex;
   padding: 2px;
 }
 
-.c-header{
+.c-header {
   width: 100%;
 }
 
-main{
+main {
   flex: 1 1 0%;
   height: 100%;
-  background-color: var(--white);
   width: calc(100% - 280px);
 }
 
-.c-main{
+.c-main {
   width: 100%;
   height: calc(100% - 70px);
   display: flex;
   flex-direction: column;
-  background-color: var(--white);
 }
+
+input[type="checkbox"] {
+  display: none;
+}
+
+.custom-skeleton {
+  background-color: red;
+}
+
+.active {
+  background-color: var(--primary);
+}
+
+.p-dropdown {
+  background-color: var(--white);
+  padding: 0 20px;
+  border: 1px solid var(--grey-light-2);
+  border-radius: 10px;
+  min-width: 150px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  transition: all 0.25s ease-out;
+}
+.p-dropdown-items-wrapper {
+  background-color: var(--white);
+  padding: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  font-size: clamp(7px, 8vw, 14px);
+}
+
+.p-icon {
+  width: 0.6rem;
+  height: 0.6rem;
+  color: var(--grey-1) ;
+}
+
+.p-highlight{
+  background-color: var(--grey-light-11);
+  color: var(--primary);
+  font-weight: 500;
+  position: relative;
   
-  // .btn-cancel,
-  // .btn-acept {
-  //   width: 100%;
-  //   cursor: pointer;
-  //   font-size: clamp(5.5px, 8vw, 11px);
-  //   transition: all 0.35s ease-in-out;
-  //   border-radius: 5px;
-  //   height: 40px;
-  //   @include md {
-  //     font-size: clamp(6.5px, 8vw, 13px);
-  //     height: 50px;
-  //   }
-  // }
-  
-  // .btn-cancel {
-  //   color: var(--grey);
-  //   border: 1px solid var(--grey);
-  //   &:hover {
-  //     background-color: var(--red);
-  //     color: #000e1b;
-  //     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  //   }
-  // }
-  
-  // .btn-acept {
-  //   color: var(--white);
-  //   background-color: var(--grey);
-  //   &:hover {
-  //     background-color: var(--red);
-  //     color: #000e1b;
-  //   }
-  // }
-  input[type="checkbox"] {
-    display: none;
+  &::before {
+    content: "";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    width: .2em;
+    height: .5em;
+    border: solid var(--primary);
+    border-width: 0 .15em .15em 0;
+    transform: rotate(45deg) translateY(-50%);
   }
-  
-  .custom-skeleton {
-    background-color: red;
+}
+
+
+.p-dropdown-item {
+  border-radius: 8px;
+  padding: 6px 12px; 
+  &:hover{
+    background-color: var(--grey-light-1);
   }
-  
-  .active {
-    background-color: var(--primary);
+}
+
+.p-inputwrapper-focus{
+  border: 1px solid var(--primary);
+  .p-icon{
+    transform: rotate(180deg);
+    color: var(--primary);
   }
+}
