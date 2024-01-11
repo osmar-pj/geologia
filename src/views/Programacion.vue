@@ -1,11 +1,11 @@
 <script setup>
-
+import TableList from "../components/Table.vue";
 </script>
 
 <template>
-    <h1>PROGRAMACION</h1>
+    <TableList :showActionsColumn="false" title="Viajes culminados, revisar"/>
 </template>
 
-<style>
+<style lang="scss">
 
 </style>

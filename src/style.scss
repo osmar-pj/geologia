@@ -176,6 +176,7 @@ h1 {
   color: var(--black);
   font-size: clamp(10px, 8vw, 20px);  
   line-height: 1.6rem;
+  font-weight: 600;
   @include md {
     font-size: clamp(13px, 8vw, 26px);
     line-height: 1.7rem;

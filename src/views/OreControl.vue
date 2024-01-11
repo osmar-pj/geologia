@@ -1,11 +1,11 @@
 <script setup>
-
+import TableList from "../components/Table.vue";
 </script>
 
 <template>
-    <h1>ORE CONTROL</h1>
+    <TableList  :showActionsColumn="true" title="Viajes recientes, por completar"/>
 </template>
 
-<style>
+<style lang="scss">
 
 </style>
