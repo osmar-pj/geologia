@@ -1,5 +1,6 @@
 <script setup>
 import MySvg from "../icons/MySvg.vue";
+import Alert from "../icons/Alert.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -42,7 +43,7 @@ name.value = store.state.name;
           @click.prevent="goToPage('/')"
           :class="active == '/' ? 'active' : ''"
         >
-          <div class="nav-select"><MySvg /></div>
+          <div class="nav-select"><Alert /></div>
           <span>Dashboard</span>
         </li>
         <li
