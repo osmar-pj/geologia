@@ -129,7 +129,7 @@ pre {
   --primary: #26d452;
   --secondary: #26d452;
   --tertiary: #fafafa1c;
-  --white: #f7f7f7;
+  --white: #fff;
   --black: #1A1A1A;
   --grey-1: #898989;
   --grey-2: #777777;
@@ -392,16 +392,16 @@ ul, li {
 main{
   flex: 1 1 0%;
   height: 100%;
-  background-color: var(--grey-light-1);
+  background-color: var(--white);
   width: calc(100% - 280px);
 }
 
 .c-main{
   width: 100%;
-  height: calc(100% - 80px);
+  height: calc(100% - 70px);
   display: flex;
   flex-direction: column;
-
+  background-color: var(--white);
 }
   
   // .btn-cancel,

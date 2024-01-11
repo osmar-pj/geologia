@@ -21,8 +21,8 @@ import MySvg from "../icons/MySvg.vue";
           <span>12</span>
         </div>
         <div class="s-c-t-info">
-          <span> <strong>3</strong> items </span> -
-          <span> <strong>1</strong> item </span>
+          <span> <strong>3</strong> items </span>
+          <span> <strong>• 1</strong> item </span>
         </div>
       </div>
       <ul class="s-content-menu">
