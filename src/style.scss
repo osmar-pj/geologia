@@ -1,0 +1,446 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/*//////////////////////////////////////////////////////////////////
+[ MIXINS ]*/
+
+$break-tablet: 610px;
+$break-desktop: 1540px;
+
+// * de $mq hacia arriba, $mq incluido
+@mixin media-to-up($mq) {
+  @media (min-width: $mq) {
+    @content;
+  }
+}
+
+// * de $mq hacia abajo, $mq incluido
+@mixin media-to-down($mq) {
+  @media (max-width: $mq) {
+    @content;
+  }
+}
+
+// * de $mq-min a $mq-max, ambos incluidos
+@mixin media-between($mq-min, $mq-max) {
+  @media (min-width: $mq-min) and (max-width: $mq-max) {
+    @content;
+  }
+}
+
+// ! SM ----------------------------------
+// * de 0px a 610px. 610px incluido
+@mixin only-sm() {
+  @include media-to-down($break-tablet) {
+    @content;
+  }
+}
+
+// ! MD ----------------------------------
+// * de 611px a infinito. 611px incluido
+@mixin md() {
+  @include media-to-up($break-tablet + 1) {
+    @content;
+  }
+}
+
+// * de 611px a 1190px. 611px y 1190px incluidos
+@mixin only-md() {
+  @include media-between(($break-tablet + 1), $break-desktop) {
+    @content;
+  }
+}
+
+// ! LG ----------------------------------
+// * de 1190px a infinito, 1190px incluido
+@mixin lg() {
+  @include media-to-up($break-desktop + 1) {
+    @content;
+  }
+}
+
+@mixin x-lg() {
+  @include media-to-up($break-desktop + 1) {
+    @content;
+  }
+}
+
+/*//////////////////////////////////////////////////////////////////
+[ IMPORTS]*/
+
+
+
+/*//////////////////////////////////////////////////////////////////
+[ RESTYLE TAG ]*/
+
+* {
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+/*! locomotive-scroll v3.6.1 | MIT License | https://github.com/locomotivemtl/locomotive-scroll */
+html.has-scroll-smooth {
+  overflow: hidden;
+}
+
+html.has-scroll-dragging {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.has-scroll-smooth body {
+  overflow: hidden;
+}
+
+.has-scroll-smooth [data-scroll-container] {
+  min-height: 100vh;
+}
+
+/*//////////////////////////////////////////////////////////////////
+[ ]*/
+html,
+body {
+  margin: 0;
+  background: var(--grey-light-1);
+    height: 100vh;
+  // cursor: none;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+blockquote,
+dd,
+dl,
+figure,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+pre {
+  margin: 0;
+}
+
+// COLORS
+:root {
+  --primary: #26d452;
+  --secondary: #26d452;
+  --tertiary: #fafafa1c;
+  --white: #f7f7f7;
+  --black: #1A1A1A;
+  --grey-1: #898989;
+  --grey-2: #777777;
+  --grey-light-1: #F2F2F2;
+  --grey-light-11: #F5F5F5;
+  --grey-light-2:#D0D0D0;
+  --grey-light-22:#E6E6E6;
+  --grey-light-3:#B3B3B3;
+}
+
+/*//////////////////////////////////////////////////////////////////
+[ SCROLLBAR ]*/
+
+::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+  
+}
+
+html[dir] .dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.16);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--grey-light-2);
+  border-radius: 50px;
+}
+
+html[dir] .dark ::-webkit-scrollbar-track {
+  background-color: initial;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--white);
+}
+
+/*//////////////////////////////////////////////////////////////////
+[ TITLES ]*/
+
+h1 {
+  color: var(--black);
+  font-size: clamp(10px, 8vw, 20px);  
+  line-height: 1.6rem;
+  @include md {
+    font-size: clamp(13px, 8vw, 26px);
+    line-height: 1.7rem;
+  }
+}
+
+h2 {
+  font-size: clamp(8px, 8vw, 16px);
+  font-weight: 500;
+
+  @include md {
+    font-size: clamp(9px, 8vw, 19px);
+    line-height: 1.3rem;
+  }
+}
+
+h3 {
+  color: var(--black);
+  font-size: clamp(6.5px, 8vw, 13px);
+  letter-spacing: -0.03em;
+  line-height: 1rem;
+  font-weight: 600;
+
+  @include md {
+    font-size: clamp(7.5px, 8vw, 15px);
+    line-height: 1rem;
+  }
+
+  @include lg {
+    font-size: clamp(10px, 8vw, 20px);
+    line-height: 1rem;
+  }
+}
+
+h4 {
+  color: var(--black);
+  font-size: clamp(5px, 8vw, 10px);
+  font-weight: normal;
+  @include md {
+    font-size: clamp(7px, 8vw, 14.5px);
+    line-height: 1rem;
+    font-weight: 500;
+  }
+}
+
+h5 {
+  color: var(--black);
+  font-size: clamp(5.5px, 8vw, 11px);
+  line-height: 1rem;
+  font-weight: normal;
+  @include md {
+    font-size: clamp(5px, 8vw, 12px);
+    line-height: 1.1rem;
+  }
+}
+
+h6 {
+  color: var(--black);
+  font-size: clamp(4px, 8vw, 7px);
+  line-height: 1rem;
+
+  @include md {
+    font-size: clamp(5px, 8vw, 8px);
+    line-height: 0.8rem;
+  }
+}
+
+p {
+  color: var(--black);
+  font-size: clamp(6.5px, 8vw, 13px);
+  line-height: 0.9rem;
+
+  @include md {
+    font-size: clamp(7px, 8vw, 14px);
+    line-height: 1rem;
+  }
+}
+
+input {
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  outline: none;
+  background-color: var(--white);  
+  border: none;
+  height: 40px;
+  width: 100%;
+  text-align: left;
+  border-radius: 8px;
+  padding: 14px 20px 14px 40px;
+  font-size: clamp(5.5px, 8vw, 12px);
+  font-style: 100;
+  border: 1.5px solid var(--grey-light-2);
+  @include md {
+    height: 45px;
+    font-size: clamp(7px, 8vw, 14px);
+  }
+  
+  &:focus {
+    border: 1.5px solid #26d452;
+    color: var(--black);
+  }
+}
+
+
+input[type="search"]::placeholder {
+  color:var(--grey-1);
+}
+
+select{
+  
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 100;
+  border: none;
+  padding: 0 .5rem;
+  border-radius: 5px;
+  border: 0.5px solid var(--grey-light-2);
+  height: 30px;
+  &:focus {
+    border: 0.5px solid var(--grey-light-2);
+    color: var(--black);
+  }
+  
+}
+
+textarea {
+  resize: none;
+  color: var(--black);
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  outline: none;
+  background-color: var(--white);  
+  border: none;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  border-radius: 8px;
+  padding: 14px 20px 14px 20px;
+  font-size: clamp(5.5px, 8vw, 12px);
+  font-style: 100;
+  border: 1px solid var(--grey-light-2);
+  @include md {
+   
+    font-size: clamp(7px, 8vw, 14px);
+  }
+  
+  &:focus {
+    border: 1.5px solid var(--secondary);
+    color: var(--black);
+  }
+}
+
+button {
+  font-family: 'Space Grotesk', sans-serif;
+  transition: all 0.5s ease-out;
+  cursor: pointer;
+  border: none;
+  color: var(--white);
+  border: none;
+  width: 100%;  
+  text-align: center;
+  border-radius: 8px;
+  font-size: clamp(5.5px, 8vw, 12px);
+  background-color: var(--grey);
+  padding: 0.7rem 1rem;
+  @include md {
+    padding: .8rem 1rem;
+    font-size: clamp(6.5px, 8vw, 14px);
+  }
+  
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+svg {
+  transition: all 0.5s ease-out;
+}
+
+::-moz-selection {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+::selection {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+section {
+  min-height: 100vh;
+}
+
+ul, li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+/*//////////////////////////////////////////////////////////////////
+[ ERROR 404]*/
+
+.content{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  padding: 2px;
+}
+
+.c-header{
+  width: 100%;
+}
+
+main{
+  flex: 1 1 0%;
+  height: 100%;
+  background-color: var(--grey-light-1);
+  width: calc(100% - 280px);
+}
+
+.c-main{
+  width: 100%;
+  height: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+
+}
+  
+  // .btn-cancel,
+  // .btn-acept {
+  //   width: 100%;
+  //   cursor: pointer;
+  //   font-size: clamp(5.5px, 8vw, 11px);
+  //   transition: all 0.35s ease-in-out;
+  //   border-radius: 5px;
+  //   height: 40px;
+  //   @include md {
+  //     font-size: clamp(6.5px, 8vw, 13px);
+  //     height: 50px;
+  //   }
+  // }
+  
+  // .btn-cancel {
+  //   color: var(--grey);
+  //   border: 1px solid var(--grey);
+  //   &:hover {
+  //     background-color: var(--red);
+  //     color: #000e1b;
+  //     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  //   }
+  // }
+  
+  // .btn-acept {
+  //   color: var(--white);
+  //   background-color: var(--grey);
+  //   &:hover {
+  //     background-color: var(--red);
+  //     color: #000e1b;
+  //   }
+  // }
+  input[type="checkbox"] {
+    display: none;
+  }
+  
+  .custom-skeleton {
+    background-color: red;
+  }
+  
