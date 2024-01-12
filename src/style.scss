@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Saira:wght@100;200;300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700&display=swap");
 
 /*//////////////////////////////////////////////////////////////////
 [ MIXINS ]*/
@@ -104,7 +104,7 @@ body {
   height: 100vh;
   // cursor: none;
   font-family: "Saira", sans-serif;
-  background-image: url('../assets/img/Fondo2.svg');
+  background-image: url('./assets/img/Fondo2.svg');
   background-color: #fafafa;
 }
 
@@ -127,8 +127,8 @@ pre {
 // COLORS
 :root {
   --primary: #26d452;
-  --secondary: #26d452;
-  --tertiary: #fafafa1c;
+  --secondary: #00b12c;
+  --tertiary: #fafafa;
   --white: #fff;
   --black: #1a1a1a;
   --grey-1: #898989;
@@ -263,18 +263,19 @@ input {
   width: 100%;
   text-align: left;
   border-radius: 10px;
-  padding: 14px 20px 14px 40px;
+  padding: 14px 20px 14px 45px;
   font-size: clamp(5.5px, 8vw, 12px);
-  font-style: 100;
+  font-weight: 400;
   border: 1.5px solid var(--grey-light-2);
   transition: all 0.25s ease-out;
   @include md {
     height: 45px;
-    font-size: clamp(7px, 8vw, 14px);
+    font-size: clamp(7px, 8vw, 14.5px);
   }
 
   &:focus {
     border: 1.5px solid #26d452;
+    box-shadow: 0 1px 2px #26d45171;
     color: var(--black);
   }
 }
@@ -328,7 +329,7 @@ textarea {
 
 button {
   font-family: "Saira", sans-serif;
-
+  
   transition: all 0.5s ease-out;
   cursor: pointer;
   border: none;
@@ -414,9 +415,11 @@ input[type="checkbox"] {
   background-color: var(--primary);
 }
 
+/*----------DROPDOWN -------*/
+
 .p-dropdown {
   background-color: var(--white);
-  padding: 0 20px;
+  padding: 10px 20px;
   border: 1px solid var(--grey-light-2);
   border-radius: 10px;
   min-width: 150px;
@@ -425,11 +428,17 @@ input[type="checkbox"] {
   align-items: center;
   transition: all 0.25s ease-out;
 }
-.p-dropdown-items-wrapper {
+.p-dropdown-panel{
   background-color: var(--white);
+  font-size: clamp(7px, 8vw, 14px);
   padding: 5px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
+  border: 1px solid var(--grey-light-2);
+  margin-top: 3px;
+}
+
+.p-dropdown-label {
   font-size: clamp(7px, 8vw, 14px);
 }
 
@@ -458,10 +467,9 @@ input[type="checkbox"] {
   }
 }
 
-
 .p-dropdown-item {
   border-radius: 8px;
-  padding: 6px 12px; 
+  padding: 8px 15px; 
   &:hover{
     background-color: var(--grey-light-1);
   }
@@ -469,6 +477,7 @@ input[type="checkbox"] {
 
 .p-inputwrapper-focus{
   border: 1px solid var(--primary);
+  box-shadow: 0 1px 2px #26d45171;
   .p-icon{
     transform: rotate(180deg);
     color: var(--primary);

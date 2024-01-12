@@ -42,7 +42,7 @@ const store = createStore({
             commit('authLogout')
         },
         get_list: async ({ commit }) => {
-            const response = await fetch(`${url}/oreControl`, {
+            const response = await fetch(`${url}/triplist`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

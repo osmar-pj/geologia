@@ -36,10 +36,10 @@ const login = async () => {
                 value=""
                 onChange=""
                 v-model="code"
+                maxlength="8"
               />
             </div>
-          </div>
-          
+          </div>          
         </div>
         <div class="login-c-footer">
           <button class="btn-success" type=""  @click.prevent="login">Continuar</button>

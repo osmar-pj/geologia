@@ -1,7 +1,6 @@
 <script setup>
-import MySvg from "../icons/MySvg.vue";
-import Alert from "../icons/Alert.vue";
 import { ref } from "vue";
+import Alert from "../icons/Alert.vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 const router = useRouter();
@@ -12,7 +11,7 @@ const goToPage = (page) => {
   active.value = page;
 };
 const name = ref("");
-name.value = store.state.name
+name.value = store.state.name;
 const logout = async () => {
   try {
     await store.dispatch("auth_logout");
@@ -33,7 +32,10 @@ const logout = async () => {
       </div>
     </div>
     <div class="sidebar-search">
-      <input type="text" value="" placeholder="Buscar en..." />
+      <div class="c-c-filters-search">
+        <img src="../assets/img/i-search.svg" alt="" />
+        <input type="text" value="" placeholder="Buscar por nombre..." />
+      </div>
     </div>
     <div class="sidebar-content">
       <div class="s-content-title">
@@ -106,10 +108,12 @@ const logout = async () => {
     </div>
     <div class="sidebar-footer">
       <div className="s-footer-logout">
-        <MySvg />
-        <a href="" @click.prevent="logout"><h4>Salir</h4></a>
+        <a href="" @click.prevent="logout">
+          <Alert />
+          <h4>Salir</h4>
+        </a>
       </div>
-      <span>Version: 1.20.12</span>
+      <span>Version: 1.1.10</span>
     </div>
   </div>
 </template>
@@ -178,12 +182,25 @@ const logout = async () => {
   }
   .sidebar-search {
     padding: 0.5rem 1.8rem;
-    input {
-      background-color: #1b1f22;
-      border: 1px solid #1b1f22;
-      color: var(--white);
-      &:focus{
-        border: 1px solid var(--grey-2);
+    .c-c-filters-search {
+      display: flex;
+      position: relative;
+      max-width: 300px;
+      width: 100%;
+      img {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 15px;
+        width: 1rem;
+      }
+      input {
+        background-color: #1b1f22;
+        border: 1px solid #1b1f22;
+        color: var(--white);
+        &:focus {
+          border: 1px solid var(--grey-2);
+        }
       }
     }
   }
@@ -321,14 +338,24 @@ const logout = async () => {
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      h4 {
-        color: var(--white);
-        font-weight: normal;
-      }
-      svg {
-        fill: var(--grey-2);
-        width: 1.2rem;
-        height: 1.2rem;
+      a {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 10px 18px 10px 12px;
+        border-radius: 10px;
+        h4 {
+          color: var(--white);
+          font-weight: normal;
+        }
+        svg {
+          fill: var(--grey-2);
+          width: 1.2rem;
+          height: 1.2rem;
+        }
+        &:hover{
+          background-color: #1b1f22;
+        }
       }
     }
     span {

@@ -1,38 +1,50 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from "vue";
+import Modal from "../components/Modal.vue";
 const selectedCity = ref(null);
+const showModal = ref(false);
 const cities = ref([
-  { name: 'City1', value: 'city1' },
-  { name: 'City2', value: 'city2' },
-  { name: 'City1', value: 'city3' },
-  { name: 'City2', value: 'city4' },
-  { name: 'City1', value: 'city5' },
-  { name: 'City2', value: 'city6' },
-  { name: 'City1', value: 'city7' },
-  { name: 'City2', value: 'city8' },
-  { name: 'City1', value: 'city9' },
-  { name: 'City2', value: 'city10' },
-  { name: 'City1', value: 'city11' },
-  { name: 'City2', value: 'city12' },
-])
+  { name: "City1", value: "city1" },
+  { name: "City2", value: "city2" },
+  { name: "City1", value: "city3" },
+  { name: "City2", value: "city4" },
+  { name: "City1", value: "city5" },
+  { name: "City2", value: "city6" },
+  { name: "City1", value: "city7" },
+  { name: "City2", value: "city8" },
+  { name: "City1", value: "city9" },
+  { name: "City2", value: "city10" },
+  { name: "City1", value: "city11" },
+  { name: "City2", value: "city12" },
+]);
 
-const props = defineProps(['showActionsColumn', 'title', 'data']);
-const formattedDate = ref('');
+const props = defineProps(["showActionsColumn", "title", "data"]);
+const formattedDate = ref("");
 
 onMounted(() => {
-  const options = { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' };
+  const options = {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  };
   const today = new Date();
 
-  const weekday = today.toLocaleDateString('es-ES', { weekday: 'long' }).charAt(0).toUpperCase() +
-    today.toLocaleDateString('es-ES', { weekday: 'long' }).slice(1);
+  const weekday =
+    today
+      .toLocaleDateString("es-ES", { weekday: "long" })
+      .charAt(0)
+      .toUpperCase() +
+    today.toLocaleDateString("es-ES", { weekday: "long" }).slice(1);
 
-  formattedDate.value = `${weekday}, ${today.toLocaleDateString('es-ES', options).replace(/\//g, '.')}`;
+  formattedDate.value = `${weekday}, ${today
+    .toLocaleDateString("es-ES", options)
+    .replace(/\//g, ".")}`;
 });
-
 </script>
 
 <template>
-   <div class="c-global-header">
+  <div class="c-global-header">
     <div class="global-h-title">
       <h1>{{ props.title || "Viajes realizados, Listos" }}</h1>
       <span>{{ formattedDate }} | Dia terminado en Mina </span>
@@ -59,17 +71,31 @@ onMounted(() => {
   <div class="c-global-c-content">
     <div class="users-c-c-filters">
       <div class="c-c-filters-search">
-        <!-- <img src="imgs/i-search.svg" alt="" /> -->
-        <input
-          type="text"
-          value=""
-          placeholder="Buscar por nombre, email, rol..."
-        />
+        <img src="../assets/img/i-search.svg" alt="" />
+        <input type="text" value="" placeholder="Buscar por nombre..." />
       </div>
       <div class="c-c-filters-items">
-        <Dropdown class="p-dropdown" v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Seleccionar"  />
-        <Dropdown class="p-dropdown" v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Seleccionar"  />
-        <Dropdown class="p-dropdown" v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Seleccionar"  />
+        <Dropdown
+          class="p-dropdown"
+          v-model="selectedCity"
+          :options="cities"
+          optionLabel="name"
+          placeholder="Seleccionar"
+        />
+        <Dropdown
+          class="p-dropdown"
+          v-model="selectedCity"
+          :options="cities"
+          optionLabel="name"
+          placeholder="Seleccionar"
+        />
+        <Dropdown
+          class="p-dropdown"
+          v-model="selectedCity"
+          :options="cities"
+          optionLabel="name"
+          placeholder="Seleccionar"
+        />
       </div>
     </div>
 
@@ -85,7 +111,7 @@ onMounted(() => {
             <th>Placa</th>
             <th>Vagones</th>
             <th>Tonelada</th>
-            <th>Mineral</th>
+            <th>TMH</th>
             <th>Tajo</th>
             <th>Tableta</th>
             <th v-if="props.showActionsColumn">Acciones</th>
@@ -100,30 +126,51 @@ onMounted(() => {
                 </div>
               </div>
             </td>
-            <td> {{ d.fecha }} </td>
-            <td> {{ d.turno }} </td>
-            <td> {{ d.mina }} </td>
             <td>
               <div class="td-user">
-                <span class="t-siglas" style="{spanStyle}"> CP </span>
                 <div class="t-name">
-                  <h4> {{ d.operador }} </h4>
-                  <h5 class="t-2"> {{ d.operador }} </h5>
+                  <h4>{{ d.fecha }}</h4>
+                  <h5>Fecha de llegada</h5>
+                </div>
+              </div>
+            </td>
+           <td>
+              <div class="td-user">
+                <div class="t-name">
+                  <h4>{{ d.turno }}</h4>
+                  <h5>turno</h5>
                 </div>
               </div>
             </td>
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4> {{ d.vehiculo }} </h4>
-                  <h5>automovil</h5>
+                  <h4>{{ d.mina }}</h4>
+                  <h5>mina</h5>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="td-user">
+                <span class="t-siglas">{{ d.operador ? d.operador.split(' ').slice(0, 2).map(word => word.charAt(0)).join('') : '' }}</span>
+                <div class="t-name">
+                  <h4>{{ d.operador ? d.operador.split(' ').slice(0,2).join(' ') : ''}}</h4>
+                  <h5 class="t-2">{{ d.operador ? d.operador.split(' ').slice(2).join(' ') : ''}}</h5>                  
                 </div>
               </div>
             </td>
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4> {{ d.vagones }} </h4>
+                  <h4>{{ d.vehiculo }}</h4>
+                  <h5>vehiculo</h5>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="td-user">
+                <div class="t-name">
+                  <h4>{{ d.vagones }}</h4>
                   <h5>vagones</h5>
                 </div>
               </div>
@@ -131,7 +178,7 @@ onMounted(() => {
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4> {{ d.ton }} </h4>
+                  <h4>{{ d.ton }}</h4>
                   <h5>toneladas</h5>
                 </div>
               </div>
@@ -139,7 +186,7 @@ onMounted(() => {
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4> {{ d.tonh }} </h4>
+                  <h4>{{ d.tonh }}</h4>
                   <h5>toneladas</h5>
                 </div>
               </div>
@@ -147,25 +194,26 @@ onMounted(() => {
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4> {{ d.tajo }} </h4>
-                  <h5> {{ d.tipo }} </h5>
+                  <h4>{{ d.tajo }}</h4>
+                  <h5>{{ d.tipo }}</h5>
                 </div>
               </div>
             </td>
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4> {{ d.tableta }} </h4>
-                  <h5> {{ d.tableta ? '#tableta' : '' }} </h5>
+                  <h4>{{ d.tableta }}</h4>
+                  <h5>{{ d.tableta ? "#tableta" : "" }}</h5>
                 </div>
               </div>
             </td>
             <td v-if="showActionsColumn">
-              <div className="btns" >
-                <button> Completar > </button>
+              <div className="btns">
+                <button @click="showModal = true">Completar ></button>
               </div>
             </td>
           </tr>
+          <tr v-if="props.data.length === 0"> Sin datos</tr>
         </tbody>
       </table>
     </div>
@@ -183,6 +231,8 @@ onMounted(() => {
       </div>
     </div>
   </div>
+  <Modal v-if="showModal" @cerrarModal="showModal = false" />
+
 </template>
 
 <style lang="scss">
@@ -337,7 +387,7 @@ onMounted(() => {
     }
 
     th {
-      padding: 15px;
+      padding: 15px 12px;
       font-weight: normal !important;
       div {
         display: flex;
@@ -429,7 +479,7 @@ onMounted(() => {
     place-items: center;
     background-color: var(--white);
     padding: 8px 14px;
-    border-radius: 12px;
+    border-radius: 10px;
     color: var(--primary);
     border: 1px solid var(--primary);
     font-weight: 500;
@@ -468,7 +518,8 @@ onMounted(() => {
     h5 {
       text-transform: lowercase;
       font-size: clamp(6px, 8vw, 12px);
-      line-height: .8rem;
+      line-height: 0.8rem;
+      color: var(--grey-1);
       //   @include md {
       //     font-size: clamp(6px, 8vw, 12px);
       //   }
@@ -511,4 +562,3 @@ onMounted(() => {
   font-size: clamp(6px, 8vw, 14px);
 }
 </style>
-
