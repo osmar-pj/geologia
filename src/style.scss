@@ -469,7 +469,8 @@ input[type="checkbox"] {
 
 .p-dropdown-item {
   border-radius: 8px;
-  padding: 8px 15px; 
+  padding: 8px 15px;
+  transition: all 0.35s ease-out; 
   &:hover{
     background-color: var(--grey-light-1);
   }

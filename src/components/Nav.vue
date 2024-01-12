@@ -12,6 +12,7 @@ const goToPage = (page) => {
 };
 const name = ref("");
 name.value = store.state.name;
+const storedUser = JSON.parse(localStorage.getItem('user'));
 const logout = async () => {
   try {
     await store.dispatch("auth_logout");
@@ -25,10 +26,10 @@ const logout = async () => {
 <template>
   <div class="c-sidebar">
     <div class="sidebar-header">
-      <div className="s-header-avatar">A</div>
+      <div className="s-header-avatar"> {{ storedUser.user ? storedUser.user.trim().match(/\b\w/g).join('') : '' }}</div>
       <div className="s-header-name">
-        <h4>Prueba Ejemplo</h4>
-        <span>prueba_ejemplo@gmail.com</span>
+        <h4>{{ storedUser.user }}</h4>
+        <span>Bienvenido, {{ storedUser.empresa }}</span>
       </div>
     </div>
     <div class="sidebar-search">
@@ -40,7 +41,7 @@ const logout = async () => {
     <div class="sidebar-content">
       <div class="s-content-title">
         <div class="s-c-t-general">
-          <h1>{{ name }}</h1>
+          <h1>Menu</h1>
           <span>12</span>
         </div>
         <div class="s-c-t-info">

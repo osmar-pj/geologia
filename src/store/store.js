@@ -29,7 +29,6 @@ const store = createStore({
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({code: payload})
-                
             })
             const data = await response.json()
             if (!data.status) return

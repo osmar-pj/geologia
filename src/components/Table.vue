@@ -41,6 +41,13 @@ onMounted(() => {
     .toLocaleDateString("es-ES", options)
     .replace(/\//g, ".")}`;
 });
+
+// onMounted(() => {
+//     CustomerService.getCustomersMedium().then((data) => (customers.value = data));
+// });
+// const customers = ref();
+
+
 </script>
 
 <template>
@@ -122,7 +129,7 @@ onMounted(() => {
             <td>
               <div class="td-user">
                 <div class="t-name">
-                  <h4>#{{ index }}</h4>
+                  <h4>#{{ index + 1}}</h4>
                 </div>
               </div>
             </td>
@@ -213,9 +220,28 @@ onMounted(() => {
               </div>
             </td>
           </tr>
-          <tr v-if="props.data.length === 0"> Sin datos</tr>
+          
         </tbody>
-      </table>
+      </table>  
+      <!-- <DataTable :value="data" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem"
+                paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                currentPageReportTemplate="{first} to {last} of {totalRecords}">
+            <template #paginatorstart>
+                <Button type="button" icon="pi pi-refresh" text />
+            </template>
+            <template #paginatorend>
+                <Button type="button" icon="pi pi-download" text />
+            </template>
+            <Column field="fecha" header="Fecha" style="width: 25%">
+              <div>
+                fecha
+              </div>
+            </Column>
+            <Column field="country.name" header="Country" style="width: 25%"></Column>
+            <Column field="company" header="Company" style="width: 25%"></Column>
+            <Column field="representative.name" header="Representative" style="width: 25%"></Column>
+        </DataTable> -->
+
     </div>
 
     <div class="users-c-c-footer">
