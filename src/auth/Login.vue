@@ -27,7 +27,7 @@ const login = async () => {
           <div class="Login-imputs-item">
             <label>Código de acceso</label>
             <div class="imputs-i-input">
-              <!-- <img src="imgs/i-f-pass.svg" alt="" /> -->
+              <img src="../assets/img/lock.svg" alt="" />
               <input
                 type="password"
                 name="password"

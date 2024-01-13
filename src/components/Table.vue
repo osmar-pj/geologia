@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
+
 import Modal from "../components/Modal.vue";
 const selectedCity = ref(null);
 const showModal = ref(false);
@@ -17,6 +18,9 @@ const cities = ref([
   { name: "City1", value: "city11" },
   { name: "City2", value: "city12" },
 ]);
+
+const selectedProduct = ref();
+const metaKey = ref(true);
 
 const props = defineProps(["showActionsColumn", "title", "data"]);
 const formattedDate = ref("");
@@ -46,8 +50,6 @@ onMounted(() => {
 //     CustomerService.getCustomersMedium().then((data) => (customers.value = data));
 // });
 // const customers = ref();
-
-
 </script>
 
 <template>
@@ -76,189 +78,167 @@ onMounted(() => {
   </div>
 
   <div class="c-global-c-content">
-    <div class="users-c-c-filters">
-      <div class="c-c-filters-search">
-        <img src="../assets/img/i-search.svg" alt="" />
-        <input type="text" value="" placeholder="Buscar por nombre..." />
-      </div>
-      <div class="c-c-filters-items">
-        <Dropdown
-          class="p-dropdown"
-          v-model="selectedCity"
-          :options="cities"
-          optionLabel="name"
-          placeholder="Seleccionar"
-        />
-        <Dropdown
-          class="p-dropdown"
-          v-model="selectedCity"
-          :options="cities"
-          optionLabel="name"
-          placeholder="Seleccionar"
-        />
-        <Dropdown
-          class="p-dropdown"
-          v-model="selectedCity"
-          :options="cities"
-          optionLabel="name"
-          placeholder="Seleccionar"
-        />
-      </div>
-    </div>
-
-    <div class="users-c-c-table">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Fecha</th>
-            <th>Turno</th>
-            <th>Mina</th>
-            <th>Operador</th>
-            <th>Placa</th>
-            <th>Vagones</th>
-            <th>Tonelada</th>
-            <th>TMH</th>
-            <th>Tajo</th>
-            <th>Tableta</th>
-            <th v-if="props.showActionsColumn">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(d, index) in props.data" :key="index">
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>#{{ index + 1}}</h4>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.fecha }}</h4>
-                  <h5>Fecha de llegada</h5>
-                </div>
-              </div>
-            </td>
-           <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.turno }}</h4>
-                  <h5>turno</h5>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.mina }}</h4>
-                  <h5>mina</h5>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <span class="t-siglas">{{ d.operador ? d.operador.split(' ').slice(0, 2).map(word => word.charAt(0)).join('') : '' }}</span>
-                <div class="t-name">
-                  <h4>{{ d.operador ? d.operador.split(' ').slice(0,2).join(' ') : ''}}</h4>
-                  <h5 class="t-2">{{ d.operador ? d.operador.split(' ').slice(2).join(' ') : ''}}</h5>                  
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.vehiculo }}</h4>
-                  <h5>vehiculo</h5>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.vagones }}</h4>
-                  <h5>vagones</h5>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.ton }}</h4>
-                  <h5>toneladas</h5>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.tonh }}</h4>
-                  <h5>toneladas</h5>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.tajo }}</h4>
-                  <h5>{{ d.tipo }}</h5>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="td-user">
-                <div class="t-name">
-                  <h4>{{ d.tableta }}</h4>
-                  <h5>{{ d.tableta ? "#tableta" : "" }}</h5>
-                </div>
-              </div>
-            </td>
-            <td v-if="showActionsColumn">
-              <div className="btns">
-                <button @click="showModal = true">Completar ></button>
-              </div>
-            </td>
-          </tr>
-          
-        </tbody>
-      </table>  
-      <!-- <DataTable :value="data" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem"
-                paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                currentPageReportTemplate="{first} to {last} of {totalRecords}">
-            <template #paginatorstart>
-                <Button type="button" icon="pi pi-refresh" text />
-            </template>
-            <template #paginatorend>
-                <Button type="button" icon="pi pi-download" text />
-            </template>
-            <Column field="fecha" header="Fecha" style="width: 25%">
-              <div>
-                fecha
-              </div>
-            </Column>
-            <Column field="country.name" header="Country" style="width: 25%"></Column>
-            <Column field="company" header="Company" style="width: 25%"></Column>
-            <Column field="representative.name" header="Representative" style="width: 25%"></Column>
-        </DataTable> -->
-
-    </div>
-
-    <div class="users-c-c-footer">
-      <div class="c-c-footer-item"></div>
-      <div class="c-c-footer-page">
-        <button>
-          <!-- <img src="imgs/i-drop.svg" alt="" /> -->
-        </button>
-        <span class=""> Página <strong> 2 de 10 </strong> </span>
-        <button>
-          <!-- <img src="imgs/i-drop.svg" alt="" /> -->
-        </button>
-      </div>
-    </div>
+    <DataTable
+      v-model:selection="selectedProduct"
+      :value="data"
+      dataKey="travel_Id"
+      paginator
+      :rows="20"
+      scrollable
+      tableStyle="width: 100%"
+      paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
+      currentPageReportTemplate="Página {currentPage} de {totalPages}" :filters="filters"
+    >
+    <!-- <template #header>
+        <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+            <h4 class="m-0">Manage Products</h4>
+            <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText v-model="filters['global'].value" placeholder="Search..." />
+            </span>
+        </div>
+    </template> -->
+      <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+      <Column field="index" header="#">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>#</h4>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="fecha" header="Fecha" sortable>
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.fecha }}</h4>
+              <h5>Fecha de llegada</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="turno" header="Turno" sortable>
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.turno }}</h4>
+              <h5>turno</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="mina" header="Mina" sortable>
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.mina }}</h4>
+              <h5>mina</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="user" header="Operador" sortable>
+        <template #body="slotProps">
+          <div class="td-user">
+            <span class="t-siglas">{{
+              slotProps.data.operador
+                ? slotProps.data.operador
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((word) => word.charAt(0))
+                    .join("")
+                : ""
+            }}</span>
+            <div class="t-name">
+              <h4>
+                {{
+                  slotProps.data.operador
+                    ? slotProps.data.operador.split(" ").slice(0, 2).join(" ")
+                    : ""
+                }}
+              </h4>
+              <h5 class="t-2">
+                {{
+                  slotProps.data.operador
+                    ? slotProps.data.operador.split(" ").slice(2).join(" ")
+                    : ""
+                }}
+              </h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="vehiculo" header="Vehículo" sortable>
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.vehiculo }}</h4>
+              <h5>vehiculo</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="vagones" header="vagones">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.vagones }}</h4>
+              <h5>vagones</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="toneladas" header="Toneladas">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.ton }}</h4>
+              <h5>toneladas</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="tonh" header="TMH" sortable>
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.tonh }}</h4>
+              <h5>toneladas</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="tajo" header="Tajo">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.tajo }}</h4>
+              <h5>{{ slotProps.data.tipo }}</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="tableta" header="Tableta">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>{{ slotProps.data.tableta }}</h4>
+              <h5>{{ slotProps.data.tableta ? "#tableta" : "" }}</h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="Acciones" header="Acciones">
+        <template #body="slotProps">
+          <div className="btns">
+            <button @click="showModal = true">Completar ></button>
+          </div>
+        </template>
+      </Column>
+    </DataTable>
   </div>
   <Modal v-if="showModal" @cerrarModal="showModal = false" />
-
 </template>
 
 <style lang="scss">
@@ -266,6 +246,7 @@ onMounted(() => {
   width: 100%;
   padding: 1.5rem 2.5rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -282,11 +263,10 @@ onMounted(() => {
       position: relative;
       display: flex;
       flex-wrap: wrap;
-      border-radius: 0.5rem;
+      border-radius: 12px;
       background-color: var(--grey-light-1);
       box-sizing: border-box;
-
-      padding: 0.25rem;
+      padding: 6px;
       width: 300px;
       font-size: 14px;
     }
@@ -305,7 +285,7 @@ onMounted(() => {
       cursor: pointer;
       align-items: center;
       justify-content: center;
-      border-radius: 0.5rem;
+      border-radius: 8px;
       border: none;
       padding: 0.5rem 0;
       color: var(--grey-1);
@@ -315,7 +295,7 @@ onMounted(() => {
     .radio-inputs .radio input:checked + .name {
       background-color: var(--primary);
       color: var(--white);
-      font-weight: 600;
+      font-weight: 500;
     }
   }
   //   @include md {
@@ -326,11 +306,11 @@ onMounted(() => {
 .c-global-c-content {
   display: flex;
   flex-direction: column;
-  padding: 2.5rem;
-  padding-top: 0;
+  padding: 0 2.5rem;
+  padding-bottom: 1rem;
   gap: 1rem;
   flex: 1 1;
-  overflow: auto;
+  overflow: hidden;
   .users-c-c-filters {
     display: flex;
     justify-content: space-between;
@@ -379,71 +359,71 @@ onMounted(() => {
       // }
     }
   }
-  .users-c-c-table {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    overflow: auto;
+  // .users-c-c-table {
+  //   display: flex;
+  //   flex-direction: column;
+  //   align-items: flex-start;
+  //   overflow: auto;
 
-    table {
-      width: 100%;
-      color: var(--black);
-      font-size: clamp(6px, 8vw, 14px);
-      line-height: 0.7rem;
-      font-weight: 500;
-      border-collapse: collapse;
-      white-space: nowrap;
-      // @include md {
-      //   font-size: clamp(6px, 8vw, 14px);
-      //   line-height: 1.1rem;
-      // }
-    }
+  //   table {
+  //     width: 100%;
+  //     color: var(--black);
+  //     font-size: clamp(6px, 8vw, 14px);
+  //     line-height: 0.7rem;
+  //     font-weight: 500;
+  //     border-collapse: collapse;
+  //     white-space: nowrap;
+  //     // @include md {
+  //     //   font-size: clamp(6px, 8vw, 14px);
+  //     //   line-height: 1.1rem;
+  //     // }
+  //   }
 
-    thead {
-      color: var(--grey-1);
-      text-align: left;
-      background-color: var(--grey-light-1);
-      font-size: clamp(6px, 8vw, 11px);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      // @include md {
-      //   font-size: clamp(6px, 8vw, 12px);
-      // }
-    }
+  //   thead {
+  //     color: var(--grey-1);
+  //     text-align: left;
+  //     background-color: var(--grey-light-1);
+  //     font-size: clamp(6px, 8vw, 11px);
+  //     position: sticky;
+  //     top: 0;
+  //     z-index: 1;
+  //     // @include md {
+  //     //   font-size: clamp(6px, 8vw, 12px);
+  //     // }
+  //   }
 
-    th {
-      padding: 15px 12px;
-      font-weight: normal !important;
-      div {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        img {
-          width: 0.5rem;
-          // @include md {
-          //   width: 0.6rem;
-          // }
-        }
-        //   @include md {
-        //     gap: 0.5rem;
-        //   }
-      }
-    }
+  //   th {
+  //     padding: 15px 12px;
+  //     font-weight: normal !important;
+  //     div {
+  //       display: flex;
+  //       align-items: center;
+  //       gap: 0.4rem;
+  //       img {
+  //         width: 0.5rem;
+  //         // @include md {
+  //         //   width: 0.6rem;
+  //         // }
+  //       }
+  //       //   @include md {
+  //       //     gap: 0.5rem;
+  //       //   }
+  //     }
+  //   }
 
-    td {
-      padding: 9px 12px;
+  //   td {
+  //     padding: 9px 12px;
 
-      // @include md {
-      //   padding: 15px;
-      // }
-    }
+  //     // @include md {
+  //     //   padding: 15px;
+  //     // }
+  //   }
 
-    tbody tr {
-      z-index: 99;
-      background-color: var(--white);
-    }
-  }
+  //   tbody tr {
+  //     z-index: 99;
+  //     background-color: var(--white);
+  //   }
+  // }
   .users-c-c-footer {
     display: flex;
     justify-content: space-between;
