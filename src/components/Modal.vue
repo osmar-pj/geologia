@@ -61,15 +61,15 @@ const type = ref([
       <div class="mC-c-body">
         <div className="mC-b-info">
           <p>
-            El viaje programado el <strong>12 de Diciembre de 2023</strong>,
+            El viaje programado el <strong>'{{ userModal.fecha }} '</strong>,
             conducido por
             <strong> {{ userModal.operador }} </strong> asociado al vehículo
-            <strong>'BFC-567'</strong>, transportó
-            <strong>12 toneladas</strong> de <strong>desmonte</strong> en
-            <strong>0 vagones</strong>. El vehículo, con el tipo
-            <strong>'Tajo 500JC'</strong>, se dirigió al tajo denominado
-            <strong>'Tajo'</strong>. La tableta no fue especificada, y el estado
-            final del viaje fue 'en revisión'.
+            <strong>'{{ userModal.vehiculo }} '</strong>, transportó
+            <strong>{{ userModal.ton }}  toneladas</strong> de <strong>{{ userModal.material }} </strong> en
+            <strong>{{ userModal.vagones }}  vagones</strong>. El vehículo, con el tipo
+            <strong>'{{ userModal.tipo }} '</strong>, se dirigió al tajo denominado
+            <strong>'{{ userModal.tajo }} '</strong>. La tableta no fue especificada, y el estado
+            final del viaje fue <strong>'{{ userModal.status }}'</strong>.
           </p>
         </div>
         <div className="mC-b-imputs">
@@ -95,6 +95,16 @@ const type = ref([
                 placeholder="Seleccionar"
               />
             </div>
+          </div>
+          <div class="radio-inputs" v-if="!showItem">
+            <label class="radio">
+              <input type="radio" name="radio" checked="" />
+              <span class="name">Crear Ruma</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="radio" />
+              <span class="name">Asignar Ruma</span>
+            </label>
           </div>
           <div className="mC-imputs-item" v-if="!showItem">
             <label>Nro de Ruma</label>

@@ -6,9 +6,9 @@ const store = useStore();
 const selectedCity = ref(null);
 const showModal = ref(false);
 const openModal = (e) => {
-  store.state.userModal = e
+  store.state.userModal = e;
   showModal.value = true;
-}
+};
 
 const cities = ref([
   { name: "City1", value: "city1" },
@@ -28,7 +28,13 @@ const cities = ref([
 const selectedProduct = ref();
 const metaKey = ref(true);
 
-const props = defineProps(["showActionsColumn", "title", "data", "showColum", "showItem"]);
+const props = defineProps([
+  "showActionsColumn",
+  "title",
+  "data",
+  "showColum",
+  "showItem",
+]);
 const formattedDate = ref("");
 
 onMounted(() => {
@@ -93,9 +99,10 @@ onMounted(() => {
       scrollable
       tableStyle="width: 100%"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
-      currentPageReportTemplate="Página {currentPage} de {totalPages}" :filters="filters"
+      currentPageReportTemplate="Página {currentPage} de {totalPages}"
+      :filters="filters"
     >
-    <!-- <template #header>
+      <!-- <template #header>
         <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
             <h4 class="m-0">Manage Products</h4>
             <span class="p-input-icon-left">
@@ -314,7 +321,12 @@ onMounted(() => {
       </Column>
     </DataTable>
   </div>
-  <Modal v-if="showModal"  @cerrarModal="showModal = false" :showItem="props.showItem" :selectedTravelId="selectedTravelId" />
+  <Modal
+    v-if="showModal"
+    @cerrarModal="showModal = false"
+    :showItem="props.showItem"
+    :selectedTravelId="selectedTravelId"
+  />
 </template>
 
 <style lang="scss">
