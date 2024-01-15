@@ -1,7 +1,6 @@
 <script setup>
 import { ref, defineProps, defineEmits } from "vue";
-
-const { showModal } = defineProps(["showModal"]);
+const { showModal, showItem } = defineProps(["showItem", "showModal"]);
 const emit = defineEmits();
 
 const cerrarModal = () => {
@@ -9,20 +8,27 @@ const cerrarModal = () => {
 };
 
 const selectedCity = ref(null);
-
+const selectedType = ref(null);
 const cities = ref([
-  { name: "City1", value: "city1" },
-  { name: "City2", value: "city2" },
-  { name: "City1", value: "city3" },
-  { name: "City2", value: "city4" },
-  { name: "City1", value: "city5" },
-  { name: "City2", value: "city6" },
-  { name: "City1", value: "city7" },
-  { name: "City2", value: "city8" },
-  { name: "City1", value: "city9" },
-  { name: "City2", value: "city10" },
-  { name: "City1", value: "city11" },
-  { name: "City2", value: "city12" },
+  { name: "TJ400_1P_1", value: "TJ400_1P_1" },
+  { name: "TJ400_2P_1", value: "TJ400_2P_1" },
+  { name: "TJ400_6S_1", value: "TJ400_6S_1" },
+  { name: "TJ500_1S_1", value: "TJ500_1S_1" },
+  { name: "TJ500_2S_1", value: "TJ500_2S_1" },
+  { name: "TJ500_3P_1", value: "TJ500_3P_1" },
+  { name: "TJ500_3S_1", value: "TJ500_3S_1" },
+  { name: "TJ500_4S_1", value: "TJ500_4S_1" },
+  { name: "TJ500_5S_1", value: "TJ500_5S_1" },
+  { name: "TJ500_6P_1", value: "TJ500_6P_1" },
+  { name: "TJ500_7P_1", value: "TJ500_7P_1" },
+  { name: "TJ500_7S_1", value: "TJ500_7S_1" },
+  { name: "TJ500_8S_1", value: "TJ500_8S_1" },
+  { name: "TJ500_11P_1", value: "TJ500_11P_1" },
+]);
+
+const type = ref([
+  { name: "Tajo", value: "tajo" },
+  { name: "Avance", value: "avance" },
 ]);
 </script>
 
@@ -58,8 +64,31 @@ const cities = ref([
           </p>
         </div>
         <div className="mC-b-imputs">
-          <div className="mC-imputs-item">
-            <label>Nro de Tableta</label>
+          <div class="radio-inputs" v-if="!showItem">
+            <label class="radio">
+              <input type="radio" name="radio" checked="" />
+              <span class="name">Tajo</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="radio" />
+              <span class="name">Avance</span>
+            </label>
+          </div>
+          <div className="mC-imputs-item" v-if="!showItem">
+            <label>Tajo</label>
+            <div className="imputs-i-input">
+              <!-- <img src="imgs/i-f-user.svg" alt="" /> -->
+              <Dropdown
+                class="p-dropdown"
+                v-model="selectedCity"
+                :options="cities"
+                optionLabel="name"
+                placeholder="Seleccionar"
+              />
+            </div>
+          </div>
+          <div className="mC-imputs-item" v-if="!showItem">
+            <label>Nro de Ruma</label>
             <div className="imputs-i-input">
               <img src="../assets/img/i-tablet.svg" alt="" />
               <input
@@ -73,16 +102,110 @@ const cities = ref([
               />
             </div>
           </div>
-          <div className="mC-imputs-item">
-            <label>Tajo</label>
+
+          <!-- CONTROL DE CALIDAD -->
+          <div className="mC-imputs-item" v-if="showItem">
+            <label>Codigo de muestra</label>
             <div className="imputs-i-input">
-              <!-- <img src="imgs/i-f-user.svg" alt="" /> -->
-              <Dropdown
-                class="p-dropdown"
-                v-model="selectedCity"
-                :options="cities"
-                optionLabel="name"
-                placeholder="Seleccionar"
+              <img src="../assets/img/i-tablet.svg" alt="" />
+              <input
+                type="text"
+                name="operationTruck_Id"
+                inputMode="text"
+                placeholder="Ej. TJ-999_9_1"
+                className="input-crud"
+                value=""
+                required
+              />
+            </div>
+          </div>
+          <div className="mC-imputs-item" v-if="showItem">
+            <label>Ley Ag</label>
+            <div className="imputs-i-input">
+              <img src="../assets/img/i-tablet.svg" alt="" />
+              <input
+                type="text"
+                name="operationTruck_Id"
+                inputMode="text"
+                placeholder="Ej. TJ-999_9_1"
+                className="input-crud"
+                value=""
+                required
+              />
+            </div>
+          </div>
+          <div className="mC-imputs-item" v-if="showItem">
+            <label>Ley Fe</label>
+            <div className="imputs-i-input">
+              <img src="../assets/img/i-tablet.svg" alt="" />
+              <input
+                type="text"
+                name="operationTruck_Id"
+                inputMode="text"
+                placeholder="Ej. TJ-999_9_1"
+                className="input-crud"
+                value=""
+                required
+              />
+            </div>
+          </div>
+          <div className="mC-imputs-item" v-if="showItem">
+            <label>Ley Mn</label>
+            <div className="imputs-i-input">
+              <img src="../assets/img/i-tablet.svg" alt="" />
+              <input
+                type="text"
+                name="operationTruck_Id"
+                inputMode="text"
+                placeholder="Ej. TJ-999_9_1"
+                className="input-crud"
+                value=""
+                required
+              />
+            </div>
+          </div>
+          <div className="mC-imputs-item" v-if="showItem">
+            <label>Ley Pb</label>
+            <div className="imputs-i-input">
+              <img src="../assets/img/i-tablet.svg" alt="" />
+              <input
+                type="text"
+                name="operationTruck_Id"
+                inputMode="text"
+                placeholder="Ej. TJ-999_9_1"
+                className="input-crud"
+                value=""
+                required
+              />
+            </div>
+          </div>
+          <div className="mC-imputs-item" v-if="showItem">
+            <label>Ley Zn</label>
+            <div className="imputs-i-input">
+              <img src="../assets/img/i-tablet.svg" alt="" />
+              <input
+                type="text"
+                name="operationTruck_Id"
+                inputMode="text"
+                placeholder="Ej. TJ-999_9_1"
+                className="input-crud"
+                value=""
+                required
+              />
+            </div>
+          </div>
+          <div className="mC-imputs-item" v-if="showItem">
+            <label>Fecha Abaste</label>
+            <div className="imputs-i-input">
+              <img src="../assets/img/i-tablet.svg" alt="" />
+              <input
+                type="text"
+                name="operationTruck_Id"
+                inputMode="text"
+                placeholder="Ej. TJ-999_9_1"
+                className="input-crud"
+                value=""
+                required
               />
             </div>
           </div>
@@ -218,6 +341,44 @@ const cities = ref([
             }
           }
         }
+        .radio-inputs {
+          position: relative;
+          display: flex;
+          flex-wrap: wrap;
+          border-radius: 12px;
+          background-color: var(--grey-light-1);
+          box-sizing: border-box;
+          padding: 6px;
+          width: 100%;
+          font-size: 14px;
+          .radio {
+            flex: 1 1 auto;
+            text-align: center;
+            input {
+              display: none;
+              &:checked + .name {
+                background-color: var(--primary);
+                color: var(--white);
+                font-weight: 500;
+              }
+            }
+            .name {
+             display: flex;
+             cursor: pointer;
+             align-items: center;
+             justify-content: center;
+             border-radius: 8px;
+             border: none;
+             padding: 0.5rem 0;
+             color: var(--grey-1);
+             transition: all 0.15s ease-in-out;
+           }
+          }
+        }
+
+
+
+
       }
 
       .mC-b-info {

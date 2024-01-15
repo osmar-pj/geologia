@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 import Modal from "../components/Modal.vue";
 const selectedCity = ref(null);
 const showModal = ref(false);
+
 const cities = ref([
   { name: "City1", value: "city1" },
   { name: "City2", value: "city2" },
@@ -22,7 +23,7 @@ const cities = ref([
 const selectedProduct = ref();
 const metaKey = ref(true);
 
-const props = defineProps(["showActionsColumn", "title", "data"]);
+const props = defineProps(["showActionsColumn", "title", "data", "showColum", "showItem"]);
 const formattedDate = ref("");
 
 onMounted(() => {
@@ -219,7 +220,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="tableta" header="Tableta">
+      <Column field="tableta" header="Nro Ruma">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -229,7 +230,77 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="Acciones" header="Acciones">
+      <Column field="codMuestra" header="Cod Muestra" v-if="props.showColum">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4></h4>
+              <h5></h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="leyAg" header="Ley Ag" v-if="props.showColum">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4></h4>
+              <h5></h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="leyFe" header="Ley Fe" v-if="props.showColum">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4></h4>
+              <h5></h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="leyMn" header="Ley Mn" v-if="props.showColum">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4></h4>
+              <h5></h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="leyPb" header="Ley Pb" v-if="props.showColum">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4></h4>
+              <h5></h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="leyZn" header="Ley Zn" v-if="props.showColum">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4></h4>
+              <h5></h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="abastecimiento" header="Fech Abast" v-if="props.showColum">
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4></h4>
+              <h5></h5>
+            </div>
+          </div>
+        </template>
+      </Column>
+      <Column field="Acciones" header="Acciones" v-if="props.showActionsColumn">
         <template #body="slotProps">
           <div className="btns">
             <button @click="showModal = true">Completar ></button>
@@ -238,7 +309,7 @@ onMounted(() => {
       </Column>
     </DataTable>
   </div>
-  <Modal v-if="showModal" @cerrarModal="showModal = false" />
+  <Modal v-if="showModal"  @cerrarModal="showModal = false" :showItem="props.showItem" :selectedTravelId="selectedTravelId" />
 </template>
 
 <style lang="scss">
