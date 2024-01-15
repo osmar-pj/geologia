@@ -1,7 +1,11 @@
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { useStore } from "vuex";
+import Filexcel from "../components/Filexcel.vue";
+const url = import.meta.env.VITE_API_URL
+
 const store = useStore();
+const dataRuma = ref([])
 const { showModal, showItem } = defineProps(["showItem", "showModal"]);
 const emit = defineEmits();
 
@@ -9,16 +13,12 @@ const cerrarModal = () => {
   emit("cerrarModal");
 };
 
-const userModal = store.state.userModal;
+onMounted(async () => {
+    await store.dispatch('rumaList')
+    data.value = store.state.dataList.filter(item => item.status === 'Completo');
+})
 
-const updateTravel = () => {
-  // enviar el UPDATE al backend
-  // actualizar el userModal como null
-};
-
-const selectedCity = ref(null);
-const selectedType = ref(null);
-const cities = ref([
+const tajos = ref([
   { name: "TJ400_1P_1", value: "TJ400_1P_1" },
   { name: "TJ400_2P_1", value: "TJ400_2P_1" },
   { name: "TJ400_6S_1", value: "TJ400_6S_1" },
@@ -35,10 +35,34 @@ const cities = ref([
   { name: "TJ500_11P_1", value: "TJ500_11P_1" },
 ]);
 
-const type = ref([
-  { name: "Tajo", value: "tajo" },
-  { name: "Avance", value: "avance" },
-]);
+const userModal = store.state.userModal;
+const selectedOption = ref(userModal.tipo || "TAJO");
+const selectedTajo = ref(userModal.tajo || "");
+const NroRuma = ref(userModal.ruma || "");
+console.log(userModal.tajo);
+
+const updateTravel = async () => {
+  try {
+    const response = await fetch(`${url}/triplist/${userModal._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tipo: selectedOption.value, tajo: selectedTajo.value.value, status: "ControlCalidad", ruma :NroRuma.value }),
+    });
+
+    const data = await response.json();
+
+    if (!data.status) {
+      console.log("correcto");
+    } else {
+      console.log("error");
+    }
+  } catch (error) {
+    console.error("Error al actualizar:", error);
+  }
+};
+
 </script>
 
 <template>
@@ -62,41 +86,54 @@ const type = ref([
         <div className="mC-b-info">
           <p>
             El viaje programado el <strong>'{{ userModal.fecha }} '</strong>,
-            conducido por
-            <strong> {{ userModal.operador }} </strong> asociado al vehículo
-            <strong>'{{ userModal.vehiculo }} '</strong>, transportó
-            <strong>{{ userModal.ton }}  toneladas</strong> de <strong>{{ userModal.material }} </strong> en
-            <strong>{{ userModal.vagones }}  vagones</strong>. El vehículo, con el tipo
-            <strong>'{{ userModal.tipo }} '</strong>, se dirigió al tajo denominado
-            <strong>'{{ userModal.tajo }} '</strong>. La tableta no fue especificada, y el estado
-            final del viaje fue <strong>'{{ userModal.status }}'</strong>.
+            conducido por <strong> {{ userModal.operador }} </strong> asociado
+            al vehículo <strong>'{{ userModal.vehiculo }} '</strong>, transportó
+            <strong>{{ userModal.ton }} toneladas</strong> de
+            <strong>{{ userModal.material }} </strong> en
+            <strong>{{ userModal.vagones }} vagones</strong>. El vehículo, con
+            el tipo <strong>'{{ userModal.tipo }} '</strong>, se dirigió al tajo
+            denominado <strong>'{{ userModal.tajo }} '</strong>. La tableta no
+            fue especificada, y el estado final del viaje fue
+            <strong>'{{ userModal.status }}'</strong>.
           </p>
         </div>
         <div className="mC-b-imputs">
-          <div class="radio-inputs" v-if="!showItem">
+          <div class="radio-inputs">
             <label class="radio">
-              <input type="radio" name="radio" checked="" />
+              <input
+                type="radio"
+                name="radio"
+                v-model="selectedOption"
+                value="TAJO"
+                checked
+              />
               <span class="name">Tajo</span>
             </label>
             <label class="radio">
-              <input type="radio" name="radio" />
+              <input
+                type="radio"
+                name="radio"
+                v-model="selectedOption"
+                value="AVANCE"
+              />
               <span class="name">Avance</span>
             </label>
           </div>
-          <div className="mC-imputs-item" v-if="!showItem">
+
+          <div class="mC-imputs-item" v-show="selectedOption === 'TAJO'" v-if="!showItem">
             <label>Tajo</label>
-            <div className="imputs-i-input">
-              <!-- <img src="imgs/i-f-user.svg" alt="" /> -->
+            <div class="imputs-i-input">
               <Dropdown
                 class="p-dropdown"
-                v-model="selectedCity"
-                :options="cities"
+                v-model="selectedTajo"
+                :options="tajos"
                 optionLabel="name"
                 placeholder="Seleccionar"
               />
             </div>
           </div>
-          <div class="radio-inputs" v-if="!showItem">
+
+          <!-- <div class="radio-inputs" v-if="!showItem">
             <label class="radio">
               <input type="radio" name="radio" checked="" />
               <span class="name">Crear Ruma</span>
@@ -105,101 +142,23 @@ const type = ref([
               <input type="radio" name="radio" />
               <span class="name">Asignar Ruma</span>
             </label>
-          </div>
-          <div className="mC-imputs-item" v-if="!showItem">
-            <label>Nro de Ruma</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
+          </div> -->
+          <div class="mC-imputs-item" v-if="!showItem">
+            <label>Nro Ruma</label>
+            <div class="imputs-i-input">
+              <Dropdown
+                class="p-dropdown"
+                v-model="selectedRuma"
+                :options="dataRuma"
+                optionLabel="name"
+                placeholder="Seleccionar"
               />
             </div>
           </div>
-
+          <Filexcel v-if="showItem" />
           <!-- CONTROL DE CALIDAD -->
           <div className="mC-imputs-item" v-if="showItem">
             <label>Codigo de muestra</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div>
-          <div className="mC-imputs-item" v-if="showItem">
-            <label>Ley Ag</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div>
-          <div className="mC-imputs-item" v-if="showItem">
-            <label>Ley Fe</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div>
-          <div className="mC-imputs-item" v-if="showItem">
-            <label>Ley Mn</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div>
-          <div className="mC-imputs-item" v-if="showItem">
-            <label>Ley Pb</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div>
-          <div className="mC-imputs-item" v-if="showItem">
-            <label>Ley Zn</label>
             <div className="imputs-i-input">
               <img src="../assets/img/i-tablet.svg" alt="" />
               <input
@@ -234,7 +193,13 @@ const type = ref([
         <button @click="cerrarModal" class="btn-cancel" type="button">
           Cancelar
         </button>
-        <button class="btn-success" type="submit" @click.prevent="updateTravel()">Guardar</button>
+        <button
+          class="btn-success"
+          type="submit"
+          @click.prevent="updateTravel()"
+        >
+          Guardar
+        </button>
       </div>
     </form>
   </div>
@@ -253,7 +218,7 @@ const type = ref([
   place-items: center;
   .mCreate-content {
     background-color: var(--white);
-    max-width: 400px;
+    max-width: 480px;
     width: 100%;
     border-radius: 15px;
     display: flex;
@@ -337,7 +302,7 @@ const type = ref([
         flex-wrap: wrap;
         gap: 0.5rem;
         .mC-imputs-item {
-          flex: 1 1 250px;
+          flex: 1 1 200px;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
@@ -382,22 +347,18 @@ const type = ref([
               }
             }
             .name {
-             display: flex;
-             cursor: pointer;
-             align-items: center;
-             justify-content: center;
-             border-radius: 8px;
-             border: none;
-             padding: 0.5rem 0;
-             color: var(--grey-1);
-             transition: all 0.15s ease-in-out;
-           }
+              display: flex;
+              cursor: pointer;
+              align-items: center;
+              justify-content: center;
+              border-radius: 8px;
+              border: none;
+              padding: 0.5rem 0;
+              color: var(--grey-1);
+              transition: all 0.15s ease-in-out;
+            }
           }
         }
-
-
-
-
       }
 
       .mC-b-info {

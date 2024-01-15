@@ -9,6 +9,7 @@ const store = createStore({
         name: 'Juan',
         user: user,
         dataList: [],
+        rumaList: [],
         userModal: null
     },
     mutations: {
@@ -20,6 +21,9 @@ const store = createStore({
         },
         getList(state, payload) {
             state.dataList = payload
+        },
+        getRuma(state, payload) {
+            state.rumaList = payload
         }
     },
     actions: {
@@ -51,8 +55,20 @@ const store = createStore({
             }) // cambiar la ruta a list
             const data = await response.json()
             commit('getList', data)
-            console.log(data)
+           
             // return data
+        },
+        getRuma: async ({ commit }) => {
+            const response = await fetch(`${url}/ruma`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "ngrok-skip-browser-warning": true
+                }
+            }) 
+            const data = await response.json()
+            commit('getRuma', data)
+            console.log(data)            
         },
     },
     modules: {}

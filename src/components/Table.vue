@@ -15,14 +15,6 @@ const cities = ref([
   { name: "City2", value: "city2" },
   { name: "City1", value: "city3" },
   { name: "City2", value: "city4" },
-  { name: "City1", value: "city5" },
-  { name: "City2", value: "city6" },
-  { name: "City1", value: "city7" },
-  { name: "City2", value: "city8" },
-  { name: "City1", value: "city9" },
-  { name: "City2", value: "city10" },
-  { name: "City1", value: "city11" },
-  { name: "City2", value: "city12" },
 ]);
 
 const selectedProduct = ref();
@@ -58,10 +50,6 @@ onMounted(() => {
     .replace(/\//g, ".")}`;
 });
 
-// onMounted(() => {
-//     CustomerService.getCustomersMedium().then((data) => (customers.value = data));
-// });
-// const customers = ref();
 </script>
 
 <template>
@@ -111,16 +99,8 @@ onMounted(() => {
             </span>
         </div>
     </template> -->
-      <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-      <Column field="index" header="#">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>#</h4>
-            </div>
-          </div>
-        </template>
-      </Column>
+      <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
+      
       <Column field="fecha" header="Fecha" sortable>
         <template #body="slotProps">
           <div class="td-user">
@@ -206,22 +186,13 @@ onMounted(() => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ton }}</h4>
-              <h5>toneladas</h5>
+              <h4>{{ slotProps.data.ton }} TMH</h4>
+              <h5>{{ slotProps.data.material }}</h5>
             </div>
           </div>
         </template>
       </Column>
-      <Column field="tonh" header="TMH" sortable>
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.tonh }}</h4>
-              <h5>toneladas</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
+      
       <Column field="tajo" header="Tajo">
         <template #body="slotProps">
           <div class="td-user">

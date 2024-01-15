@@ -540,6 +540,12 @@ input[type="checkbox"] {
       //     gap: 0.5rem;
       //   }
     }
+    &:first-child{
+      border-radius: 8px 0px 0px 8px !important;
+  }
+  &:last-child{
+      border-radius: 0 8px 8px 0px !important;
+  }
   }
 
   td {
