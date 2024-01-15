@@ -8,7 +8,8 @@ const store = createStore({
     state: {
         name: 'Juan',
         user: user,
-        dataList: []
+        dataList: [],
+        userModal: null
     },
     mutations: {
         authLogin(state, payload) {

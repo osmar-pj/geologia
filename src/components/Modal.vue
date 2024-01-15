@@ -1,10 +1,19 @@
 <script setup>
 import { ref, defineProps, defineEmits } from "vue";
+import { useStore } from "vuex";
+const store = useStore();
 const { showModal, showItem } = defineProps(["showItem", "showModal"]);
 const emit = defineEmits();
 
 const cerrarModal = () => {
   emit("cerrarModal");
+};
+
+const userModal = store.state.userModal;
+
+const updateTravel = () => {
+  // enviar el UPDATE al backend
+  // actualizar el userModal como null
 };
 
 const selectedCity = ref(null);
@@ -54,7 +63,7 @@ const type = ref([
           <p>
             El viaje programado el <strong>12 de Diciembre de 2023</strong>,
             conducido por
-            <strong>Carlos Campos Perez Camposano</strong> asociado al vehículo
+            <strong> {{ userModal.operador }} </strong> asociado al vehículo
             <strong>'BFC-567'</strong>, transportó
             <strong>12 toneladas</strong> de <strong>desmonte</strong> en
             <strong>0 vagones</strong>. El vehículo, con el tipo
@@ -215,7 +224,7 @@ const type = ref([
         <button @click="cerrarModal" class="btn-cancel" type="button">
           Cancelar
         </button>
-        <button class="btn-success" type="submit">Guardar</button>
+        <button class="btn-success" type="submit" @click.prevent="updateTravel()">Guardar</button>
       </div>
     </form>
   </div>

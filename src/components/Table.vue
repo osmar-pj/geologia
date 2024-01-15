@@ -1,9 +1,14 @@
 <script setup>
 import { ref, onMounted } from "vue";
-
+import { useStore } from "vuex";
 import Modal from "../components/Modal.vue";
+const store = useStore();
 const selectedCity = ref(null);
 const showModal = ref(false);
+const openModal = (e) => {
+  store.state.userModal = e
+  showModal.value = true;
+}
 
 const cities = ref([
   { name: "City1", value: "city1" },
@@ -303,7 +308,7 @@ onMounted(() => {
       <Column field="Acciones" header="Acciones" v-if="props.showActionsColumn">
         <template #body="slotProps">
           <div className="btns">
-            <button @click="showModal = true">Completar ></button>
+            <button @click="openModal(slotProps.data)">Completar ></button>
           </div>
         </template>
       </Column>
