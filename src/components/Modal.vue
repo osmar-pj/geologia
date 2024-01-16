@@ -29,20 +29,27 @@ const userModal = store.state.userModal;
 // } else {
 //   selectedTajo.value = ''
 // }
-const selectedOption = ref(userModal.tipo || "TAJO");
+const selectedTipo = ref(userModal.tipo || "TAJO");
 const selectedRuma = ref(userModal.ruma_Id || "");
 const selectedTajo = ref(userModal.tajo || "");
 
 const updateTravel = async () => {
-  console.log(userModal);
+  if (selectedTipo.value) {
+    // enviar error
+  } else {
+    userModal.tipo = selectedTipo.value;
+  }
+  userModal.tajo = selectedTajo.value.value;
+  userModal.ruma = selectedRuma.value.ruma_Id;
   try {
+    userModal.status = "ControlCalidad";
     const response = await fetch(`${url}/triplist/${userModal._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(userModal),
-      // body: JSON.stringify({ tipo: selectedOption.value, tajo: selectedTajo.value.value, status: "ControlCalidad", ruma :NroRuma.value }),
+      // body: JSON.stringify({ tipo: selectedTipo.value, tajo: selectedTajo.value.value, status: "ControlCalidad", ruma :NroRuma.value }),
     });
 
     const data = await response.json();
@@ -93,13 +100,13 @@ const updateTravel = async () => {
         <div className="mC-b-imputs">
           <div
             class="radio-inputs"
-            v-if="userModal.tipo === '' && !showItem"
+            v-if="(userModal.tipo === '' || userModal.tajo === 0) && !showItem"
           >
             <label class="radio">
               <input
                 type="radio"
                 name="radio"
-                v-model="selectedOption"
+                v-model="selectedTipo"
                 value="TAJO"
                 checked
               />
@@ -109,7 +116,7 @@ const updateTravel = async () => {
               <input
                 type="radio"
                 name="radio"
-                v-model="selectedOption"
+                v-model="selectedTipo"
                 value="AVANCE"
               />
               <span class="name">Avance</span>
@@ -118,7 +125,7 @@ const updateTravel = async () => {
 
           <div
             class="mC-imputs-item"
-            v-show="selectedOption === 'TAJO' && userModal.tipo === '' && !showItem"
+            v-show="selectedTipo === 'TAJO' && (userModal.tipo === '' || userModal.tajo === 0) && !showItem"
           >
             <label>Tajo</label>
             <div class="imputs-i-input">
