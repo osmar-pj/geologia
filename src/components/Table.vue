@@ -2,12 +2,19 @@
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import Modal from "../components/Modal.vue";
+import Delete from "../components/Delete.vue";
 const store = useStore();
 const selectedCity = ref(null);
 const showModal = ref(false);
+const showModalDelete = ref(false);
 const openModal = (e) => {
   store.state.userModal = e;
   showModal.value = true;
+};
+
+const openDelete = (e) => {
+  store.state.userModal = e;
+  showModalDelete.value = true;
 };
 
 const cities = ref([
@@ -130,7 +137,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="user" header="Operador" sortable>
+      <Column field="operador" header="Operador" sortable>
         <template #body="slotProps">
           <div class="td-user">
             <span class="t-siglas">{{
@@ -191,7 +198,6 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      
       <Column field="tajo" header="Tajo">
         <template #body="slotProps">
           <div class="td-user">
@@ -286,6 +292,7 @@ onMounted(() => {
         <template #body="slotProps">
           <div className="btns">
             <button @click="openModal(slotProps.data)">Completar ></button>
+            <button @click="openDelete(slotProps.data)">X</button>
           </div>
         </template>
       </Column>
@@ -295,8 +302,12 @@ onMounted(() => {
     v-if="showModal"
     @cerrarModal="showModal = false"
     :showItem="props.showItem"
-    :selectedTravelId="selectedTravelId"
+   
   />
+  <Delete  v-if="showModalDelete"
+    @cerrarModal="showModalDelete = false"
+      
+    />
 </template>
 
 <style lang="scss">

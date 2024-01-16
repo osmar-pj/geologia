@@ -10,6 +10,7 @@ const store = createStore({
         user: user,
         dataList: [],
         rumaList: [],
+        tajoList: [],
         userModal: null
     },
     mutations: {
@@ -24,6 +25,9 @@ const store = createStore({
         },
         getRuma(state, payload) {
             state.rumaList = payload
+        },
+        getTajo(state, payload) {
+            state.tajoList = payload
         }
     },
     actions: {
@@ -53,7 +57,8 @@ const store = createStore({
                     "ngrok-skip-browser-warning": true
                 }
             }) // cambiar la ruta a list
-            const data = await response.json()
+            const data = await response.json()            
+            console.log(data)           
             commit('getList', data)
         },
         ruma_list: async ({ commit }) => {
@@ -65,7 +70,18 @@ const store = createStore({
                 }
             }) 
             const data = await response.json()
-            commit('getRuma', data)           
+            commit('getRuma', data)
+        },
+        tajo_list: async ({ commit }) => {
+            const response = await fetch(`${url}/tajoGeo`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "ngrok-skip-browser-warning": true
+                }
+            }) 
+            const data = await response.json()
+            commit('getTajo', data)            
         },
     },
     modules: {}

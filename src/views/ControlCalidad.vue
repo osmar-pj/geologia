@@ -7,7 +7,7 @@ const data = ref([])
 
 onMounted(async () => {
     await store.dispatch('get_list')
-    data.value = store.state.dataList.filter(item => item.status === 'ControlCalidad');
+    data.value = store.state.dataList.filter(item => item.statusGeology === 'ControlCalidad');
 })
 
 </script>

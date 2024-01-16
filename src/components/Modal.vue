@@ -2,61 +2,46 @@
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { useStore } from "vuex";
 import Filexcel from "../components/Filexcel.vue";
-const url = import.meta.env.VITE_API_URL
+const url = import.meta.env.VITE_API_URL;
 
-const store = useStore();
-const dataRuma = ref([])
 const { showModal, showItem } = defineProps(["showItem", "showModal"]);
 const emit = defineEmits();
 
 const cerrarModal = () => {
   emit("cerrarModal");
 };
+const store = useStore();
+const dataRuma = ref([]);
+const dataTajo = ref([]);
 
 onMounted(async () => {
-    await store.dispatch('ruma_list')
-    dataRuma.value = store.state.rumaList
-    // data.value = store.state.dataList.filter(item => item.status === 'Completo');
-})
-
-const tajos = ref([
-  { name: "TJ400_1P_1", value: "TJ400_1P_1" },
-  { name: "TJ400_2P_1", value: "TJ400_2P_1" },
-  { name: "TJ400_6S_1", value: "TJ400_6S_1" },
-  { name: "TJ500_1S_1", value: "TJ500_1S_1" },
-  { name: "TJ500_2S_1", value: "TJ500_2S_1" },
-  { name: "TJ500_3P_1", value: "TJ500_3P_1" },
-  { name: "TJ500_3S_1", value: "TJ500_3S_1" },
-  { name: "TJ500_4S_1", value: "TJ500_4S_1" },
-  { name: "TJ500_5S_1", value: "TJ500_5S_1" },
-  { name: "TJ500_6P_1", value: "TJ500_6P_1" },
-  { name: "TJ500_7P_1", value: "TJ500_7P_1" },
-  { name: "TJ500_7S_1", value: "TJ500_7S_1" },
-  { name: "TJ500_8S_1", value: "TJ500_8S_1" },
-  { name: "TJ500_11P_1", value: "TJ500_11P_1" },
-]);
+  await store.dispatch("ruma_list");
+  await store.dispatch("tajo_list");
+  dataRuma.value = store.state.rumaList;
+  dataTajo.value = store.state.tajoList;
+});
 
 const userModal = store.state.userModal;
-const selectedTajo = ref( {name: "TJ400_1P_1", value: "TJ400_1P_1"});
-console.log(userModal)
-if (userModal.tajo != 0) {
-  selectedTajo.value = userModal.tajo
-} else {
-  selectedTajo.value = ''
-}
+// const selectedTajo = ref( {name: "TJ400_1P_1", value: "TJ400_1P_1"});
+// console.log(userModal)
+// if (userModal.tajo != 0) {
+//   selectedTajo.value = userModal.tajo
+// } else {
+//   selectedTajo.value = ''
+// }
 const selectedOption = ref(userModal.tipo || "TAJO");
 const selectedRuma = ref(userModal.ruma_Id || "");
-const NroRuma = ref(userModal.ruma || "");
+const selectedTajo = ref(userModal.tajo || "");
 
 const updateTravel = async () => {
-  console.log(userModal)
+  console.log(userModal);
   try {
     const response = await fetch(`${url}/triplist/${userModal._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(userModal)
+      body: JSON.stringify(userModal),
       // body: JSON.stringify({ tipo: selectedOption.value, tajo: selectedTajo.value.value, status: "ControlCalidad", ruma :NroRuma.value }),
     });
 
@@ -71,12 +56,11 @@ const updateTravel = async () => {
     console.error("Error al actualizar:", error);
   }
 };
-
 </script>
 
 <template>
   <div class="modalCreate-backg">
-    <form class="mCreate-content mCreate-2">
+    <form class="mCreate-content">
       <div class="mC-c-header">
         <div class="mC-h-title">
           <div class="mC-c-title-icon">
@@ -107,7 +91,10 @@ const updateTravel = async () => {
           </p>
         </div>
         <div className="mC-b-imputs">
-          <div class="radio-inputs">
+          <div
+            class="radio-inputs"
+            v-if="userModal.tipo === '' && !showItem"
+          >
             <label class="radio">
               <input
                 type="radio"
@@ -129,29 +116,23 @@ const updateTravel = async () => {
             </label>
           </div>
 
-          <div class="mC-imputs-item" v-show="selectedOption === 'TAJO'" v-if="!showItem">
+          <div
+            class="mC-imputs-item"
+            v-show="selectedOption === 'TAJO' && userModal.tipo === '' && !showItem"
+          >
             <label>Tajo</label>
             <div class="imputs-i-input">
               <Dropdown
-                class="p-dropdown"
+                class="p-dropdown-search"
+                filter
                 v-model="selectedTajo"
-                :options="tajos"
+                :options="dataTajo"
                 optionLabel="name"
                 placeholder="Seleccionar"
               />
             </div>
           </div>
 
-          <!-- <div class="radio-inputs" v-if="!showItem">
-            <label class="radio">
-              <input type="radio" name="radio" checked="" />
-              <span class="name">Crear Ruma</span>
-            </label>
-            <label class="radio">
-              <input type="radio" name="radio" />
-              <span class="name">Asignar Ruma</span>
-            </label>
-          </div> -->
           <div class="mC-imputs-item" v-if="!showItem">
             <label>Nro Ruma</label>
             <div class="imputs-i-input">
@@ -174,7 +155,7 @@ const updateTravel = async () => {
                 type="text"
                 name="operationTruck_Id"
                 inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
+                placeholder="Ej.000122"
                 className="input-crud"
                 value=""
                 required
@@ -184,9 +165,9 @@ const updateTravel = async () => {
           <div className="mC-imputs-item" v-if="showItem">
             <label>Fecha Abaste</label>
             <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
+              <!-- <img src="../assets/img/i-tablet.svg" alt="" /> -->
               <input
-                type="text"
+                type="date"
                 name="operationTruck_Id"
                 inputMode="text"
                 placeholder="Ej. TJ-999_9_1"
@@ -318,7 +299,7 @@ const updateTravel = async () => {
           gap: 0.25rem;
           label {
             font-size: clamp(7px, 8vw, 13px);
-            font-weight: 400;
+            font-weight: 500;
             color: var(--grey-1);
           }
           .imputs-i-input {
