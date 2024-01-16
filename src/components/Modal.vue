@@ -14,8 +14,9 @@ const cerrarModal = () => {
 };
 
 onMounted(async () => {
-    await store.dispatch('rumaList')
-    data.value = store.state.dataList.filter(item => item.status === 'Completo');
+    await store.dispatch('ruma_list')
+    dataRuma.value = store.state.rumaList
+    // data.value = store.state.dataList.filter(item => item.status === 'Completo');
 })
 
 const tajos = ref([
@@ -36,19 +37,27 @@ const tajos = ref([
 ]);
 
 const userModal = store.state.userModal;
+const selectedTajo = ref( {name: "TJ400_1P_1", value: "TJ400_1P_1"});
+console.log(userModal)
+if (userModal.tajo != 0) {
+  selectedTajo.value = userModal.tajo
+} else {
+  selectedTajo.value = ''
+}
 const selectedOption = ref(userModal.tipo || "TAJO");
-const selectedTajo = ref(userModal.tajo || "");
+const selectedRuma = ref(userModal.ruma_Id || "");
 const NroRuma = ref(userModal.ruma || "");
-console.log(userModal.tajo);
 
 const updateTravel = async () => {
+  console.log(userModal)
   try {
     const response = await fetch(`${url}/triplist/${userModal._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ tipo: selectedOption.value, tajo: selectedTajo.value.value, status: "ControlCalidad", ruma :NroRuma.value }),
+      body: JSON.stringify(userModal)
+      // body: JSON.stringify({ tipo: selectedOption.value, tajo: selectedTajo.value.value, status: "ControlCalidad", ruma :NroRuma.value }),
     });
 
     const data = await response.json();
@@ -150,7 +159,7 @@ const updateTravel = async () => {
                 class="p-dropdown"
                 v-model="selectedRuma"
                 :options="dataRuma"
-                optionLabel="name"
+                optionLabel="ruma_Id"
                 placeholder="Seleccionar"
               />
             </div>

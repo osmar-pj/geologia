@@ -55,10 +55,8 @@ const store = createStore({
             }) // cambiar la ruta a list
             const data = await response.json()
             commit('getList', data)
-           
-            // return data
         },
-        getRuma: async ({ commit }) => {
+        ruma_list: async ({ commit }) => {
             const response = await fetch(`${url}/ruma`, {
                 method: 'GET',
                 headers: {
@@ -67,8 +65,7 @@ const store = createStore({
                 }
             }) 
             const data = await response.json()
-            commit('getRuma', data)
-            console.log(data)            
+            commit('getRuma', data)           
         },
     },
     modules: {}

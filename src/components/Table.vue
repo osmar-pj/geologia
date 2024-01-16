@@ -88,7 +88,6 @@ onMounted(() => {
       tableStyle="width: 100%"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
-      :filters="filters"
     >
       <!-- <template #header>
         <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
