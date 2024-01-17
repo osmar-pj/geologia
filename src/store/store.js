@@ -14,7 +14,9 @@ const store = createStore({
         rumaList: [],
         rumaTotal: [],
         tajoList: [],
-        userModal: null
+        userModal: null,
+        errior: null,
+        loading: false
     },
     mutations: {
         authLogin(state, payload) {
@@ -40,6 +42,9 @@ const store = createStore({
         },
         getRumaTotal(state, payload) {
             state.rumaTotal = payload
+        },
+        loading(state, payload) {
+            state.loading = payload
         }
     },
     actions: {
@@ -62,15 +67,21 @@ const store = createStore({
             commit('authLogout')
         },
         get_list: async ({ commit }) => {
-            const response = await fetch(`${url}/triplist`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    "ngrok-skip-browser-warning": true
-                }
-            })
-            const data = await response.json()                                  
-            commit('getList', data)
+            try {
+                // cargar el loading true
+                const response = await fetch(`${url}/triplist`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "ngrok-skip-browser-warning": true
+                    }
+                })
+                const data = await response.json()
+                // quitar el loading false
+                commit('getList', data)
+            } catch (error) {
+                // quitar el loadinng false
+            }
         },
         get_listControl: async ({ commit }) => {
             const response = await fetch(`${url}/QualityControl`, {

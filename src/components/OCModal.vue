@@ -1,6 +1,6 @@
 <script setup>
 import CreateRuma from "../components/CreateRuma.vue";
-import { ref, defineProps, defineEmits, onMounted } from "vue";
+import { ref, defineProps, defineEmits, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 const url = import.meta.env.VITE_API_URL;
 
@@ -11,14 +11,18 @@ const cerrarModal = () => {
   emit("cerrarModal");
 };
 const store = useStore();
-const dataRuma = ref([]);
+// const dataRuma = ref([]);
 const dataTajo = ref([]);
 
 onMounted(async () => {
   await store.dispatch("ruma_list");
   await store.dispatch("tajo_list");
-  dataRuma.value = store.state.rumaList;
+  // dataRuma.value = store.state.rumaList;
   dataTajo.value = store.state.tajoList;
+});
+
+const dataRuma = computed(() => {
+  return store.state.rumaList;
 });
 
 const userModal = store.state.userModal;
@@ -65,6 +69,7 @@ const updateTravel = async () => {
 
       if (data.status === true) {
         console.log("Correcto");
+        await store.dispatch("get_list")
         emit("cerrarModal");
       } else {
         console.log("error");

@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from "vue";
+import { useStore } from "vuex";
 const url = import.meta.env.VITE_API_URL;
+const store = useStore();
 
 const showOCModal = ref(false);
 const openModal = () => {
@@ -25,6 +27,7 @@ const createRuma = async () => {
 
     if (data.status === true) {
       console.log("Correcto");
+      await store.dispatch("ruma_list");
       showOCModal.value = false;
     } else {
       console.log("error");
