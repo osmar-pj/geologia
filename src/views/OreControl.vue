@@ -7,12 +7,12 @@ const data = ref([])
 
 onMounted(async () => {
     await store.dispatch('get_list')
-    data.value = store.state.dataList.filter(item => item.statusGeology === 'OreControl');
+    data.value = store.state.dataList;
 })
 </script>
 
 <template>
-    <TableList :showActionsColumn="true" title="Viajes recientes, por completar" :data="data" :showColum="false" :showItem="false" />
+    <TableList :showActionsColumn="true" title="Viajes recientes, por completar" :data="data" :showColum="false"  />
 </template>
 
 <style lang="scss">

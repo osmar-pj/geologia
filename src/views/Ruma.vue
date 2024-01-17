@@ -1,39 +1,29 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
-import OCModal from "../components/OCModal.vue";
-import CCModal from "../components/CCModal.vue";
+import URModal from "../components/URModal.vue";
 import Delete from "../components/Delete.vue";
 
-const props = defineProps([
-  "showActionsColumn",
-  "title",
-  "data",
-  "showColum",
-]);
+const data= [
+    {mina:"yumpag", operador:"Carlos", statusGeology: "QualityControl", tipo:""},
+    {mina:"yumpag", operador:"Pedro", statusGeology: "OreControl", tipo:""},
+    {mina:"yumpag", operador:"Ricardo", statusGeology: "QualityControl", tipo:""},
+    {mina:"yumpag", operador:"Lucas", statusGeology: "QualityControl", tipo:""},
+]
 
 const store = useStore();
 const showModalDelete = ref(false);
 
 const showOCModal = ref(false);
-const showCCModal = ref(false);
 
-const openModal = (data) => {
-  store.state.userModal = data;
-
-  if (data.statusGeology === "QualityControl") {
-    showCCModal.value = true;
-  } else if (data.statusGeology === "OreControl") {
-    showOCModal.value = true;
-  }
+const openModal = () => {
+  showOCModal.value = true;
 };
-
 
 const openDelete = (e) => {
-  store.state.userModal = e;
+  
   showModalDelete.value = true;
 };
-
 
 const formattedDate = ref("");
 
@@ -63,25 +53,11 @@ onMounted(() => {
 <template>
   <div class="c-global-header">
     <div class="global-h-title">
-      <h1>{{ props.title || "Viajes realizados, Completos" }}</h1>
+      <h1>Control de Rumas</h1>
       <span>{{ formattedDate }} | Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-      <div class="radio-inputs">
-        <label class="radio">
-          <input type="radio" name="radio" checked="" />
-          <span class="name">Semana</span>
-        </label>
-        <label class="radio">
-          <input type="radio" name="radio" />
-          <span class="name">Mes</span>
-        </label>
-
-        <label class="radio">
-          <input type="radio" name="radio" />
-          <span class="name">Año</span>
-        </label>
-      </div>
+      <button class="btn-ruma" @click="openModal()">Unir Rumas</button>
     </div>
   </div>
 
@@ -96,15 +72,6 @@ onMounted(() => {
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
     >
-      <!-- <template #header>
-        <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
-            <h4 class="m-0">Manage Products</h4>
-            <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="filters['global'].value" placeholder="Search..." />
-            </span>
-        </div>
-    </template> -->
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
       
       <Column field="fecha" header="Fecha" sortable>
@@ -113,16 +80,6 @@ onMounted(() => {
             <div class="t-name">
               <h4>{{ slotProps.data.fecha }} {{ slotProps.data.hora }}</h4>
               <h5>Fecha de llegada</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="turno" header="Turno" sortable>
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.turno }}</h4>
-              <h5>turno</h5>
             </div>
           </div>
         </template>
@@ -137,77 +94,6 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="operador" header="Operador" sortable>
-        <template #body="slotProps">
-          <div class="td-user">
-            <span class="t-siglas">{{
-              slotProps.data.operador
-                ? slotProps.data.operador
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((word) => word.charAt(0))
-                    .join("")
-                : ""
-            }}</span>
-            <div class="t-name">
-              <h4>
-                {{
-                  slotProps.data.operador
-                    ? slotProps.data.operador.split(" ").slice(0, 2).join(" ")
-                    : ""
-                }}
-              </h4>
-              <h5 class="t-2">
-                {{
-                  slotProps.data.operador
-                    ? slotProps.data.operador.split(" ").slice(2).join(" ")
-                    : ""
-                }}
-              </h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="vehiculo" header="Vehículo" sortable>
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.vehiculo }}</h4>
-              <h5>vehiculo</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="vagones" header="Vagones">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.vagones !== 0 ? slotProps.data.vagones : '-' }}</h4>
-              <h5>{{ slotProps.data.vagones !== 0 ? "vagones" : 'No aplica' }}</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="toneladas" header="Toneladas">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ton }} TMH</h4>
-              <h5>{{ slotProps.data.material }}</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="tajo" header="Tajo">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.tajo }}</h4>
-              <h5>{{ slotProps.data.tipo }}</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
       <Column field="ruma" header="Nro Ruma">
         <template #body="slotProps">
           <div class="td-user">
@@ -218,17 +104,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <!-- <Column field="codMuestra" header="Cod Muestra" v-if="props.showColum">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4></h4>
-              <h5></h5>
-            </div>
-          </div>
-        </template>
-      </Column> -->
-      <Column field="ley_ag" header="Ley Ag" v-if="props.showColum">
+      <Column field="ley_ag" header="Ley Ag">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -238,7 +114,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="ley_fe" header="Ley Fe" v-if="props.showColum">
+      <Column field="ley_fe" header="Ley Fe">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -248,7 +124,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="ley_mn" header="Ley Mn" v-if="props.showColum">
+      <Column field="ley_mn" header="Ley Mn">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -258,7 +134,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="ley_pb" header="Ley Pb" v-if="props.showColum">
+      <Column field="ley_pb" header="Ley Pb">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -268,7 +144,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="ley_zn" header="Ley Zn" v-if="props.showColum">
+      <Column field="ley_zn" header="Ley Zn">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -278,28 +154,17 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <!-- <Column field="abastecimiento" header="Fech Abast" v-if="props.showColum">
+     
+      <Column field="Acciones" header="Acciones">
         <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4></h4>
-              <h5></h5>
-            </div>
-          </div>
-        </template>
-      </Column> -->
-      <Column field="Acciones" header="Acciones" v-if="props.showActionsColumn">
-        <template #body="slotProps">
-          <div className="btns">
-            <button @click="openModal(slotProps.data)">Completar ></button>
+          <div className="btns">           
             <button @click="openDelete(slotProps.data)">X</button>
           </div>
         </template>
       </Column>
     </DataTable>
   </div>
-  <OCModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
-  <CCModal v-if="showCCModal" @cerrarModal="showCCModal = false" />
+  <URModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
   <Delete  v-if="showModalDelete"
     @cerrarModal="showModalDelete = false"      
     />

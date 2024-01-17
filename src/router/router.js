@@ -12,6 +12,7 @@ const router = createRouter({
             { path: '/oreControl', name: 'OreControl', component: () => import('../views/OreControl.vue'), meta: { requireAuth: true } },
             { path: '/controlCalidad', name: 'ControlCalidad', component: () => import('../views/ControlCalidad.vue'), meta: { requireAuth: true } },
             { path: '/programacion', name: 'Programacion', component: () => import('../views/Programacion.vue'), meta: { requireAuth: true } },
+            { path: '/ruma', name: 'Ruma', component: () => import('../views/Ruma.vue'), meta: { requireAuth: true } },
         ] },
     ]
 })

@@ -61,29 +61,36 @@ const logout = async () => {
           @click.prevent="goToPage('list')"
           :class="active == 'list' ? 'active' : ''"
         >
-          <div class="nav-select"><MySvg /></div>
+          <div class="nav-select"></div>
           <span>Lista</span>
         </li>
         <li
           @click.prevent="goToPage('oreControl')"
           :class="active == 'oreControl' ? 'active' : ''"
         >
-          <div class="nav-select"><MySvg /></div>
+          <div class="nav-select"></div>
           <span>Ore Control</span>
         </li>
         <li
           @click.prevent="goToPage('controlCalidad')"
           :class="active == 'controlCalidad' ? 'active' : ''"
         >
-          <div class="nav-select"><MySvg /></div>
+          <div class="nav-select"></div>
           <span>Control de Calidad</span>
         </li>
         <li
           @click.prevent="goToPage('programacion')"
           :class="active == 'programacion' ? 'active' : ''"
         >
-          <div class="nav-select"><MySvg /></div>
+          <div class="nav-select"></div>
           <span>Programación</span>
+        </li>
+        <li
+          @click.prevent="goToPage('ruma')"
+          :class="active == 'programacion' ? 'active' : ''"
+        >
+          <div class="nav-select"></div>
+          <span>Control de Rumas</span>
         </li>
       </ul>
       <div class="s-content-msg">

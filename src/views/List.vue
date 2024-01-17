@@ -6,8 +6,8 @@ const store = useStore()
 const data = ref([])
 
 onMounted(async () => {
-    await store.dispatch('get_list')
-    data.value = store.state.dataList.filter(item => item.status === 'Completo');
+    await store.dispatch('get_listGeneral')
+    data.value = store.state.dataListGeneral;
 })
 
 </script>

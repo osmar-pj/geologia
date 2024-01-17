@@ -63,7 +63,7 @@ onMounted(() => {
 <template>
   <div class="c-global-header">
     <div class="global-h-title">
-      <h1>{{ props.title || "Viajes realizados, Completos" }}</h1>
+      <h1>Rumas</h1>
       <span>{{ formattedDate }} | Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
@@ -423,7 +423,71 @@ onMounted(() => {
       // }
     }
   }
-  
+  // .users-c-c-table {
+  //   display: flex;
+  //   flex-direction: column;
+  //   align-items: flex-start;
+  //   overflow: auto;
+
+  //   table {
+  //     width: 100%;
+  //     color: var(--black);
+  //     font-size: clamp(6px, 8vw, 14px);
+  //     line-height: 0.7rem;
+  //     font-weight: 500;
+  //     border-collapse: collapse;
+  //     white-space: nowrap;
+  //     // @include md {
+  //     //   font-size: clamp(6px, 8vw, 14px);
+  //     //   line-height: 1.1rem;
+  //     // }
+  //   }
+
+  //   thead {
+  //     color: var(--grey-1);
+  //     text-align: left;
+  //     background-color: var(--grey-light-1);
+  //     font-size: clamp(6px, 8vw, 11px);
+  //     position: sticky;
+  //     top: 0;
+  //     z-index: 1;
+  //     // @include md {
+  //     //   font-size: clamp(6px, 8vw, 12px);
+  //     // }
+  //   }
+
+  //   th {
+  //     padding: 15px 12px;
+  //     font-weight: normal !important;
+  //     div {
+  //       display: flex;
+  //       align-items: center;
+  //       gap: 0.4rem;
+  //       img {
+  //         width: 0.5rem;
+  //         // @include md {
+  //         //   width: 0.6rem;
+  //         // }
+  //       }
+  //       //   @include md {
+  //       //     gap: 0.5rem;
+  //       //   }
+  //     }
+  //   }
+
+  //   td {
+  //     padding: 9px 12px;
+
+  //     // @include md {
+  //     //   padding: 15px;
+  //     // }
+  //   }
+
+  //   tbody tr {
+  //     z-index: 99;
+  //     background-color: var(--white);
+  //   }
+  // }
   .users-c-c-footer {
     display: flex;
     justify-content: space-between;

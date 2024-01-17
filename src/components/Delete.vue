@@ -12,25 +12,25 @@ const cerrarModal = () => {
   emit("cerrarModal");
 };
 
-
 const deleteTravel = async () => {
-  console.log(userModal)
+  console.log(userModal.travel_Id)
   try {
-    const response = await fetch(`${url}/triplist/${userModal._id}`, {
-      method: "PUT",
+    userModal.validGeology = 0;
+    const response = await fetch(`${url}/triplist`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ validGeology: 0}),
+      body: JSON.stringify(userModal),
     });
 
     const data = await response.json();
-
-    if (!data.status) {
-      console.log("correcto");
-    } else {
-      console.log("error");
-    }
+     if (data.status === true) {
+       console.log("correcto");
+       emit("cerrarModal");
+     } else {
+       console.log("error");
+     }
   } catch (error) {
     console.error("Error al actualizar:", error);
   }
@@ -75,7 +75,7 @@ const deleteTravel = async () => {
             No
           </button>
           <button
-            class="btn-success"
+            class="btn-delete"
             type="submit"
             @click.prevent="deleteTravel()"
           >
@@ -194,11 +194,21 @@ const deleteTravel = async () => {
       display: flex;
       gap: 1rem;
 
-      .btn-success {
-        transition: all 0.35s ease-out;
-        background-color: var(--primary);
+      .btn-cancel{
+        border-color: var(--grey-light-22);
+        color: var(--grey-2);
+        background-color: var(--grey-light-22);
         &:hover {
-          background-color: var(--secondary);
+          background-color: rgb(236, 47, 47);
+          color: var(--white);
+        }
+      }
+
+      .btn-delete {
+        transition: all 0.35s ease-out;
+        background-color: rgb(243, 89, 89);
+        &:hover {
+          background-color: rgb(236, 47, 47);
         }
       }
     }

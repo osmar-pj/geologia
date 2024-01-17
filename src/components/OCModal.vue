@@ -1,10 +1,9 @@
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { useStore } from "vuex";
-import Filexcel from "../components/Filexcel.vue";
 const url = import.meta.env.VITE_API_URL;
 
-const { showModal, showItem } = defineProps(["showItem", "showModal"]);
+const { showModal } = defineProps(["showModal"]);
 const emit = defineEmits();
 
 const cerrarModal = () => {
@@ -22,40 +21,72 @@ onMounted(async () => {
 });
 
 const userModal = store.state.userModal;
-// const selectedTajo = ref( {name: "TJ400_1P_1", value: "TJ400_1P_1"});
-// console.log(userModal)
-// if (userModal.tajo != 0) {
-//   selectedTajo.value = userModal.tajo
-// } else {
-//   selectedTajo.value = ''
-// }
 const selectedTipo = ref(userModal.tipo || "TAJO");
 const selectedRuma = ref(userModal.ruma_Id || "");
 const selectedTajo = ref(userModal.tajo || "");
+const showError = ref(false);
 
+const hideError = () => {
+  showError.value = false;
+};
 const updateTravel = async () => {
-  if (selectedTipo.value) {
-    // enviar error
+  if (
+    (!selectedTipo.value && selectedTipo.value !== 0) ||
+    !selectedTajo.value ||
+    !selectedTajo.value.name ||
+    !selectedRuma.value ||
+    !selectedRuma.value.ruma_Id
+  ) {
+    showError.value = true;
+    setTimeout(hideError, 5000);
+    console.log("Por favor, completa todos los campos requeridos");
+    console.log(
+      selectedTipo.value,
+      selectedTajo.value.name,
+      selectedRuma.value.ruma_Id
+    );
   } else {
     userModal.tipo = selectedTipo.value;
+    userModal.tajo = selectedTajo.value.name;
+    userModal.ruma = selectedRuma.value.ruma_Id;
+
+    try {
+      userModal.statusGeology = "QualityControl";
+      const response = await fetch(`${url}/triplist`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userModal),
+      });
+
+      const data = await response.json();
+
+      if (data.status === true) {
+        console.log("Correcto");
+        emit("cerrarModal");
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    }
   }
-  userModal.tajo = selectedTajo.value.value;
-  userModal.ruma = selectedRuma.value.ruma_Id;
+};
+
+const createRuma = async () => {
   try {
-    userModal.status = "ControlCalidad";
-    const response = await fetch(`${url}/triplist/${userModal._id}`, {
-      method: "PUT",
+    const response = await fetch(`${url}/ruma`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(userModal),
-      // body: JSON.stringify({ tipo: selectedTipo.value, tajo: selectedTajo.value.value, status: "ControlCalidad", ruma :NroRuma.value }),
     });
 
     const data = await response.json();
 
-    if (!data.status) {
-      console.log("correcto");
+    if (data.status === true) {
+      console.log("Correcto");
     } else {
       console.log("error");
     }
@@ -97,37 +128,50 @@ const updateTravel = async () => {
             <strong>'{{ userModal.status }}'</strong>.
           </p>
         </div>
-        <div className="mC-b-imputs">
-          <div
-            class="radio-inputs"
-            v-if="(userModal.tipo === '' || userModal.tajo === 0) && !showItem"
-          >
-            <label class="radio">
+        <div
+          className="mC-b-imputs"
+          v-if="userModal.tipo === '' || userModal.tajo === 0"
+        >
+          <div class="radio-inputs">
+            <label>
               <input
+                class="radio-input"
                 type="radio"
                 name="radio"
                 v-model="selectedTipo"
                 value="TAJO"
+                id="tajo-radio"
                 checked
               />
-              <span class="name">Tajo</span>
+              <span class="radio-tile">
+                <span class="radio-label">Tajo</span>
+                <p class="radio-info">Mina a Tajo Abierto</p>
+              </span>
             </label>
-            <label class="radio">
+            <label>
               <input
+                class="radio-input"
                 type="radio"
                 name="radio"
                 v-model="selectedTipo"
                 value="AVANCE"
+                id="avance-radio"
               />
-              <span class="name">Avance</span>
+              <span class="radio-tile">
+                <span class="radio-label">Avance</span>
+                <p class="radio-info">Mina Subterránea</p>
+              </span>
             </label>
           </div>
 
           <div
             class="mC-imputs-item"
-            v-show="selectedTipo === 'TAJO' && (userModal.tipo === '' || userModal.tajo === 0) && !showItem"
+            v-show="
+              selectedTipo === 'TAJO' &&
+              (userModal.tipo === '' || userModal.tajo === 0)
+            "
           >
-            <label>Tajo</label>
+            <label>Selecciona un Tajo</label>
             <div class="imputs-i-input">
               <Dropdown
                 class="p-dropdown-search"
@@ -138,10 +182,13 @@ const updateTravel = async () => {
                 placeholder="Seleccionar"
               />
             </div>
+            <span class="label-error" v-if="showError">*Campo requerido</span>
           </div>
+        </div>
+        <div className="mC-b-imputs">
+          <div class="mC-imputs-item">
+            <label>Selecciona una Ruma</label>
 
-          <div class="mC-imputs-item" v-if="!showItem">
-            <label>Nro Ruma</label>
             <div class="imputs-i-input">
               <Dropdown
                 class="p-dropdown"
@@ -151,38 +198,16 @@ const updateTravel = async () => {
                 placeholder="Seleccionar"
               />
             </div>
+            <span class="label-error" v-if="showError">*Campo requerido</span>
           </div>
-          <Filexcel v-if="showItem" />
-          <!-- CONTROL DE CALIDAD -->
-          <div className="mC-imputs-item" v-if="showItem">
-            <label>Codigo de muestra</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej.000122"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div>
-          <div className="mC-imputs-item" v-if="showItem">
-            <label>Fecha Abaste</label>
-            <div className="imputs-i-input">
-              <!-- <img src="../assets/img/i-tablet.svg" alt="" /> -->
-              <input
-                type="date"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
+          <div class="mC-imputs-more">
+            <button
+              class="btn-ruma"
+              type="submit"
+              @click.prevent="createRuma()"
+            >
+              + Ruma
+            </button>
           </div>
         </div>
       </div>
@@ -246,13 +271,13 @@ const updateTravel = async () => {
           h2 {
             font-size: clamp(6px, 8vw, 18px);
             color: var(--black);
-            font-weight: 500;
+            font-weight: 600;
             letter-spacing: -0.03em;
           }
           h4 {
             padding-top: 0.1rem;
-            font-weight: normal;
-            color: var(--grey-1);
+            font-weight: 500;
+            color: var(--grey-2);
             font-size: clamp(6px, 8vw, 13px);
           }
         }
@@ -291,13 +316,14 @@ const updateTravel = async () => {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding: 1.8rem 1.5rem;
+      padding: 2rem 1.5rem;
       overflow: auto;
       max-height: 70vh;
       .mC-b-imputs {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
+
         .mC-imputs-item {
           flex: 1 1 200px;
           display: flex;
@@ -307,7 +333,8 @@ const updateTravel = async () => {
           label {
             font-size: clamp(7px, 8vw, 13px);
             font-weight: 500;
-            color: var(--grey-1);
+            color: var(--grey-2);
+            line-height: 1rem;
           }
           .imputs-i-input {
             position: relative;
@@ -323,37 +350,12 @@ const updateTravel = async () => {
           }
         }
         .radio-inputs {
-          position: relative;
-          display: flex;
-          flex-wrap: wrap;
-          border-radius: 12px;
-          background-color: var(--grey-light-1);
-          box-sizing: border-box;
-          padding: 6px;
           width: 100%;
-          font-size: 14px;
-          .radio {
-            flex: 1 1 auto;
-            text-align: center;
-            input {
-              display: none;
-              &:checked + .name {
-                background-color: var(--primary);
-                color: var(--white);
-                font-weight: 500;
-              }
-            }
-            .name {
-              display: flex;
-              cursor: pointer;
-              align-items: center;
-              justify-content: center;
-              border-radius: 8px;
-              border: none;
-              padding: 0.5rem 0;
-              color: var(--grey-1);
-              transition: all 0.15s ease-in-out;
-            }
+          display: flex;
+          gap: 1rem;
+          padding-bottom: 1rem;
+          li {
+            flex: 1 1 120px;
           }
         }
       }
@@ -361,7 +363,7 @@ const updateTravel = async () => {
       .mC-b-info {
         display: flex;
         flex-direction: column;
-        padding-bottom: 1rem;
+        padding-bottom: 0.5rem;
         p {
           strong {
             font-weight: 600;
@@ -390,15 +392,142 @@ const updateTravel = async () => {
 .btn-cancel {
   height: 45px;
   padding: 0 1rem;
+  font-weight: 500;
 }
 .btn-cancel {
   height: 45px;
-  background-color: var(--white);
-  color: var(--primary);
-  border: 1px solid var(--primary);
+  border-color: var(--grey-light-22);
+  color: var(--grey-2);
+  background-color: var(--grey-light-22);
+  &:hover {
+    background-color: var(--secondary);
+    color: var(--white);
+  }
+}
+
+.mC-imputs-more {
+  flex: 0 1 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+.btn-ruma {
+  background-color: var(--grey-light-22);
+  color: var(--grey-2);
+  padding: 0.8rem 0.5rem;
+  font-weight: 500;
   &:hover {
     background-color: var(--primary);
     color: var(--white);
   }
+}
+
+.radio-inputs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  label {
+    flex: 1 1 200px;
+  }
+}
+
+.label-error {
+  font-size: clamp(6px, 8vw, 12px);
+  color: rgb(243, 89, 89);
+  font-weight: 500;
+  line-height: 0.8rem;
+}
+
+/***--RADIO BUTTON */
+.radio-input:checked + .radio-tile {
+  border-color: var(--primary);
+  box-shadow: 0 3px 6px #26d45171;
+  color: var(--primary);
+}
+
+.radio-input:checked + .radio-tile:before {
+  opacity: 1;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.radio-input:checked + .radio-tile .radio-label {
+  color: var(--black);
+}
+
+.radio-input:focus + .radio-tile:before {
+  opacity: 1;
+}
+
+.radio-tile {
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: 65px;
+  border-radius: 10px;
+  border: 1px solid var(--grey-light-2);
+  transition: 0.15s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.radio-tile:before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1px solid var(--grey-light-2);
+  border-radius: 50%;
+  top: 50%;
+  right: 20px;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: 0.25s ease;
+}
+
+.radio-tile:hover {
+  border-color: var(--primary);
+}
+
+.radio-tile:hover:before {
+  opacity: 1;
+}
+
+.radio-label {
+  color: var(--black);
+  transition: 0.375s ease;
+  text-align: center;
+  font-size: clamp(6px, 8vw, 14px);
+  line-height: 1.2rem;
+  font-weight: 500;
+}
+
+.radio-info {
+  color: var(--grey-2);
+  transition: 0.375s ease;
+  text-align: center;
+  font-size: clamp(6px, 8vw, 12px);
+}
+
+.radio-input {
+  clip: rect(0 0 0 0);
+  -webkit-clip-path: inset(100%);
+  clip-path: inset(100%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 </style>

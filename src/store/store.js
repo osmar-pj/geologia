@@ -9,6 +9,8 @@ const store = createStore({
         name: 'Juan',
         user: user,
         dataList: [],
+        dataListControl: [],
+        dataListGeneral: [],
         rumaList: [],
         tajoList: [],
         userModal: null
@@ -22,6 +24,12 @@ const store = createStore({
         },
         getList(state, payload) {
             state.dataList = payload
+        },
+        getListControl(state, payload) {
+            state.dataListControl = payload
+        },
+        getListGeneral(state, payload) {
+            state.dataListGeneral = payload
         },
         getRuma(state, payload) {
             state.rumaList = payload
@@ -56,10 +64,34 @@ const store = createStore({
                     'Content-Type': 'application/json',
                     "ngrok-skip-browser-warning": true
                 }
-            }) // cambiar la ruta a list
-            const data = await response.json()            
-            console.log(data)           
+            })
+            const data = await response.json()                                  
+            console.log(data)                             
             commit('getList', data)
+        },
+        get_listControl: async ({ commit }) => {
+            const response = await fetch(`${url}/QualityControl`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "ngrok-skip-browser-warning": true
+                }
+            })
+            const data = await response.json()     
+            console.log(data); 
+            commit('getListControl', data)
+        },
+        get_listGeneral: async ({ commit }) => {
+            const response = await fetch(`${url}/general`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "ngrok-skip-browser-warning": true
+                }
+            })
+            const data = await response.json()
+            console.log(data);     
+            commit('getListGeneral', data)
         },
         ruma_list: async ({ commit }) => {
             const response = await fetch(`${url}/ruma`, {
@@ -69,7 +101,7 @@ const store = createStore({
                     "ngrok-skip-browser-warning": true
                 }
             }) 
-            const data = await response.json()
+            const data = await response.json()                      
             commit('getRuma', data)
         },
         tajo_list: async ({ commit }) => {
@@ -81,7 +113,7 @@ const store = createStore({
                 }
             }) 
             const data = await response.json()
-            commit('getTajo', data)            
+            commit('getTajo', data)
         },
     },
     modules: {}

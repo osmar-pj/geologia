@@ -29,43 +29,39 @@
   </div>
 </template>
 
-<script>
-import readXlsxFile from "read-excel-file";
 
-export default {
-  data() {
-    return {
-      data: [],
-      averages: [],
-    };
-  },
-  methods: {
-    handleFileChange(event) {
-      const file = event.target.files[0];
+<script setup>
+import { ref } from 'vue';
+import readXlsxFile from 'read-excel-file';
 
-      readXlsxFile(file)
-        .then((rows) => {
-          const averages = [];
+const data = ref([]);
+const averages = ref([]);
 
-          for (let col = 0; col < rows[0].length; col++) {
-            const column = rows
-              .map((row) => parseFloat(row[col]))
-              .filter((value) => !isNaN(value));
-            const average =
-              column.reduce((acc, value) => acc + value, 0) / column.length;
-            averages.push(average);
-          }
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
 
-          this.data = rows;
-          this.averages = averages;
-        })
-        .catch((error) => {
-          console.error("Error al procesar el archivo Excel:", error);
-        });
-    },
-  },
+  readXlsxFile(file)
+    .then((rows) => {
+      const averagesArr = [];
+
+      for (let col = 0; col < rows[0].length; col++) {
+        const column = rows
+          .map((row) => parseFloat(row[col]))
+          .filter((value) => !isNaN(value));
+        const average =
+          column.reduce((acc, value) => acc + value, 0) / column.length;
+        averagesArr.push(average);
+      }
+
+      data.value = rows;
+      averages.value = averagesArr;
+    })
+    .catch((error) => {
+      console.error("Error al procesar el archivo Excel:", error);
+    });
 };
 </script>
+
 
 <style lang="scss">
 input[type="file"] {

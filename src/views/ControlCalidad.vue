@@ -6,14 +6,14 @@ const store = useStore()
 const data = ref([])
 
 onMounted(async () => {
-    await store.dispatch('get_list')
-    data.value = store.state.dataList.filter(item => item.statusGeology === 'ControlCalidad');
+    await store.dispatch('get_listControl')
+    data.value = store.state.dataListControl;
 })
 
 </script>
 
 <template>
-    <TableList :showActionsColumn="true" title="Viajes recientes, por completar" :data="data" :showColum="true" :showItem="true"/>
+    <TableList :showActionsColumn="true" title="Viajes recientes, por completar" :data="data" :showColum="false"/>
 </template>
 
 <style lang="scss">

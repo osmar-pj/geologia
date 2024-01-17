@@ -1,8 +1,3 @@
-<script>
-export default {
-  name: 'MySvg',
-};
-</script>
 
 <template>
    <svg
@@ -21,3 +16,8 @@ export default {
   </svg>
 </template>
 
+  <script>
+  export default {
+    name: 'MySvg',
+  };
+  </script>
