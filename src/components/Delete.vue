@@ -62,7 +62,7 @@ const deleteTravel = async () => {
         <div class="mC-c-body">
             <div class="mC-b-info ">
                 <p>
-                    ¿Seguro que quieres eliminar a <strong>"{{
+                    ¿Está seguro que desea eliminar a <strong>"{{
                           userModal.operador
                             ? userModal.operador.split(" ").slice(0, 2).join(" ")
                             : ""

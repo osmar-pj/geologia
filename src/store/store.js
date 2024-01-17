@@ -12,6 +12,7 @@ const store = createStore({
         dataListControl: [],
         dataListGeneral: [],
         rumaList: [],
+        rumaTotal: [],
         tajoList: [],
         userModal: null
     },
@@ -36,6 +37,9 @@ const store = createStore({
         },
         getTajo(state, payload) {
             state.tajoList = payload
+        },
+        getRumaTotal(state, payload) {
+            state.rumaTotal = payload
         }
     },
     actions: {
@@ -66,7 +70,6 @@ const store = createStore({
                 }
             })
             const data = await response.json()                                  
-            console.log(data)                             
             commit('getList', data)
         },
         get_listControl: async ({ commit }) => {
@@ -78,7 +81,7 @@ const store = createStore({
                 }
             })
             const data = await response.json()     
-            console.log(data); 
+             
             commit('getListControl', data)
         },
         get_listGeneral: async ({ commit }) => {
@@ -90,7 +93,7 @@ const store = createStore({
                 }
             })
             const data = await response.json()
-            console.log(data);     
+                                     
             commit('getListGeneral', data)
         },
         ruma_list: async ({ commit }) => {
@@ -102,7 +105,20 @@ const store = createStore({
                 }
             }) 
             const data = await response.json()                      
+               
             commit('getRuma', data)
+        },
+        ruma_total: async ({ commit }) => {
+            const response = await fetch(`${url}/rumaList`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "ngrok-skip-browser-warning": true
+                }
+            }) 
+            const data = await response.json()                      
+               
+            commit('getRumaTotal', data)
         },
         tajo_list: async ({ commit }) => {
             const response = await fetch(`${url}/tajoGeo`, {

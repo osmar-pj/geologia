@@ -5,12 +5,7 @@ import OCModal from "../components/OCModal.vue";
 import CCModal from "../components/CCModal.vue";
 import Delete from "../components/Delete.vue";
 
-const props = defineProps([
-  "showActionsColumn",
-  "title",
-  "data",
-  "showColum",
-]);
+const props = defineProps(["showActionsColumn", "title", "data", "showColum"]);
 
 const store = useStore();
 const showModalDelete = ref(false);
@@ -28,12 +23,10 @@ const openModal = (data) => {
   }
 };
 
-
 const openDelete = (e) => {
   store.state.userModal = e;
   showModalDelete.value = true;
 };
-
 
 const formattedDate = ref("");
 
@@ -57,13 +50,17 @@ onMounted(() => {
     .toLocaleDateString("es-ES", options)
     .replace(/\//g, ".")}`;
 });
-
 </script>
 
 <template>
   <div class="c-global-header">
     <div class="global-h-title">
-      <h1>{{ props.title || "Viajes realizados, Completos" }}</h1>
+      <div class="g-h-t-primary">
+        <h1>
+          {{ props.title || "Viajes realizados, Completos" }}
+        </h1>
+        <span>{{ data.length }}</span>
+      </div>
       <span>{{ formattedDate }} | Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
@@ -86,7 +83,7 @@ onMounted(() => {
   </div>
 
   <div class="c-global-c-content">
-    <DataTable      
+    <DataTable
       :value="data"
       dataKey="travel_Id"
       paginator
@@ -106,13 +103,13 @@ onMounted(() => {
         </div>
     </template> -->
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
-      
+
       <Column field="fecha" header="Fecha" sortable>
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.fecha }} {{ slotProps.data.hora }}</h4>
-              <h5>Fecha de llegada</h5>
+              <h4>{{ slotProps.data.fecha }}</h4>
+              <h5>{{ slotProps.data.hora }} hora</h5>
             </div>
           </div>
         </template>
@@ -182,8 +179,14 @@ onMounted(() => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.vagones !== 0 ? slotProps.data.vagones : '-' }}</h4>
-              <h5>{{ slotProps.data.vagones !== 0 ? "vagones" : 'No aplica' }}</h5>
+              <h4>
+                {{
+                  slotProps.data.vagones !== 0 ? slotProps.data.vagones : "-"
+                }}
+              </h4>
+              <h5>
+                {{ slotProps.data.vagones !== 0 ? "vagones" : "No aplica" }}
+              </h5>
             </div>
           </div>
         </template>
@@ -202,8 +205,8 @@ onMounted(() => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.tajo }}</h4>
-              <h5>{{ slotProps.data.tipo }}</h5>
+              <h4>{{ slotProps.data.tajo || "faltante" }}</h4>
+              <h5>{{ slotProps.data.tipo || "faltante" }}</h5>
             </div>
           </div>
         </template>
@@ -218,6 +221,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
+
       <!-- <Column field="codMuestra" header="Cod Muestra" v-if="props.showColum">
         <template #body="slotProps">
           <div class="td-user">
@@ -278,16 +282,19 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <!-- <Column field="abastecimiento" header="Fech Abast" v-if="props.showColum">
+      <Column field="statusMina" header="Status" sortable>
         <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4></h4>
-              <h5></h5>
-            </div>
-          </div>
+          <h4
+            :class="{
+              'td-status': true,
+              't-completo': slotProps.data.statusMina === 'completo',
+              't-incompleto': slotProps.data.statusMina === 'incompleto',
+            }"
+          >
+            {{ slotProps.data.statusMina }}
+          </h4>
         </template>
-      </Column> -->
+      </Column>
       <Column field="Acciones" header="Acciones" v-if="props.showActionsColumn">
         <template #body="slotProps">
           <div className="btns">
@@ -300,9 +307,7 @@ onMounted(() => {
   </div>
   <OCModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
   <CCModal v-if="showCCModal" @cerrarModal="showCCModal = false" />
-  <Delete  v-if="showModalDelete"
-    @cerrarModal="showModalDelete = false"      
-    />
+  <Delete v-if="showModalDelete" @cerrarModal="showModalDelete = false" />
 </template>
 
 <style lang="scss">
@@ -320,6 +325,20 @@ onMounted(() => {
       font-size: clamp(6px, 8vw, 14px);
       line-height: 1.1rem;
       font-weight: 400;
+    }
+    .g-h-t-primary {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+      span {
+        color: var(--grey-2);
+        font-size: clamp(6px, 8vw, 14px);
+        font-weight: 600;
+        line-height: 1.1rem;
+        background-color: var(--grey-light-1);
+        padding: 2px 5px;
+        border-radius: 8px;
+      }
     }
   }
   .global-h-button {
@@ -423,7 +442,7 @@ onMounted(() => {
       // }
     }
   }
-  
+
   .users-c-c-footer {
     display: flex;
     justify-content: space-between;
@@ -497,6 +516,22 @@ onMounted(() => {
       color: var(--white);
     }
   }
+}
+
+.td-status {
+    font-size: clamp(7px, 8vw, 13px);
+    text-transform: capitalize;
+    text-align: center;
+    border-radius: 8px;
+    padding: 5px 8px;
+}
+.t-completo {
+  color: #45a452;
+  background-color: #ebf9ea;
+}
+.t-incompleto {
+  color: #ecb11a;
+  background-color: #fdf7e9;
 }
 
 .td-user {

@@ -438,6 +438,10 @@ input[type="checkbox"] {
   }
 }
 
+.p-multiselect-empty-message{
+  padding: 5px;
+  color: var(--grey-2);
+}
 .p-multiselect-panel{
   background-color: var(--white);
   font-size: clamp(7px, 8vw, 14px);

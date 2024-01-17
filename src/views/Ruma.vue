@@ -4,16 +4,10 @@ import { useStore } from "vuex";
 import URModal from "../components/URModal.vue";
 import Delete from "../components/Delete.vue";
 
-const data= [
-    {mina:"yumpag", operador:"Carlos", statusGeology: "QualityControl", tipo:""},
-    {mina:"yumpag", operador:"Pedro", statusGeology: "OreControl", tipo:""},
-    {mina:"yumpag", operador:"Ricardo", statusGeology: "QualityControl", tipo:""},
-    {mina:"yumpag", operador:"Lucas", statusGeology: "QualityControl", tipo:""},
-]
-
 const store = useStore();
-const showModalDelete = ref(false);
+const dataRuma = ref([]);
 
+const showModalDelete = ref(false);
 const showOCModal = ref(false);
 
 const openModal = () => {
@@ -21,13 +15,12 @@ const openModal = () => {
 };
 
 const openDelete = (e) => {
-  
   showModalDelete.value = true;
 };
 
 const formattedDate = ref("");
 
-onMounted(() => {
+onMounted(async () => {
   const options = {
     weekday: "long",
     day: "2-digit",
@@ -46,8 +39,11 @@ onMounted(() => {
   formattedDate.value = `${weekday}, ${today
     .toLocaleDateString("es-ES", options)
     .replace(/\//g, ".")}`;
-});
 
+  await store.dispatch("ruma_total");
+  dataRuma.value = store.state.rumaTotal;
+  console.log(dataRuma.value);
+});
 </script>
 
 <template>
@@ -60,114 +56,36 @@ onMounted(() => {
       <button class="btn-ruma" @click="openModal()">Unir Rumas</button>
     </div>
   </div>
-
-  <div class="c-global-c-content">
-    <DataTable      
-      :value="data"
-      dataKey="travel_Id"
-      paginator
-      :rows="20"
-      scrollable
-      tableStyle="width: 100%"
-      paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
-      currentPageReportTemplate="Página {currentPage} de {totalPages}"
-    >
-      <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
-      
-      <Column field="fecha" header="Fecha" sortable>
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.fecha }} {{ slotProps.data.hora }}</h4>
-              <h5>Fecha de llegada</h5>
-            </div>
+  <div class="c-global-c-rumas">
+    <div v-for="(ruma, index) in dataRuma" :key="index" class="card-ruma">
+      <div class="c-ruma-body">
+        <img src="../assets/img/i-ruma.svg" alt="" />
+        <h3>{{ ruma.ruma_Id }}</h3>
+        <div class="c-r-body-items">
+          <span class="c-r-b-item">{{ ruma.rumas_united }} </span>
+        </div>
+        <div class="c-r-body-info">
+          <div class="c-r-body-i-item">
+            <span class="ton-total">{{ ruma.tonh }}</span>
+            <p>TMH</p>
           </div>
-        </template>
-      </Column>
-      <Column field="mina" header="Mina" sortable>
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.mina }}</h4>
-              <h5>mina</h5>
-            </div>
+          <div class="c-r-body-i-item">
+            <span class="ton-total">{{ ruma.travels || "0" }}</span>
+            <p>viajes</p>
           </div>
-        </template>
-      </Column>
-      <Column field="ruma" header="Nro Ruma">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ruma }}</h4>
-              <h5>{{ slotProps.data.ruma ? "#ruma" : "" }}</h5>
-            </div>
+          <div class="c-r-body-i-item">
+           <button>Update</button>
           </div>
-        </template>
-      </Column>
-      <Column field="ley_ag" header="Ley Ag">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_ag }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_fe" header="Ley Fe">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_fe }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_mn" header="Ley Mn">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_mn }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_pb" header="Ley Pb">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_pb }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_zn" header="Ley Zn">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_zn }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-     
-      <Column field="Acciones" header="Acciones">
-        <template #body="slotProps">
-          <div className="btns">           
-            <button @click="openDelete(slotProps.data)">X</button>
-          </div>
-        </template>
-      </Column>
-    </DataTable>
+        </div>
+      </div>
+      <div class="c-ruma-footer">
+        <span> <strong>3</strong> rumas unidas</span>
+      </div>
+    </div>
   </div>
+
   <URModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
-  <Delete  v-if="showModalDelete"
-    @cerrarModal="showModalDelete = false"      
-    />
+  <Delete v-if="showModalDelete" @cerrarModal="showModalDelete = false" />
 </template>
 
 <style lang="scss">
@@ -232,108 +150,91 @@ onMounted(() => {
   //   }
 }
 
-.c-global-c-content {
-  display: flex;
-  flex-direction: column;
-  padding: 0 2.5rem;
-  padding-bottom: 1rem;
+.c-global-c-rumas {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
-  flex: 1 1;
-  overflow: hidden;
-  .users-c-c-filters {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    .c-c-filters-search {
+  padding: 1.5rem 2.5rem;
+  padding-bottom: 1rem;
+  overflow: auto;
+  .card-ruma {
+    border-radius: 12px;
+    background-color: var(--white);
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--white);
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    .c-ruma-header {
+      padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+      font-size: clamp(7px, 8vw, 12px);
+      color: var(--grey-2);
+      text-align: right;
+    }
+
+    .c-ruma-body {
       display: flex;
-      position: relative;
-      max-width: 300px;
-      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1.5rem 1.5rem 1.5rem;
       img {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 15px;
-        width: 1rem;
+        width: 2.5rem;
+        height: 2.5rem;
       }
-    }
-    .c-c-filters-type {
-      flex: 1 1 250px;
-      label {
-        font-size: clamp(5px, 8vw, 10px);
-        font-weight: 500;
-        //   @include md {
-        //     font-size: clamp(6px, 8vw, 12px);
-        //   }
+      h3 {
+        font-weight: 600;
+        font-size: clamp(7px, 8vw, 16px);
       }
-      .imputs-i-input {
-        position: relative;
-        img {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          left: 15px;
-          width: 1rem;
-        }
-      }
-    }
-    .c-c-filters-items {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: clamp(6px, 8vw, 14px);
-      // @include md {
-      //   font-size: clamp(6px, 8vw, 13px);
-      // }
-    }
-  }
-  
-  .users-c-c-footer {
-    display: flex;
-    justify-content: space-between;
-    .c-c-footer-page {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      button {
-        height: 30px;
-        width: 30px;
-        padding: 0;
-        border: 0.5px solid var(--grey-light-2);
-        display: grid;
-        place-items: center;
-        border-radius: 5px;
-        img {
-          width: 0.7rem;
-        }
-        &:nth-child(1) {
-          img {
-            transform: rotate(90deg);
-          }
-        }
-        &:nth-child(3) {
-          img {
-            transform: rotate(270deg);
-          }
-        }
-        &:hover {
-          background-color: #f3f3f4;
-        }
-      }
-      span {
+      .c-r-body-items {
+        margin: 1rem 0;
         display: flex;
+        flex-wrap: wrap;
         gap: 0.5rem;
-        font-size: clamp(6px, 8vw, 12px);
-        //   @include md {
-        //     font-size: clamp(6px, 8vw, 13px);
-        //   }
+        .c-r-b-item {
+          background-color: var(--grey-light-1);
+          border-radius: 15px;
+          font-size: clamp(7px, 8vw, 13px);
+          padding: 3px 10px;
+          color: var(--grey-2);
+        }
+      }
+      .c-r-body-info {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        .c-r-body-i-item {
+          flex: 1 1 100px;
+          span {            
+            font-size: clamp(7px, 8vw, 22px);
+            font-weight: 600;
+            letter-spacing: -0.03rem;            
+            color: var(--black);
+          }
+          p{            
+            font-size: clamp(7px, 8vw, 12px);
+            font-weight: 500;
+            color: var(--grey-2);
+          }
+          button{
+            transition: all 0.35s ease-out;
+    background-color: var(--primary);
+    height: 40px;
+          }
+        }
       }
     }
+    .c-ruma-footer {
+      padding: 0.5rem 1.5rem;
+      font-size: clamp(7px, 8vw, 12px);
+      background-color: var(--grey-light-1);
+      color: var(--grey-2);
+      border-radius: 0 0 10px 10px;
+    }
+    &:hover {
+      border: 2px solid var(--primary);
+    }
   }
-  // @include md {
-  //   padding: 3rem;
-  // }
 }
 //   @include md {
 //     gap: 1.5rem;
@@ -362,74 +263,5 @@ onMounted(() => {
       color: var(--white);
     }
   }
-}
-
-.td-user {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  .t-siglas {
-    width: 35px;
-    height: 35px;
-    background-color: #00b47e;
-    color: var(--white);
-    text-transform: uppercase;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: clamp(7px, 8vw, 16px);
-  }
-  .t-name {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    h4 {
-      text-transform: capitalize;
-    }
-    h5 {
-      text-transform: lowercase;
-      font-size: clamp(6px, 8vw, 12px);
-      line-height: 0.8rem;
-      color: var(--grey-1);
-      //   @include md {
-      //     font-size: clamp(6px, 8vw, 12px);
-      //   }
-    }
-    h4 {
-      font-weight: 500;
-      font-size: clamp(6px, 8vw, 14px);
-      //   @include md {
-      //     font-size: clamp(6px, 8vw, 14px);
-      //   }
-    }
-    .t-2 {
-      text-transform: capitalize;
-    }
-  }
-}
-
-.td-cot {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  img {
-    width: 1.1rem;
-  }
-  h4 {
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: clamp(6px, 8vw, 12px);
-    // @include md {
-    //   font-size: clamp(6px, 8vw, 14px);
-    // }
-  }
-}
-
-.t-cort {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 150px;
-  font-size: clamp(6px, 8vw, 14px);
 }
 </style>

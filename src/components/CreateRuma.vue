@@ -1,0 +1,103 @@
+<script setup>
+import { ref } from "vue";
+const url = import.meta.env.VITE_API_URL;
+
+const showOCModal = ref(false);
+const openModal = () => {
+  showOCModal.value = true;
+};
+
+
+const cerrarModal = () => {
+    showOCModal.value = false;
+};
+
+const createRuma = async () => {
+  try {
+    const response = await fetch(`${url}/ruma`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (data.status === true) {
+      console.log("Correcto");
+      showOCModal.value = false;
+    } else {
+      console.log("error");
+    }
+  } catch (error) {
+    console.error("Error al actualizar:", error);
+  }
+};
+</script>
+
+<template>
+  <div class="mC-imputs-more">
+    <button class="btn-ruma" type="button" @click="openModal()">
+      + Ruma
+    </button>
+  </div>
+  <div class="modalCreate-backg" v-if="showOCModal" @cerrarModal="showOCModal = false">
+    <form class="mCreate-2">
+      <div class="mC-c-header">
+        <div class="mC-h-title">
+          <div class="mC-c-title-icon">
+            <img src="../assets/img/i-compl.svg" alt="" />
+          </div>
+          <div class="mC-c-title-text">
+            <h2>Crear nueva ruma</h2>
+            <h4>Inicializar una nueva ruma</h4>
+          </div>
+        </div>
+        <span @click="cerrarModal" class="mC-h-close" type="button">
+          <img src="../assets/img/i-close.svg" alt="" />
+        </span>
+      </div>
+      <div class="mC-c-body">
+        <div class="mC-b-info">
+          <p>
+            Crear una nueva ruma implica iniciar una nueva área o pila para acumular los materiales extraídos.
+            <strong>¿Seguro que deseas crear una nueva ruma?</strong>?
+          </p>
+        </div>
+      </div>
+      <div class="mC-c-footer">
+        <button @click="cerrarModal" class="btn-cancel" type="button">
+          No
+        </button>
+        <button
+          class="btn-success"
+          type="submit"
+          @click.prevent="createRuma()"
+        >
+          Si
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<style lang="scss">
+.mC-imputs-more {
+  flex: 0 1 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+.btn-ruma {
+  background-color: var(--grey-light-22);
+  color: var(--grey-2);
+  padding: 0.8rem 0.5rem;
+  font-weight: 500;
+  &:hover {
+    background-color: var(--primary);
+    color: var(--white);
+  }
+}
+</style>

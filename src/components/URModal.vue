@@ -1,15 +1,23 @@
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from "vue";
-
 import { useStore } from "vuex";
 const url = import.meta.env.VITE_API_URL;
-
+const store = useStore()
 const { showModal } = defineProps(["showModal"]);
 const emit = defineEmits();
 
 const cerrarModal = () => {
   emit("cerrarModal");
 };
+
+const dataRuma = ref([]);
+
+onMounted(async () => {
+  await store.dispatch("ruma_list");
+  dataRuma.value = store.state.rumaList;
+});
+
+const selectedRuma = ref();
 
 const showError = ref(false);
 
@@ -18,17 +26,29 @@ const hideError = () => {
 };
 
 const selectedCountries = ref([]);
-const countries = [
-  { id: 1, name: "United States" },
-  { id: 2, name: "Canada" },
-  { id: 3, name: "United Kingdom" },
-  { id: 4, name: "ruma3" },
-  { id: 5, name: "Ruma 4" },
-  { id: 6, name: "Ruma 5" },
-  { id: 7, name: "Ruma 6" },
-  { id: 8, name: "Ruma 7" },
-  { id: 9, name: "Ruma 8" },
-];
+
+const unirRumas = async () => {
+  console.log(selectedRuma.value);
+  try {    
+    const response = await fetch(`${url}/updateruma`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({rumas:selectedRuma.value}),
+    });
+
+    const data = await response.json();
+     if (data.status === true) {
+       console.log("correcto");
+       emit("cerrarModal");
+     } else {
+       console.log("error");
+     }
+  } catch (error) {
+    console.error("Error al actualizar:", error);
+  }
+};
 </script>
 
 <template>
@@ -54,16 +74,16 @@ const countries = [
             <label>Lista de rumas</label>
             <div class="imputs-i-input">
               <MultiSelect
-                v-model="selectedCountries"
-                :options="countries"
-                optionLabel="name"
+                v-model="selectedRuma"
+                :options="dataRuma"
+                optionLabel="ruma_Id"
                 placeholder="Seleccione ruma"
                 display="chip"
                 class=""
               >
                 <template #option="slotProps">
                   <div class="flex align-items-center">
-                    <div>{{ slotProps.option.name }}</div>
+                    <div>{{ slotProps.option.ruma_Id }}</div>
                   </div>
                 </template>
                 <template #footer>
@@ -85,7 +105,7 @@ const countries = [
         <button @click="cerrarModal" class="btn-cancel" type="button">
           Cancelar
         </button>
-        <button class="btn-success" type="submit" @click.prevent="">
+        <button @click.prevent="unirRumas" class="btn-success" type="submit">
           Guardar
         </button>
       </div>

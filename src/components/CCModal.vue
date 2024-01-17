@@ -14,7 +14,7 @@ const cerrarModal = () => {
 const store = useStore();
 const userModal = store.state.userModal;
 
-const data = ref([]);
+const historial = ref([]);
 const averages = ref([]);
 
 const handleFileChange = (event) => {
@@ -33,7 +33,7 @@ const handleFileChange = (event) => {
         averagesArr.push(average);
       }
 
-      data.value = rows;
+      historial.value = rows;
       averages.value = averagesArr;
     })
     .catch((error) => {
@@ -41,9 +41,7 @@ const handleFileChange = (event) => {
     });
 };
 
-
 const updateTravel = async () => {
-
   try {
     userModal.statusGeology = "General";
     userModal.ley_ag = averages.value[0].toFixed(2);
@@ -51,7 +49,7 @@ const updateTravel = async () => {
     userModal.ley_mn = averages.value[2].toFixed(2);
     userModal.ley_pb = averages.value[3].toFixed(2);
     userModal.ley_zn = averages.value[4].toFixed(2);
-    datosMuestra()
+    datosMuestra();
     const response = await fetch(`${url}/triplist/${userModal._id}`, {
       method: "PUT",
       headers: {
@@ -64,6 +62,7 @@ const updateTravel = async () => {
 
     if (data.status === true) {
       console.log("correcto");
+      emit("cerrarModal");
     } else {
       console.log("error");
     }
@@ -73,27 +72,25 @@ const updateTravel = async () => {
 };
 
 const datosMuestra = async () => {
+  try {
+    const response = await fetch(`${url}/ruma/${userModal.ruma}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: historial.value }),
+    });
 
-try {
- 
-  const response = await fetch(`${url}/ruma/${userModal._id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data.value),
-  });
+    const data = await response.json();
 
-  const data = await response.json();
-
-  if (data.status === true) {
-    console.log("correcto");
-  } else {
-    console.log("error");
+    if (data.status === true) {
+      console.log("correcto");
+    } else {
+      console.log("error");
+    }
+  } catch (error) {
+    console.error("Error al actualizar:", error);
   }
-} catch (error) {
-  console.error("Error al actualizar:", error);
-}
 };
 </script>
 
@@ -129,22 +126,37 @@ try {
             <strong>'{{ userModal.status }}'</strong>.
           </p>
         </div>
-        <div className="mC-b-imputs">          
-           <div class="table-excel">
+        <div className="mC-b-imputs">
+          <div class="table-excel">
             <div></div>
+            <FileUpload
+              name="demo[]"
+              url="/api/upload"
+              @upload="onAdvancedUpload($event)"
+              :multiple="true"
+              :maxFileSize="1000000"
+            >
+              <template #empty>
+                <p>Drag and drop files here to upload.</p>
+              </template>
+            </FileUpload>
+
             <input type="file" @change="handleFileChange" />
             <h4>Datos desde el archivo Excel</h4>
-            <div v-if="data.length">
+            <div v-if="historial.length">
               <table>
                 <thead>
                   <tr>
-                    <th v-for="(col, index) in data[0]" :key="index">
+                    <th v-for="(col, index) in historial[0]" :key="index">
                       {{ col }}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(row, rowIndex) in data.slice(1)" :key="rowIndex">
+                  <tr
+                    v-for="(row, rowIndex) in historial.slice(1)"
+                    :key="rowIndex"
+                  >
                     <td v-for="(value, colIndex) in row" :key="colIndex">
                       {{ isNaN(value) ? value : value.toFixed(2) }}
                     </td>
@@ -159,8 +171,8 @@ try {
                 </tfoot>
               </table>
             </div>
-          </div> 
-           <!-- <div className="mC-imputs-item">
+          </div>
+          <!-- <div className="mC-imputs-item">
             <label>Codigo de muestra</label>
             <div className="imputs-i-input">
               <img src="../assets/img/i-tablet.svg" alt="" />
@@ -209,7 +221,6 @@ try {
 </template>
 
 <style lang="scss">
-
 .table-excel {
   width: 100%;
   color: var(--black);

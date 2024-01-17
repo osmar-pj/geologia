@@ -1,4 +1,5 @@
 <script setup>
+import CreateRuma from "../components/CreateRuma.vue";
 import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { useStore } from "vuex";
 const url = import.meta.env.VITE_API_URL;
@@ -71,27 +72,6 @@ const updateTravel = async () => {
     } catch (error) {
       console.error("Error al actualizar:", error);
     }
-  }
-};
-
-const createRuma = async () => {
-  try {
-    const response = await fetch(`${url}/ruma`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-
-    if (data.status === true) {
-      console.log("Correcto");
-    } else {
-      console.log("error");
-    }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
   }
 };
 </script>
@@ -200,15 +180,7 @@ const createRuma = async () => {
             </div>
             <span class="label-error" v-if="showError">*Campo requerido</span>
           </div>
-          <div class="mC-imputs-more">
-            <button
-              class="btn-ruma"
-              type="submit"
-              @click.prevent="createRuma()"
-            >
-              + Ruma
-            </button>
-          </div>
+          <CreateRuma/>
         </div>
       </div>
       <div class="mC-c-footer">
