@@ -1,21 +1,14 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
-import URModal from "../components/URModal.vue";
+import BindModal from "../components/BindModal.vue";
 import Delete from "../components/Delete.vue";
 
 const store = useStore();
-const dataRuma = ref([]);
-
-const showModalDelete = ref(false);
 const showOCModal = ref(false);
 
 const openModal = () => {
   showOCModal.value = true;
-};
-
-const openDelete = (e) => {
-  showModalDelete.value = true;
 };
 
 const formattedDate = ref("");
@@ -41,19 +34,24 @@ onMounted(async () => {
     .replace(/\//g, ".")}`;
 
   await store.dispatch("ruma_total");
-  dataRuma.value = store.state.rumaTotal;
-  console.log(dataRuma.value);
+});
+
+const dataRuma = computed(() => {
+  return store.state.rumaTotal;
 });
 </script>
 
 <template>
   <div class="c-global-header">
     <div class="global-h-title">
-      <h1>Control de Rumas</h1>
+      <div class="g-h-t-primary">
+        <h1>Control de Rumas</h1>
+        <span>{{ dataRuma.length }}</span>
+      </div>
       <span>{{ formattedDate }} | Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-      <button class="btn-ruma" @click="openModal()">Unir Rumas</button>
+      <button class="btn-unirRuma" @click="openModal()">Unir Rumas</button>
     </div>
   </div>
   <div class="c-global-c-rumas">
@@ -61,12 +59,24 @@ onMounted(async () => {
       <div class="c-ruma-body">
         <img src="../assets/img/i-ruma.svg" alt="" />
         <h3>{{ ruma.ruma_Id }}</h3>
+        <span>
+          <strong>{{
+            ruma.rumas_united ? ruma.rumas_united.length : 0
+          }}</strong>
+          rumas unidas</span
+        >
         <div class="c-r-body-items">
-          <span class="c-r-b-item">{{ ruma.rumas_united }} </span>
+          <span
+            class="c-r-b-item"
+            v-for="(rumaId, rumaIndex) in ruma.rumas_united"
+            :key="rumaIndex"
+          >
+            {{ rumaId }} /
+          </span>
         </div>
         <div class="c-r-body-info">
           <div class="c-r-body-i-item">
-            <span class="ton-total">{{ ruma.tonh }}</span>
+            <span class="ton-total">{{ ruma.tonh || "0" }}</span>
             <p>TMH</p>
           </div>
           <div class="c-r-body-i-item">
@@ -74,21 +84,32 @@ onMounted(async () => {
             <p>viajes</p>
           </div>
           <div class="c-r-body-i-item">
-           <button>Update</button>
+            <button>Update</button>
           </div>
         </div>
-      </div>
-      <div class="c-ruma-footer">
-        <span> <strong>3</strong> rumas unidas</span>
       </div>
     </div>
   </div>
 
-  <URModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
-  <Delete v-if="showModalDelete" @cerrarModal="showModalDelete = false" />
+  <BindModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
 </template>
 
 <style lang="scss">
+.g-h-t-primary {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  span {
+    color: var(--grey-2);
+    font-size: clamp(6px, 8vw, 14px);
+    font-weight: 600;
+    line-height: 1.1rem;
+    background-color: var(--grey-light-1);
+    padding: 2px 5px;
+    border-radius: 8px;
+  }
+}
+
 .c-global-header {
   width: 100%;
   padding: 1.5rem 2.5rem;
@@ -163,9 +184,11 @@ onMounted(async () => {
     background-color: var(--white);
     padding: 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border: 2px solid var(--white);
+    border: 1px solid var(--white);
     cursor: pointer;
     transition: all 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
     .c-ruma-header {
       padding: 0.5rem 1.5rem 0.5rem 1.5rem;
       font-size: clamp(7px, 8vw, 12px);
@@ -178,6 +201,7 @@ onMounted(async () => {
       flex-direction: column;
       align-items: center;
       padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+      flex: 1 1;
       img {
         width: 2.5rem;
         height: 2.5rem;
@@ -185,54 +209,63 @@ onMounted(async () => {
       h3 {
         font-weight: 600;
         font-size: clamp(7px, 8vw, 16px);
+        padding: 0.5rem 0 0 0;
+      }
+      span {
+        font-size: clamp(7px, 8vw, 11px);
+        font-weight: 500;
+        color: var(--grey-2);
       }
       .c-r-body-items {
         margin: 1rem 0;
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
+        justify-content: center;
+        background-color: var(--grey-light-1);
+        border-radius: 15px;
+        padding: 3px 10px;
         .c-r-b-item {
-          background-color: var(--grey-light-1);
-          border-radius: 15px;
-          font-size: clamp(7px, 8vw, 13px);
-          padding: 3px 10px;
+          font-size: clamp(7px, 8vw, 12px);
           color: var(--grey-2);
         }
       }
       .c-r-body-info {
+        width: 100%;
         display: flex;
         align-items: center;
-        gap: .5rem;
+        gap: 0.5rem;
+        border-top: 1px solid var(--grey-light-2);
+        padding-top: 1rem;
         .c-r-body-i-item {
           flex: 1 1 100px;
-          span {            
-            font-size: clamp(7px, 8vw, 22px);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          .ton-total {
+            font-size: clamp(7px, 8vw, 16px);
             font-weight: 600;
-            letter-spacing: -0.03rem;            
+            letter-spacing: -0.03rem;
             color: var(--black);
+            line-height: 1rem;
           }
-          p{            
-            font-size: clamp(7px, 8vw, 12px);
-            font-weight: 500;
+          p {
+            font-size: clamp(7px, 8vw, 11px);
+            font-weight: normal;
             color: var(--grey-2);
           }
-          button{
+          button {
             transition: all 0.35s ease-out;
-    background-color: var(--primary);
-    height: 40px;
+            background-color: var(--primary);
+            height: 40px;
+            padding: 0;
           }
         }
       }
     }
-    .c-ruma-footer {
-      padding: 0.5rem 1.5rem;
-      font-size: clamp(7px, 8vw, 12px);
-      background-color: var(--grey-light-1);
-      color: var(--grey-2);
-      border-radius: 0 0 10px 10px;
-    }
+
     &:hover {
-      border: 2px solid var(--primary);
+      border: 1px solid var(--primary);
     }
   }
 }
@@ -262,6 +295,16 @@ onMounted(async () => {
       background-color: var(--primary);
       color: var(--white);
     }
+  }
+}
+
+.btn-unirRuma {
+  background-color: var(--primary);
+  color: var(--white);
+  font-weight: 500;
+  min-width: 150px;
+  &:hover{
+    background-color: var(--secondary);
   }
 }
 </style>

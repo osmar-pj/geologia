@@ -42,6 +42,7 @@ const unirRumas = async () => {
      if (data.status === true) {
        console.log("correcto");
        emit("cerrarModal");
+       await store.dispatch("ruma_total");
      } else {
        console.log("error");
      }

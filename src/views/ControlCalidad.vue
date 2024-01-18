@@ -1,13 +1,15 @@
 <script setup>
 import TableList from "../components/Table.vue";
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed} from "vue"
 import { useStore } from "vuex"
 const store = useStore()
-const data = ref([])
 
 onMounted(async () => {
     await store.dispatch('get_listControl')
-    data.value = store.state.dataListControl;
+})
+
+const data = computed(() => {
+    return store.state.dataListControl
 })
 
 </script>

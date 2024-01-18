@@ -6,11 +6,14 @@ import store from './store/store'
 import './style.scss'
 import 'primevue/resources/primevue.min.css'
 
+
 import Dropdown from 'primevue/dropdown';
 import MultiSelect from 'primevue/multiselect';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import FileUpload from 'primevue/fileupload';
+import Skeleton from 'primevue/skeleton';
+
 
 const app = createApp(App)
 
@@ -23,4 +26,5 @@ app.component('MultiSelect', MultiSelect)
 app.component('DataTable', DataTable)
 app.component('Column', Column)
 app.component('FileUpload', FileUpload)
+app.component('Skeleton', Skeleton)
 app.mount('#app')

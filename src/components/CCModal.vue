@@ -17,6 +17,11 @@ const userModal = store.state.userModal;
 const historial = ref([]);
 const averages = ref([]);
 
+const showError = ref(false);
+
+const hideError = () => {
+  showError.value = false;
+};
 const handleFileChange = (event) => {
   const file = event.target.files[0];
 
@@ -42,54 +47,67 @@ const handleFileChange = (event) => {
 };
 
 const updateTravel = async () => {
-  try {
-    userModal.statusGeology = "General";
-    userModal.ley_ag = averages.value[0].toFixed(2);
-    userModal.ley_fe = averages.value[1].toFixed(2);
-    userModal.ley_mn = averages.value[2].toFixed(2);
-    userModal.ley_pb = averages.value[3].toFixed(2);
-    userModal.ley_zn = averages.value[4].toFixed(2);
-    datosMuestra();
-    const response = await fetch(`${url}/triplist/${userModal._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userModal),
-    });
+  console.log("data",averages.value);
+   if (!averages.value || averages.value.length === 0) {
+    showError.value = true;
+    setTimeout(hideError, 5000);
+  } else {
+    try {
+      userModal.statusGeology = "General";
+      userModal.ley_ag = averages.value[0].toFixed(2);
+      userModal.ley_fe = averages.value[1].toFixed(2);
+      userModal.ley_mn = averages.value[2].toFixed(2);
+      userModal.ley_pb = averages.value[3].toFixed(2);
+      userModal.ley_zn = averages.value[4].toFixed(2);
+      datosMuestra();
+      const response = await fetch(`${url}/triplist/${userModal._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userModal),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.status === true) {
-      console.log("correcto");
-      emit("cerrarModal");
-    } else {
-      console.log("error");
+      if (data.status === true) {
+        console.log("correcto");
+        emit("cerrarModal");
+        await store.dispatch("get_listControl");
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
     }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
   }
 };
 
 const datosMuestra = async () => {
-  try {
-    const response = await fetch(`${url}/ruma/${userModal.ruma}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ data: historial.value }),
-    });
+  
+   if (!averages.value || averages.value.length === 0) {
+    showError.value = true;
+    setTimeout(hideError, 5000);
+  } else {
+    try {
+      const response = await fetch(`${url}/ruma/${userModal.ruma}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data: historial.value }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.status === true) {
-      console.log("correcto");
-    } else {
-      console.log("error");
+      if (data.status === true) {
+        console.log("correcto");
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
     }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
   }
 };
 </script>
@@ -127,23 +145,25 @@ const datosMuestra = async () => {
           </p>
         </div>
         <div className="mC-b-imputs">
-          <div class="table-excel">
-            <div></div>
-            <FileUpload
-              name="demo[]"
-              url="/api/upload"
-              @upload="onAdvancedUpload($event)"
-              :multiple="true"
-              :maxFileSize="1000000"
+          <div class="table-excel">            
+            <div class="file-upload-form">
+              <label for="file" class="file-upload-label">
+                <div class="file-upload-design">
+                  <svg viewBox="0 0 640 512" height="1em">
+                    <path
+                      d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                    ></path>
+                  </svg>
+                  <span class="browse-button">Subir archivo</span>
+                </div>
+                <input id="file" type="file" @change="handleFileChange" />
+              </label>
+            </div>
+            <span class="label-error" v-if="showError"
+            >*Documento requerido</span
             >
-              <template #empty>
-                <p>Drag and drop files here to upload.</p>
-              </template>
-            </FileUpload>
-
-            <input type="file" @change="handleFileChange" />
-            <h4>Datos desde el archivo Excel</h4>
             <div v-if="historial.length">
+              <h4 class="text-excel">Datos procesados del <strong>archivo Excel</strong></h4>
               <table>
                 <thead>
                   <tr>
@@ -230,6 +250,14 @@ const datosMuestra = async () => {
   border-collapse: collapse;
   white-space: nowrap;
   overflow: hidden;
+
+  .text-excel{
+    padding: 1rem 0;
+    text-align: left;
+    font-size: clamp(7px, 8vw, 12px);
+    font-weight: normal;
+    color: var(--grey-2);
+  }
   table {
     width: 100%;
     color: var(--black);
@@ -281,5 +309,46 @@ const datosMuestra = async () => {
   tfoot {
     font-weight: 700;
   }
+}
+
+.file-upload-form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.file-upload-label input {
+  display: none;
+}
+.file-upload-label svg {
+  height: 30px;
+  fill: var(--primary);
+}
+
+
+.file-upload-label {
+  width: 100%;
+  cursor: pointer;
+  background-color: var(--white);
+  border-radius: 10px;
+  border: 1px dashed var(--primary);
+}
+.file-upload-design {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+}
+.browse-button {
+  background-color: transparent;
+  padding: 5px 15px;
+  border-radius: 10px;
+  color: var(--black);
+  transition: all 0.3s;
+  font-size: clamp(7px, 8vw, 12px);
+}
+.browse-button:hover {
+  background-color: var(--grey-light-22);
 }
 </style>

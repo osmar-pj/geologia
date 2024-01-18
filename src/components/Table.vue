@@ -1,55 +1,33 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, defineProps} from "vue";
 import { useStore } from "vuex";
 import OCModal from "../components/OCModal.vue";
 import CCModal from "../components/CCModal.vue";
 import Delete from "../components/Delete.vue";
+import SkeletonLoader from "../components/SkeletonLoader.vue";
 
 const props = defineProps(["showActionsColumn", "title", "data", "showColum"]);
-
 const store = useStore();
 const showModalDelete = ref(false);
-
 const showOCModal = ref(false);
 const showCCModal = ref(false);
 
 const openModal = (data) => {
   store.state.userModal = data;
-
   if (data.statusGeology === "QualityControl") {
     showCCModal.value = true;
+    showOCModal.value = false;
   } else if (data.statusGeology === "OreControl") {
+    showCCModal.value = false;
     showOCModal.value = true;
   }
 };
-
 const openDelete = (e) => {
   store.state.userModal = e;
   showModalDelete.value = true;
 };
 
-const formattedDate = ref("");
 
-onMounted(() => {
-  const options = {
-    weekday: "long",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  };
-  const today = new Date();
-
-  const weekday =
-    today
-      .toLocaleDateString("es-ES", { weekday: "long" })
-      .charAt(0)
-      .toUpperCase() +
-    today.toLocaleDateString("es-ES", { weekday: "long" }).slice(1);
-
-  formattedDate.value = `${weekday}, ${today
-    .toLocaleDateString("es-ES", options)
-    .replace(/\//g, ".")}`;
-});
 </script>
 
 <template>
@@ -61,7 +39,7 @@ onMounted(() => {
         </h1>
         <span>{{ data.length }}</span>
       </div>
-      <span>{{ formattedDate }} | Dia terminado en Mina </span>
+      <span>Hoy| Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
       <div class="radio-inputs">
@@ -81,8 +59,8 @@ onMounted(() => {
       </div>
     </div>
   </div>
-
-  <div class="c-global-c-content">
+  <SkeletonLoader :loading="store.state.loading" />
+  <div class="c-global-c-content" v-if="!store.state.loading">
     <DataTable
       :value="data"
       dataKey="travel_Id"
@@ -503,11 +481,12 @@ onMounted(() => {
     display: grid;
     place-items: center;
     background-color: var(--white);
-    padding: 8px 14px;
+    padding: 0 14px;
     border-radius: 10px;
     color: var(--primary);
     border: 1px solid var(--primary);
     font-weight: 500;
+    height: 40px;
     img {
       width: 1rem;
     }

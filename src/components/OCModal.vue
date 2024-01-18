@@ -44,18 +44,12 @@ const updateTravel = async () => {
   ) {
     showError.value = true;
     setTimeout(hideError, 5000);
-    console.log("Por favor, completa todos los campos requeridos");
-    console.log(
-      selectedTipo.value,
-      selectedTajo.value.name,
-      selectedRuma.value.ruma_Id
-    );
   } else {
-    userModal.tipo = selectedTipo.value;
-    userModal.tajo = selectedTajo.value.name;
-    userModal.ruma = selectedRuma.value.ruma_Id;
-
+    
     try {
+      userModal.tipo = selectedTipo.value;
+      userModal.tajo = selectedTajo.value.name;
+      userModal.ruma = selectedRuma.value.ruma_Id;
       userModal.statusGeology = "QualityControl";
       const response = await fetch(`${url}/triplist`, {
         method: "POST",
@@ -69,8 +63,8 @@ const updateTravel = async () => {
 
       if (data.status === true) {
         console.log("Correcto");
-        await store.dispatch("get_list")
         emit("cerrarModal");
+        await store.dispatch("get_list")
       } else {
         console.log("error");
       }
@@ -167,13 +161,12 @@ const updateTravel = async () => {
                 placeholder="Seleccionar"
               />
             </div>
-            <span class="label-error" v-if="showError">*Campo requerido</span>
+            <span class="label-error" v-if="showError">*Seleccionar campo requerido</span>
           </div>
         </div>
         <div className="mC-b-imputs">
           <div class="mC-imputs-item">
             <label>Selecciona una Ruma</label>
-
             <div class="imputs-i-input">
               <Dropdown
                 class="p-dropdown"
@@ -183,9 +176,9 @@ const updateTravel = async () => {
                 placeholder="Seleccionar"
               />
             </div>
-            <span class="label-error" v-if="showError">*Campo requerido</span>
           </div>
           <CreateRuma/>
+          <span class="label-error" v-if="showError">*Seleccionar campo requerido</span>
         </div>
       </div>
       <div class="mC-c-footer">
@@ -295,7 +288,7 @@ const updateTravel = async () => {
       gap: 1rem;
       padding: 2rem 1.5rem;
       overflow: auto;
-      max-height: 70vh;
+      max-height: 80vh;
       .mC-b-imputs {
         display: flex;
         flex-wrap: wrap;
@@ -307,6 +300,7 @@ const updateTravel = async () => {
           flex-direction: column;
           align-items: flex-start;
           gap: 0.25rem;
+          position: relative;
           label {
             font-size: clamp(7px, 8vw, 13px);
             font-weight: 500;
@@ -395,6 +389,7 @@ const updateTravel = async () => {
   color: var(--grey-2);
   padding: 0.8rem 0.5rem;
   font-weight: 500;
+  height: 45px;
   &:hover {
     background-color: var(--primary);
     color: var(--white);
@@ -419,8 +414,9 @@ const updateTravel = async () => {
 .label-error {
   font-size: clamp(6px, 8vw, 12px);
   color: rgb(243, 89, 89);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 0.8rem;
+  margin-top: .1rem;
 }
 
 /***--RADIO BUTTON */
