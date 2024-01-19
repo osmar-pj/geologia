@@ -44,7 +44,6 @@ const dataRuma = computed(() => {
   return store.state.rumaTotal;
 });
 
-console.log(dataRuma)
 </script>
 
 <template>

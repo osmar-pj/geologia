@@ -19,31 +19,31 @@ const store = createStore({
   },
   mutations: {
     authLogin(state, payload) {
-      state.user = payload;
+      state.user = payload
     },
     authLogout(state) {
-      state.user = null;
+      state.user = null
     },
     getList(state, payload) {
-      state.dataList = payload;
+      state.dataList = payload
     },
     getListControl(state, payload) {
-      state.dataListControl = payload;
+      state.dataListControl = payload
     },
     getListGeneral(state, payload) {
-      state.dataListGeneral = payload;
+      state.dataListGeneral = payload
     },
     getRuma(state, payload) {
-      state.rumaList = payload;
+      state.rumaList = payload
     },
     getTajo(state, payload) {
-      state.tajoList = payload;
+      state.tajoList = payload
     },
     getRumaTotal(state, payload) {
-      state.rumaTotal = payload;
+      state.rumaTotal = payload
     },
     loading(state, payload) {
-      state.loading = payload;
+      state.loading = payload
     },
   },
   actions: {
@@ -93,7 +93,7 @@ const store = createStore({
           },
         });
         const data = await response.json();
-  
+        console.log(data);
         commit("getListControl", data);
         commit("loading", false);
       } catch (error) {
