@@ -64,7 +64,7 @@ const handleFileChange = (event) => {
             historialArr.push(rowObject);
           }
         }
-
+        
         for (let col = 0; col < headers.value.length; col++) {
           const column = historialArr.map((row) => row[headers.value[col]]);
           const validColumn = column.every(
@@ -72,16 +72,22 @@ const handleFileChange = (event) => {
           );
 
           if (validColumn) {
-            const average =
-              column.reduce((acc, value) => acc + value, 0) / column.length;
+            const average = column.reduce((acc, value) => acc + value, 0) / column.length;
             averagesArr.push({ [headers.value[col]]: average });
           } else {
-            averagesArr.push({ [headers.value[col]]: null }); // Agregar null para columnas no válidas
+            averagesArr.push({ [headers.value[col]]: '' }); // Agregar null para columnas no válidas
           }
         }
 
-        historial.value = historialArr;
-        averages.value = averagesArr;
+        let result = averagesArr.reduce((acc, obj) => {
+            Object.keys(obj).forEach(key => {
+                acc[key] = obj[key];
+            });
+            return acc;
+        }, {});
+
+        console.log(historialArr, result)
+        historial.value = [...historialArr, ...[result]];
       } else {
         console.error("Error: La primera fila no es un array de encabezados.");
       }
@@ -243,16 +249,15 @@ const datosMuestra = async () => {
                   <tbody>
                     <tr v-for="(row, rowIndex) in historial" :key="rowIndex">
                       <td v-for="(value, colIndex) in row" :key="colIndex">
-  {{ !isNaN(value) || typeof value === 'string' ? value : '-' }}
-</td>
-
+                        {{ !isNaN(value) || typeof value === 'string' ? value : '-' }}
+                      </td>
                     </tr>
                   </tbody>
                   <tfoot>
                     <tr>
                       <td v-for="(average, key) in averages" :key="key">
-            {{ typeof average[key] === 'number' && !isNaN(average[key]) ? average[key] : '-' }}
-          </td>
+                        {{ typeof average[key] === 'number' && !isNaN(average[key]) ? average[key] : '-' }}
+                      </td>
                     </tr>
                   </tfoot>
                 </table>
