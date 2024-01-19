@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from "vue";
-import Alert from "../icons/Alert.vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 const router = useRouter();
@@ -58,7 +57,7 @@ const logout = async () => {
           @click.prevent="goToPage('/')"
           :class="active == '/' ? 'active' : ''"
         >
-          <div class="nav-select"><Alert /></div>
+          <div class="nav-select"></div>
           <span>Dashboard</span>
         </li>
         <li
@@ -121,7 +120,7 @@ const logout = async () => {
     <div class="sidebar-footer">
       <div className="s-footer-logout">
         <a href="" @click.prevent="logout">
-          <Alert />
+          
           <h4>Salir</h4>
         </a>
       </div>

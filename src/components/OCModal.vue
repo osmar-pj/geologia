@@ -18,13 +18,14 @@ const selectedRuma = ref("");
 const showError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
+const showForm = ref(true);
 
 const handleTipoChange = () => {
   if (selectedTipo.value === "AVANCE") {
     selectedTajo.value = "AVANCE";
   } else if (selectedTipo.value === "TAJO") {
     selectedTajo.value = "";
-  }  
+  }
 };
 
 watch(selectedTipo, handleTipoChange);
@@ -44,8 +45,14 @@ const hideError = () => {
 };
 
 const updateTravel = async () => {
-
-  console.log("tipo:",selectedTipo.value,"tajo:",selectedTajo.value,"ruma:",selectedRuma.value);
+  console.log(
+    "tipo:",
+    selectedTipo.value,
+    "tajo:",
+    selectedTajo.value,
+    "ruma:",
+    selectedRuma.value
+  );
   if (
     (!selectedTipo.value && selectedTipo.value !== 0) ||
     !selectedTajo.value ||
@@ -54,7 +61,7 @@ const updateTravel = async () => {
     !selectedRuma.value.ruma_Id
   ) {
     showError.value = true;
-    
+
     setTimeout(hideError, 5000);
   } else {
     try {
@@ -66,7 +73,7 @@ const updateTravel = async () => {
         ruma: selectedRuma.value.ruma_Id,
         statusGeology: "QualityControl",
       };
-      
+
       const response = await fetch(`${url}/triplist`, {
         method: "POST",
         headers: {
@@ -79,8 +86,12 @@ const updateTravel = async () => {
 
       if (result.status === true) {
         console.log("Correcto");
-        cerrarModal();
         await store.dispatch("get_list");
+        showForm.value = false;
+        setTimeout(() => {
+          showSuccessM.value = true;
+        }, 800);
+        cerrarModal();
       } else {
         console.log("error");
         buttonClicked.value = false;
@@ -94,7 +105,15 @@ const updateTravel = async () => {
 
 <template>
   <div class="modalCreate-backg">
-    <form class="mCreate-content inner" :style="{ userSelect: buttonClicked ? 'none' : 'auto', pointerEvents: buttonClicked ? 'none' : 'auto' }">
+    <Transition name="nested">
+    <form
+      class="mCreate-content inner"
+      :style="{
+        userSelect: buttonClicked ? 'none' : 'auto',
+        pointerEvents: buttonClicked ? 'none' : 'auto',
+      }"
+      v-if="showForm"
+    >
       <div class="mC-c-header">
         <div class="mC-h-title">
           <div class="mC-c-title-icon">
@@ -157,28 +176,28 @@ const updateTravel = async () => {
             </label>
           </div>
           <Transition name="fade" mode="out-in">
-          <div
-            class="mC-imputs-item"
-            v-show="
-              selectedTipo === 'TAJO' && (data.tipo === '' || data.tajo === 0)
-            "
-          >
-            <label>Selecciona un Tajo</label>
-            <div class="imputs-i-input">
-              <Dropdown
-                class="p-dropdown-search"
-                filter
-                v-model="selectedTajo"
-                :options="dataTajo"
-                optionLabel="name"
-                placeholder="Seleccionar"
-              />
-            </div>
-            <span class="label-error" v-if="showError"
-              >*Seleccionar campo requerido</span
+            <div
+              class="mC-imputs-item"
+              v-show="
+                selectedTipo === 'TAJO' && (data.tipo === '' || data.tajo === 0)
+              "
             >
-          </div>
-        </Transition>
+              <label>Selecciona un Tajo</label>
+              <div class="imputs-i-input">
+                <Dropdown
+                  class="p-dropdown-search"
+                  filter
+                  v-model="selectedTajo"
+                  :options="dataTajo"
+                  optionLabel="name"
+                  placeholder="Seleccionar"
+                />
+              </div>
+              <span class="label-error" v-if="showError"
+                >*Seleccionar campo requerido</span
+              >
+            </div>
+          </Transition>
         </div>
         <div className="mC-b-imputs">
           <div class="mC-imputs-item">
@@ -217,6 +236,10 @@ const updateTravel = async () => {
         </template>
       </div>
     </form>
+  </Transition>
+    <Transition name="bounce" >
+      <Success v-if="showSuccessM" />
+    </Transition>
   </div>
 </template>
 
@@ -244,7 +267,7 @@ const updateTravel = async () => {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 
     .mC-c-header {
-      padding: 1.5rem 1.5rem 0 1.5rem;
+      padding: 1.5rem;
 
       .mC-h-title {
         display: flex;
@@ -311,9 +334,9 @@ const updateTravel = async () => {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding: 2rem 1.5rem;
+      padding: 0.5rem 1.5rem;
       overflow: auto;
-      max-height: 80vh;
+      max-height: 70vh;
       .mC-b-imputs {
         display: flex;
         flex-wrap: wrap;
@@ -368,8 +391,8 @@ const updateTravel = async () => {
       }
     }
     .mC-c-footer {
-      padding: 0 1.5rem 1.5rem 1.5rem;
-
+      padding: 1.5rem;
+      border-top: 1px solid var(--grey-light-22);
       display: flex;
       gap: 1rem;
 
@@ -528,7 +551,6 @@ const updateTravel = async () => {
   white-space: nowrap;
   width: 1px;
 }
-
 
 .fade-enter-active,
 .fade-leave-active {

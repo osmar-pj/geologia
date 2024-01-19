@@ -26,6 +26,7 @@ const cerrarModal = () => {
 const hideError = () => {
   showError.value = false;
 };
+
 const handleFileChange = (event) => {
   const file = event.target.files[0];
 
@@ -36,7 +37,7 @@ const handleFileChange = (event) => {
 
       // Obtener encabezados de columnas
       if (Array.isArray(rows[0])) {
-        headers.value = rows[0];
+        headers.value = rows[0].map(header => header.toUpperCase());
 
         for (let row = 1; row < rows.length; row++) {
           const rowData = rows[row];
@@ -50,21 +51,27 @@ const handleFileChange = (event) => {
             return;
           }
 
-          const validRow = rowData.every((value) => value !== "" && value !== 0);
+          const validRow = rowData.every(
+            (value) => value !== "" && value !== 0
+          );
 
           if (validRow) {
             const rowObject = {};
 
             headers.value.forEach((header, col) => {
-              rowObject[header] = isNaN(rowData[col])
+              const value = isNaN(rowData[col])
                 ? rowData[col]
                 : parseFloat(rowData[col]);
+              rowObject[header] =
+                typeof value === "number"
+                  ? parseFloat(value.toFixed(2))
+                  : value;
             });
 
             historialArr.push(rowObject);
           }
         }
-        
+
         for (let col = 0; col < headers.value.length; col++) {
           const column = historialArr.map((row) => row[headers.value[col]]);
           const validColumn = column.every(
@@ -72,21 +79,26 @@ const handleFileChange = (event) => {
           );
 
           if (validColumn) {
-            const average = column.reduce((acc, value) => acc + value, 0) / column.length;
-            averagesArr.push({ [headers.value[col]]: average });
+            const average =
+              column.reduce((acc, value) => acc + value, 0) / column.length;
+            averagesArr.push({
+              [headers.value[col]]: parseFloat(average.toFixed(2)),
+            });
           } else {
-            averagesArr.push({ [headers.value[col]]: '' }); // Agregar null para columnas no válidas
+            averagesArr.push({ [headers.value[col]]: "" }); // Agregar null para columnas no válidas
           }
         }
 
         let result = averagesArr.reduce((acc, obj) => {
-            Object.keys(obj).forEach(key => {
-                acc[key] = obj[key];
-            });
-            return acc;
+          Object.keys(obj).forEach((key) => {
+            acc[key] = obj[key];
+          });
+          return acc;
         }, {});
 
-        console.log(historialArr, result)
+        const filteredAverages = averagesArr.filter(obj => Object.values(obj)[0] !== '' && Object.values(obj)[0] !== null);
+        averages.value = filteredAverages; 
+
         historial.value = [...historialArr, ...[result]];
       } else {
         console.error("Error: La primera fila no es un array de encabezados.");
@@ -97,26 +109,26 @@ const handleFileChange = (event) => {
     });
 };
 
-
-
 const updateTravel = async () => {
   if (!averages.value || averages.value.length === 0) {
+    console.log(averages);
     showError.value = true;
     setTimeout(hideError, 5000);
   } else {
+    
     try {
       buttonClicked.value = true;
-      console.log(averages)
+      console.log(averages);
       const updatedTravel = {
         ...props.data,
-        ley_ag: Object.values(averages.value[0])[0],
-        ley_fe: Object.values(averages.value[1])[0],
-        ley_mn: Object.values(averages.value[2])[0],
-        ley_pb: Object.values(averages.value[3])[0],
-        ley_zn: Object.values(averages.value[4])[0],
+        ley_ag: averages.value[0].AG,
+        ley_fe: averages.value[1].FE,
+        ley_mn: averages.value[2].MN,
+        ley_pb: averages.value[3].PB,
+        ley_zn: averages.value[4].ZN,
         statusGeology: "General",
       };
-
+      console.log(updatedTravel);
       const response = await fetch(`${url}/triplist/${props.data._id}`, {
         method: "PUT",
         headers: {
@@ -177,10 +189,10 @@ const datosMuestra = async () => {
 </script>
 
 <template>
-  <div class="modalCreate-backg">
-    <Transition name="nested" mode="out-in">
+  <div class="modalCreate-backg ">
+    <Transition name="nested" >
       <form
-        class="mCreate-content inner"
+        class="mCreate-content CCModal inner"
         :style="{
           userSelect: buttonClicked ? 'none' : 'auto',
           pointerEvents: buttonClicked ? 'none' : 'auto',
@@ -234,7 +246,7 @@ const datosMuestra = async () => {
               <span class="label-error" v-if="showError"
                 >*Documento requerido</span
               >
-              <div v-if="historial.length">
+              <div class="view-excel" v-if="historial.length">
                 <h4 class="text-excel">
                   Datos procesados del <strong>archivo Excel</strong>
                 </h4>
@@ -249,50 +261,17 @@ const datosMuestra = async () => {
                   <tbody>
                     <tr v-for="(row, rowIndex) in historial" :key="rowIndex">
                       <td v-for="(value, colIndex) in row" :key="colIndex">
-                        {{ !isNaN(value) || typeof value === 'string' ? value : '-' }}
+                        {{
+                          !isNaN(value) || typeof value === "string"
+                            ? value
+                            : "-"
+                        }}
                       </td>
                     </tr>
                   </tbody>
-                  <tfoot>
-                    <tr>
-                      <td v-for="(average, key) in averages" :key="key">
-                        {{ typeof average[key] === 'number' && !isNaN(average[key]) ? average[key] : '-' }}
-                      </td>
-                    </tr>
-                  </tfoot>
                 </table>
               </div>
             </div>
-            <!-- <div className="mC-imputs-item">
-            <label>Codigo de muestra</label>
-            <div className="imputs-i-input">
-              <img src="../assets/img/i-tablet.svg" alt="" />
-              <input
-                type="text"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej.000122"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div>  -->
-            <!-- <div className="mC-imputs-item">
-            <label>Fecha Abastecimiento</label>
-            <div className="imputs-i-input">
-              
-              <input
-                type="date"
-                name="operationTruck_Id"
-                inputMode="text"
-                placeholder="Ej. TJ-999_9_1"
-                className="input-crud"
-                value=""
-                required
-              />
-            </div>
-          </div> -->
           </div>
         </div>
         <div class="mC-c-footer">
@@ -314,13 +293,17 @@ const datosMuestra = async () => {
         </div>
       </form>
     </Transition>
-    <Transition name="bounce" mode="out-in">
+    <Transition name="bounce" >
       <Success v-if="showSuccessM" />
     </Transition>
   </div>
 </template>
 
 <style lang="scss">
+
+.CCModal{
+  max-width: 600px !important;
+}
 .table-excel {
   width: 100%;
   color: var(--black);
@@ -331,63 +314,73 @@ const datosMuestra = async () => {
   white-space: nowrap;
   overflow: hidden;
 
-  .text-excel {
-    padding: 1rem 0;
-    text-align: left;
-    font-size: clamp(7px, 8vw, 12px);
-    font-weight: normal;
-    color: var(--grey-2);
-  }
-  table {
-    width: 100%;
-    color: var(--black);
-    font-size: clamp(6px, 8vw, 14px);
-    line-height: 0.7rem;
-    font-weight: 500;
-    border-collapse: collapse;
-    white-space: nowrap;
-  }
-
-  thead {
-    color: var(--grey-1);
-    text-align: left;
-    background-color: var(--grey-light-1);
-    font-size: clamp(6px, 8vw, 11px);
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-
-  th {
-    padding: 10px 12px;
-    font-weight: normal !important;
-    text-align: center;
-    div {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      img {
-        width: 0.5rem;
+  .view-excel {
+    overflow: auto;
+    .text-excel {
+      padding: 1rem 0;
+      text-align: left;
+      font-size: clamp(7px, 8vw, 12px);
+      font-weight: normal;
+      color: var(--grey-2);
+      strong {
+        font-weight: 600;
       }
     }
-    &:first-child {
-      border-radius: 8px 0px 0px 8px !important;
+    table {
+      width: 100%;
+      color: var(--black);
+      font-size: clamp(6px, 8vw, 14px);
+      line-height: 0.7rem;
+      font-weight: 500;
+      border-collapse: collapse;
+      white-space: nowrap;
     }
-    &:last-child {
-      border-radius: 0 8px 8px 0px !important;
-    }
-  }
-  td {
-    padding: 9px 12px;
-    text-align: center;
-  }
 
-  tbody tr {
-    z-index: 99;
-    background-color: var(--white);
-  }
-  tfoot {
-    font-weight: 700;
+    thead {
+      color: var(--grey-1);
+      text-align: left;
+      background-color: var(--grey-light-1);
+      font-size: clamp(6px, 8vw, 11px);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th {
+      padding: 10px 12px;
+      font-weight: normal !important;
+      text-align: center;
+      div {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        img {
+          width: 0.5rem;
+        }
+      }
+      &:first-child {
+        border-radius: 8px 0px 0px 8px !important;
+      }
+      &:last-child {
+        border-radius: 0 8px 8px 0px !important;
+      }
+    }
+    td {
+      padding: 9px 12px;
+      text-align: center;
+    }
+
+    tbody tr {
+      z-index: 99;
+      background-color: var(--white);
+      &:last-child {
+        font-weight: 600;
+      }
+    }
+    table tr td:first-child,
+    table tr th:first-child {
+      font-weight: 600;
+    }
   }
 }
 

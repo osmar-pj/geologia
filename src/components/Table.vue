@@ -1,12 +1,20 @@
 <script setup>
-import { ref, defineProps} from "vue";
+import { ref, defineProps } from "vue";
 import { useStore } from "vuex";
 import OCModal from "../components/OCModal.vue";
 import CCModal from "../components/CCModal.vue";
-import Delete from "../components/Delete.vue";
+import DeleteModal from "../components/DeleteModal.vue";
+import Edit from "../icons/edit.vue";
+import Delete from "../icons/Delete.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 
-const props = defineProps(["showActionsColumn", "title", "data", "showColum", "showItem"]);
+const props = defineProps([
+  "showActionsColumn",
+  "title",
+  "data",
+  "showColum",
+  "showItem",
+]);
 const store = useStore();
 const showModalDelete = ref(false);
 const showOCModal = ref(false);
@@ -28,7 +36,6 @@ const openDelete = (data) => {
   modalData.value = data;
   showModalDelete.value = true;
 };
-
 </script>
 
 <template>
@@ -190,7 +197,7 @@ const openDelete = (data) => {
           </div>
         </template>
       </Column>
-      <Column field="ruma" header="Nro Ruma" >
+      <Column field="ruma" header="Nro Ruma">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -266,27 +273,45 @@ const openDelete = (data) => {
       <Column field="Acciones" header="Acciones" v-if="props.showActionsColumn">
         <template #body="slotProps">
           <div className="btns">
-            <button @click="openModal(slotProps.data)" :userModal="store.state.userModal">Completar ></button>
-            <button @click="openDelete(slotProps.data)" :userModal="store.state.userModal" v-if="props.showItem"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="injected-svg" data-src="/icons/delete-02-stroke-rounded.svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" color="#000000">
-<path d="M19.5 5.5L18.8803 15.5251C18.7219 18.0864 18.6428 19.3671 18.0008 20.2879C17.6833 20.7431 17.2747 21.1273 16.8007 21.416C15.8421 22 14.559 22 11.9927 22C9.42312 22 8.1383 22 7.17905 21.4149C6.7048 21.1257 6.296 20.7408 5.97868 20.2848C5.33688 19.3626 5.25945 18.0801 5.10461 15.5152L4.5 5.5" stroke="#000000" stroke-width="1.5" stroke-linecap="round"></path>
-<path d="M3 5.5H21M16.0557 5.5L15.3731 4.09173C14.9196 3.15626 14.6928 2.68852 14.3017 2.39681C14.215 2.3321 14.1231 2.27454 14.027 2.2247C13.5939 2 13.0741 2 12.0345 2C10.9688 2 10.436 2 9.99568 2.23412C9.8981 2.28601 9.80498 2.3459 9.71729 2.41317C9.32164 2.7167 9.10063 3.20155 8.65861 4.17126L8.05292 5.5" stroke="#000000" stroke-width="1.5" stroke-linecap="round"></path>
-<path d="M9.5 16.5L9.5 10.5" stroke="#000000" stroke-width="1.5" stroke-linecap="round"></path>
-<path d="M14.5 16.5L14.5 10.5" stroke="#000000" stroke-width="1.5" stroke-linecap="round"></path>
-</svg></button>
+            <button
+              @click="openModal(slotProps.data)"
+              :userModal="store.state.userModal"
+            >
+              <Edit/>
+            </button>
+            <button
+              @click="openDelete(slotProps.data)"
+              :userModal="store.state.userModal"
+              v-if="props.showItem"
+            >
+              <Delete/>
+            </button>
           </div>
         </template>
       </Column>
     </DataTable>
   </div>
   <Transition :duration="550" name="nested">
-  <OCModal v-if="showOCModal" @cerrarModal="showOCModal = false" :data="modalData" />
-</Transition>
-<Transition :duration="550" name="nested">
-  <CCModal v-if="showCCModal" @cerrarModal="showCCModal = false" :data="modalData"/>
-</Transition>
+    <OCModal
+      v-if="showOCModal"
+      @cerrarModal="showOCModal = false"
+      :data="modalData"
+    />
+  </Transition>
   <Transition :duration="550" name="nested">
-  <Delete v-if="showModalDelete" @cerrarModal="showModalDelete = false" :data="modalData"/>
-</Transition>
+    <CCModal
+      v-if="showCCModal"
+      @cerrarModal="showCCModal = false"
+      :data="modalData"
+    />
+  </Transition>
+  <Transition :duration="550" name="nested">
+    <DeleteModal
+      v-if="showModalDelete"
+      @cerrarModal="showModalDelete = false"
+      :data="modalData"
+    />
+  </Transition>
 </template>
 
 <style lang="scss">
@@ -468,38 +493,30 @@ const openDelete = (data) => {
   //   padding: 3rem;
   // }
 }
-//   @include md {
-//     gap: 1.5rem;
-//     padding: 1.5rem 5rem;
-//   }
 
 .btns {
   display: flex;
-  gap: 1rem;
+  gap: .8rem;
   button {
+    padding: 0 ;
     display: grid;
     place-items: center;
-    background-color: var(--white);
-    color: var(--primary);
-    border: 1px solid var(--primary);
-    font-weight: 500;
-    height: 40px;
-    img {
-      width: 1rem;
-    }
-    &:hover {
-      background-color: var(--primary);
-      color: var(--white);
+    width: 1.2rem;
+    height: 1.2rem;
+    svg {
+      width: 1.4rem;
+      height: 1.4rem;
+      color: var(--grey-2);
     }
   }
 }
 
 .td-status {
-    font-size: clamp(7px, 8vw, 13px);
-    text-transform: capitalize;
-    text-align: center;
-    border-radius: 8px;
-    padding: 5px 8px;
+  font-size: clamp(7px, 8vw, 13px);
+  text-transform: capitalize;
+  text-align: center;
+  border-radius: 8px;
+  padding: 5px 8px;
 }
 .t-completo {
   color: #45a452;
