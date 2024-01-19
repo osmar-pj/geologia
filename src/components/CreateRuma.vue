@@ -5,17 +5,19 @@ const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 
 const showOCModal = ref(false);
+const buttonClicked = ref(false);
+
 const openModal = () => {
   showOCModal.value = true;
 };
 
-
 const cerrarModal = () => {
-    showOCModal.value = false;
+  showOCModal.value = false;
 };
 
 const createRuma = async () => {
   try {
+    buttonClicked.value = true;
     const response = await fetch(`${url}/ruma`, {
       method: "POST",
       headers: {
@@ -29,8 +31,10 @@ const createRuma = async () => {
       console.log("Correcto");
       await store.dispatch("ruma_list");
       showOCModal.value = false;
+      buttonClicked.value = false;
     } else {
       console.log("error");
+      buttonClicked.value = false;
     }
   } catch (error) {
     console.error("Error al actualizar:", error);
@@ -40,12 +44,15 @@ const createRuma = async () => {
 
 <template>
   <div class="mC-imputs-more">
-    <button class="btn-ruma" type="button" @click="openModal()">
-      + Ruma
-    </button>
+    <button class="btn-ruma" type="button" @click="openModal()">+ Ruma</button>
   </div>
-  <div class="modalCreate-backg" v-if="showOCModal" @cerrarModal="showOCModal = false">
-    <form class="mCreate-2">
+  <Transition :duration="550" name="nested">
+  <div
+    class="modalCreate-backg"
+    v-if="showOCModal"
+    @cerrarModal="showOCModal = false"
+  >
+    <form class="mCreate-2 inner" :style="{ userSelect: buttonClicked ? 'none' : 'auto', pointerEvents: buttonClicked ? 'none' : 'auto' }">
       <div class="mC-c-header">
         <div class="mC-h-title">
           <div class="mC-c-title-icon">
@@ -63,25 +70,32 @@ const createRuma = async () => {
       <div class="mC-c-body">
         <div class="mC-b-info">
           <p>
-            Crear una nueva ruma implica iniciar una nueva área o pila para acumular los materiales extraídos.
+            Crear una nueva ruma implica iniciar una nueva área o pila para
+            acumular los materiales extraídos.
             <strong>¿Seguro que deseas crear una nueva ruma?</strong>?
           </p>
         </div>
       </div>
       <div class="mC-c-footer">
-        <button @click="cerrarModal" class="btn-cancel" type="button">
-          No
-        </button>
-        <button
-          class="btn-success"
-          type="submit"
-          @click.prevent="createRuma()"
-        >
-          Si
-        </button>
+        <template v-if="buttonClicked">
+          <div class="loader"></div>
+        </template>
+        <template v-else>
+          <button @click="cerrarModal" class="btn-cancel" type="button">
+            No
+          </button>
+          <button
+            class="btn-success"
+            type="submit"
+            @click.prevent="createRuma()"
+          >
+            Si
+          </button>
+        </template>
       </div>
     </form>
   </div>
+  </Transition>
 </template>
 
 <style lang="scss">

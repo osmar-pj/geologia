@@ -382,7 +382,10 @@ li {
   width: 100%;
   height: 100vh;
   display: flex;
-  padding: 2px;
+  padding: 0;
+  @include md {
+    padding: 2px;
+  }
 }
 
 .c-header {
@@ -414,8 +417,129 @@ input[type="checkbox"] {
   background-color: var(--primary);
 }
 
+/*--------------LOADING-------------*/
+.loader {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  border-top-color: transparent;
+  animation: rot1 1.2s linear infinite;
+  margin: auto;
+}
+
+@keyframes rot1 {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 
+/*----------INPUT FILE---------*/
+
+
+.file-upload-form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.file-upload-label input {
+  display: none;
+}
+.file-upload-label svg {
+  height: 30px;
+  fill: var(--primary);
+}
+
+.file-upload-label {
+  width: 100%;
+  cursor: pointer;
+  background-color: var(--white);
+  border-radius: 10px;
+  border: 1px dashed var(--primary);
+}
+.file-upload-design {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+}
+.browse-button {
+  background-color: transparent;
+  padding: 5px 15px;
+  border-radius: 10px;
+  color: var(--black);
+  transition: all 0.3s;
+  font-size: clamp(7px, 8vw, 12px);
+}
+.browse-button:hover {
+  background-color: var(--grey-light-22);
+}
+
+
+
+/*------------ ANIMATIONS-----------------*/
+.outer, .inner {
+
+  min-height: 100px;
+}
+  
+  
+.nested-enter-active, .nested-leave-active {
+	transition: all 0.3s ease-in-out;
+}
+/* delay leave of parent element */
+.nested-leave-active {
+  transition-delay: 0.25s;
+}
+
+.nested-enter-from,
+.nested-leave-to {
+  opacity: 0;
+}
+
+/* we can also transition nested elements using nested selectors */
+.nested-enter-active .inner,
+.nested-leave-active .inner { 
+  transition: all 0.3s ease-in-out;
+}
+/* delay enter of nested element */
+.nested-enter-active .inner {
+	transition-delay: 0.25s;
+}
+
+.nested-enter-from .inner,
+.nested-leave-to .inner {
+  transform: translateY(-30px);
+  /*
+  	Hack around a Chrome 96 bug in handling nested opacity transitions.
+    This is not needed in other browsers or Chrome 99+ where the bug
+    has been fixed.
+  */
+  opacity: 0.001;
+}
+
+
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+  animation-delay: 5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 /*----------MULTISELECT -------*/
 
 .p-multiselect{
@@ -575,6 +699,11 @@ input[type="checkbox"] {
   }
 }
 
+.p-dropdown-empty-message{
+  font-size: clamp(7px, 8vw, 13px);
+  padding: 5px 5px 0 5px;
+  color: var(--grey-2);
+}
 .p-dropdown {
   background-color: var(--white);
   padding: 10px 20px;

@@ -1,11 +1,10 @@
 import { createApp } from 'vue'
+import './style.scss'
+import 'primevue/resources/primevue.min.css'
 import App from './App.vue'
 import router from './router/router'
 import PrimeVue from 'primevue/config'
 import store from './store/store'
-import './style.scss'
-import 'primevue/resources/primevue.min.css'
-
 
 import Dropdown from 'primevue/dropdown';
 import MultiSelect from 'primevue/multiselect';
@@ -13,7 +12,6 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import FileUpload from 'primevue/fileupload';
 import Skeleton from 'primevue/skeleton';
-
 
 const app = createApp(App)
 

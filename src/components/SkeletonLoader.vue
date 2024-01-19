@@ -2,7 +2,7 @@
 import { ref, defineProps } from "vue";
 const { loading } = defineProps(["loading"]);
 
-const products = ref(new Array(18));
+const products = ref(new Array(12));
 </script>
 
 <template>
@@ -20,82 +20,82 @@ const products = ref(new Array(18));
 
       <Column header="Fecha">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"  ></Skeleton>
         </template>
       </Column>
       <Column header="Turno">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Mina">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Operador">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Vehículo">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Vagones">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Toneladas">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Tajo">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Nro Ruma">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Ley Ag">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Ley Fe">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Ley Mn">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Ley Pb">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Ley Zn">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Status">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
       <Column header="Acciones">
         <template #body>
-          <Skeleton></Skeleton>
+          <Skeleton height="40px"></Skeleton>
         </template>
       </Column>
     </DataTable>

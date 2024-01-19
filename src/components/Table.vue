@@ -6,14 +6,16 @@ import CCModal from "../components/CCModal.vue";
 import Delete from "../components/Delete.vue";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 
-const props = defineProps(["showActionsColumn", "title", "data", "showColum"]);
+const props = defineProps(["showActionsColumn", "title", "data", "showColum", "showItem"]);
 const store = useStore();
 const showModalDelete = ref(false);
 const showOCModal = ref(false);
 const showCCModal = ref(false);
+const modalData = ref(null);
 
 const openModal = (data) => {
-  store.state.userModal = data;
+  modalData.value = data;
+
   if (data.statusGeology === "QualityControl") {
     showCCModal.value = true;
     showOCModal.value = false;
@@ -22,11 +24,10 @@ const openModal = (data) => {
     showOCModal.value = true;
   }
 };
-const openDelete = (e) => {
-  store.state.userModal = e;
+const openDelete = (data) => {
+  modalData.value = data;
   showModalDelete.value = true;
 };
-
 
 </script>
 
@@ -199,17 +200,6 @@ const openDelete = (e) => {
           </div>
         </template>
       </Column>
-
-      <!-- <Column field="codMuestra" header="Cod Muestra" v-if="props.showColum">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4></h4>
-              <h5></h5>
-            </div>
-          </div>
-        </template>
-      </Column> -->
       <Column field="ley_ag" header="Ley Ag" v-if="props.showColum">
         <template #body="slotProps">
           <div class="td-user">
@@ -276,16 +266,22 @@ const openDelete = (e) => {
       <Column field="Acciones" header="Acciones" v-if="props.showActionsColumn">
         <template #body="slotProps">
           <div className="btns">
-            <button @click="openModal(slotProps.data)">Completar ></button>
-            <button @click="openDelete(slotProps.data)">X</button>
+            <button @click="openModal(slotProps.data)" :userModal="store.state.userModal">Completar ></button>
+            <button @click="openDelete(slotProps.data)" :userModal="store.state.userModal" v-if="props.showItem">X</button>
           </div>
         </template>
       </Column>
     </DataTable>
   </div>
-  <OCModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
-  <CCModal v-if="showCCModal" @cerrarModal="showCCModal = false" />
-  <Delete v-if="showModalDelete" @cerrarModal="showModalDelete = false" />
+  <Transition :duration="550" name="nested">
+  <OCModal v-if="showOCModal" @cerrarModal="showOCModal = false" :data="modalData" />
+</Transition>
+<Transition :duration="550" name="nested">
+  <CCModal v-if="showCCModal" @cerrarModal="showCCModal = false" :data="modalData"/>
+</Transition>
+  <Transition :duration="550" name="nested">
+  <Delete v-if="showModalDelete" @cerrarModal="showModalDelete = false" :data="modalData"/>
+</Transition>
 </template>
 
 <style lang="scss">

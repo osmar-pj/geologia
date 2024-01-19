@@ -12,7 +12,7 @@ const goToPage = (page) => {
 };
 const name = ref("");
 name.value = store.state.name;
-const storedUser = JSON.parse(localStorage.getItem('user'));
+const storedUser = JSON.parse(localStorage.getItem("user"));
 const logout = async () => {
   try {
     await store.dispatch("auth_logout");
@@ -26,7 +26,11 @@ const logout = async () => {
 <template>
   <div class="c-sidebar">
     <div class="sidebar-header">
-      <div className="s-header-avatar"> {{ storedUser.user ? storedUser.user.trim().match(/\b\w/g).join('') : '' }}</div>
+      <div className="s-header-avatar">
+        {{
+          storedUser.user ? storedUser.user.trim().match(/\b\w/g).join("") : ""
+        }}
+      </div>
       <div className="s-header-name">
         <h4>{{ storedUser.user }}</h4>
         <span>Bienvenido, {{ storedUser.empresa }}</span>
@@ -127,13 +131,17 @@ const logout = async () => {
 </template>
 
 <style lang="scss">
+@import "../style.scss";
 .c-sidebar {
   width: 280px;
   background-color: #0f1217;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-radius: 20px;
+  border-radius: 0 5px 5px 0;
+  height: 100vh;
+  position: absolute;
+  z-index: 2;
   .sidebar-header {
     height: 80px;
     display: flex;
@@ -151,10 +159,10 @@ const logout = async () => {
       color: var(--white);
       font-size: clamp(5px, 8vw, 18px);
       font-weight: 500;
-      // @include md {
-      //   font-size: clamp(7px, 8vw, 20px);
-      //   line-height: 1rem;
-      // }
+       @include md {
+         font-size: clamp(7px, 8vw, 20px);
+         line-height: 1rem;
+       }
     }
     .s-header-name {
       display: flex;
@@ -213,7 +221,7 @@ const logout = async () => {
     }
   }
   .sidebar-content {
-    height: calc(100% - 160px);
+    flex: 1 1;
     padding: 1rem 1.8rem;
     display: flex;
     flex-direction: column;
@@ -289,6 +297,7 @@ const logout = async () => {
       }
     }
     .s-content-msg {
+      display: none;
       .s-c-msg-header {
         color: var(--grey-2);
         padding: 2px 6px;
@@ -334,6 +343,9 @@ const logout = async () => {
           }
         }
       }
+      @include md {
+      display: block;
+  }
     }
   }
   .sidebar-footer {
@@ -361,7 +373,7 @@ const logout = async () => {
           width: 1.2rem;
           height: 1.2rem;
         }
-        &:hover{
+        &:hover {
           background-color: #1b1f22;
         }
       }
@@ -371,9 +383,12 @@ const logout = async () => {
       font-size: clamp(5px, 8vw, 12px);
     }
   }
-  //   @include md{
-  //     display: flex;
-  //   }
+  @include md {
+    display: flex;
+    border-radius: 20px;
+    position:sticky;
+    height: calc(100vh - 4px);
+  }
 }
 
 .sp-acti {

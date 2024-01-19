@@ -1,17 +1,21 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
-import BindModal from "../components/BindModal.vue";
-import Delete from "../components/Delete.vue";
+import BindRuma from "../components/BindRuma.vue";
+import DeactivateRuma from "../components/DeactivateRuma.vue";
 
 const store = useStore();
-const showOCModal = ref(false);
-
-const openModal = () => {
-  showOCModal.value = true;
-};
-
 const formattedDate = ref("");
+const showBindRuma = ref(false);
+const showDeactivateRuma = ref(false);
+
+const openBindRuma = () => {
+  showBindRuma.value = true;
+};
+const openDeactivateRuma = (ruma_Id) => {
+  showDeactivateRuma.value = true;
+  store.state.rumaIdToDeactivate = ruma_Id;
+};
 
 onMounted(async () => {
   const options = {
@@ -39,6 +43,8 @@ onMounted(async () => {
 const dataRuma = computed(() => {
   return store.state.rumaTotal;
 });
+
+console.log(dataRuma)
 </script>
 
 <template>
@@ -51,7 +57,7 @@ const dataRuma = computed(() => {
       <span>{{ formattedDate }} | Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-      <button class="btn-unirRuma" @click="openModal()">Unir Rumas</button>
+      <button class="btn-unirRuma" @click="openBindRuma()">Unir Rumas</button>
     </div>
   </div>
   <div class="c-global-c-rumas">
@@ -76,7 +82,7 @@ const dataRuma = computed(() => {
         </div>
         <div class="c-r-body-info">
           <div class="c-r-body-i-item">
-            <span class="ton-total">{{ ruma.tonh || "0" }}</span>
+            <span class="ton-total">{{ ruma.tonh ? ruma.tonh.toFixed(1) : 0 }}</span> 
             <p>TMH</p>
           </div>
           <div class="c-r-body-i-item">
@@ -84,14 +90,18 @@ const dataRuma = computed(() => {
             <p>viajes</p>
           </div>
           <div class="c-r-body-i-item">
-            <button>Update</button>
+            <button @click="openDeactivateRuma(ruma.ruma_Id)">Proceso</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <BindModal v-if="showOCModal" @cerrarModal="showOCModal = false" />
+  <Transition :duration="550" name="nested">
+  <BindRuma v-if="showBindRuma" @cerrarModal="showBindRuma = false" />
+</Transition>
+  <Transition :duration="550" name="nested">
+  <DeactivateRuma v-if="showDeactivateRuma" @cerrarModal="showDeactivateRuma = false" :rumaIdToDeactivate="store.state.rumaIdToDeactivate"/>
+</Transition>
 </template>
 
 <style lang="scss">

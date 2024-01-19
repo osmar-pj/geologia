@@ -1,40 +1,34 @@
 <script setup>
-import { ref, defineProps, defineEmits, onMounted } from "vue";
-
+import { ref, defineProps, defineEmits } from "vue";
 import { useStore } from "vuex";
+
+const props = defineProps(["rumaIdToDeactivate"]);
 const store = useStore();
 const url = import.meta.env.VITE_API_URL;
-
-const props = defineProps(["data"]);
 const emit = defineEmits();
 
-const buttonClicked = ref(false);
-
 const cerrarModal = () => {
+  store.state.rumaIdToDeactivate = null;
   emit("cerrarModal");
 };
 
+const buttonClicked = ref(false);
 const deleteTravel = async () => {
   try {
     buttonClicked.value = true;
-    const updatedTravel = {
-        ...props.data,
-        validGeology: 0,
-      };
-    const response = await fetch(`${url}/triplist`, {
-      method: "POST",
+    const response = await fetch(`${url}/ruma/${props.rumaIdToDeactivate}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedTravel),
+      body: JSON.stringify({ valid: 0 }),
     });
 
-    const result = await response.json();
-    if (result.status === true) {
+    const data = await response.json();
+    if (data.status === true) {
       console.log("correcto");
+      await store.dispatch("ruma_total");
       cerrarModal();
-      await store.dispatch("get_list");
-      showSuccessModal.value = true;
     } else {
       console.log("error");
       buttonClicked.value = false;
@@ -54,15 +48,8 @@ const deleteTravel = async () => {
             <img src="../assets/img/i-compl.svg" alt="" />
           </div>
           <div class="mC-c-title-text">
-            <h2>
-              Eliminar a
-              {{
-                data.operador
-                  ? data.operador.split(" ").slice(0, 1).join(" ")
-                  : ""
-              }}
-            </h2>
-            <h4>Borrar un viaje</h4>
+            <h2>Enviar a laboratorio</h2>
+            <h4>Ruma a enviar al laboratorio</h4>
           </div>
         </div>
         <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -72,15 +59,9 @@ const deleteTravel = async () => {
       <div class="mC-c-body">
         <div class="mC-b-info">
           <p>
-            ¿Está seguro que desea eliminar a
-            <strong
-              >"{{
-                data.operador
-                  ? data.operador.split(" ").slice(0, 2).join(" ")
-                  : ""
-              }}"</strong
-            >
-            de la lista de viajes?
+            La ruma <strong>"{{ props.rumaIdToDeactivate }}"</strong> se enviará
+            para laboratorio
+            <strong>¿Está seguro de realizar esta acción?</strong>
           </p>
         </div>
       </div>
@@ -103,7 +84,6 @@ const deleteTravel = async () => {
       </div>
     </form>
   </div>
-  
 </template>
 
 <style lang="scss">
