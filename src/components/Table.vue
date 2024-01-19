@@ -190,7 +190,7 @@ const openDelete = (data) => {
           </div>
         </template>
       </Column>
-      <Column field="ruma" header="Nro Ruma">
+      <Column field="ruma" header="Nro Ruma" >
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">

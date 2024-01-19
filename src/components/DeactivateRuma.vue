@@ -48,8 +48,8 @@ const deleteTravel = async () => {
             <img src="../assets/img/i-compl.svg" alt="" />
           </div>
           <div class="mC-c-title-text">
-            <h2>Enviar a laboratorio</h2>
-            <h4>Ruma a enviar al laboratorio</h4>
+            <h2>Enviar a planta</h2>
+            <h4>Ruma a enviar al planta</h4>
           </div>
         </div>
         <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -60,7 +60,7 @@ const deleteTravel = async () => {
         <div class="mC-b-info">
           <p>
             La ruma <strong>"{{ props.rumaIdToDeactivate }}"</strong> se enviará
-            para laboratorio
+            para planta
             <strong>¿Está seguro de realizar esta acción?</strong>
           </p>
         </div>

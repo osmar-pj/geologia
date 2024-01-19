@@ -481,11 +481,6 @@ input[type="checkbox"] {
 
 
 /*------------ ANIMATIONS-----------------*/
-.outer, .inner {
-
-  min-height: 100px;
-}
-  
   
 .nested-enter-active, .nested-leave-active {
 	transition: all 0.3s ease-in-out;
@@ -512,7 +507,7 @@ input[type="checkbox"] {
 
 .nested-enter-from .inner,
 .nested-leave-to .inner {
-  transform: translateY(-30px);
+  transform: translateY(-20px);
   /*
   	Hack around a Chrome 96 bug in handling nested opacity transitions.
     This is not needed in other browsers or Chrome 99+ where the bug
@@ -522,24 +517,6 @@ input[type="checkbox"] {
 }
 
 
-.bounce-enter-active {
-  animation: bounce-in 0.5s;
-  animation-delay: 5s;
-}
-.bounce-leave-active {
-  animation: bounce-in 0.5s reverse;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.25);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 /*----------MULTISELECT -------*/
 
 .p-multiselect{

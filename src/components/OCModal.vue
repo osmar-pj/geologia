@@ -17,6 +17,7 @@ const selectedTajo = ref("");
 const selectedRuma = ref("");
 const showError = ref(false);
 const buttonClicked = ref(false);
+const showSuccessM = ref(false);
 
 const handleTipoChange = () => {
   if (selectedTipo.value === "AVANCE") {

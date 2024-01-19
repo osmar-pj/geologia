@@ -13,6 +13,7 @@ const store = useStore();
 
 const historial = ref([]);
 const averages = ref([]);
+const headers = ref([]);
 const showError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
@@ -30,24 +31,67 @@ const handleFileChange = (event) => {
 
   readXlsxFile(file)
     .then((rows) => {
+      const historialArr = [];
       const averagesArr = [];
 
-      for (let col = 0; col < rows[0].length; col++) {
-        const column = rows
-          .map((row) => parseFloat(row[col]))
-          .filter((value) => !isNaN(value));
-        const average =
-          column.reduce((acc, value) => acc + value, 0) / column.length;
-        averagesArr.push(average);
-      }
+      // Obtener encabezados de columnas
+      if (Array.isArray(rows[0])) {
+        headers.value = rows[0];
 
-      historial.value = rows;
-      averages.value = averagesArr;
+        for (let row = 1; row < rows.length; row++) {
+          const rowData = rows[row];
+
+          const hasNullValue = rowData.some((value) => value === null);
+
+          if (hasNullValue) {
+            console.error(
+              "Error: Se encontró un valor null en la fila. No se puede procesar."
+            );
+            return;
+          }
+
+          const validRow = rowData.every((value) => value !== "" && value !== 0);
+
+          if (validRow) {
+            const rowObject = {};
+
+            headers.value.forEach((header, col) => {
+              rowObject[header] = isNaN(rowData[col])
+                ? rowData[col]
+                : parseFloat(rowData[col]);
+            });
+
+            historialArr.push(rowObject);
+          }
+        }
+
+        for (let col = 0; col < headers.value.length; col++) {
+          const column = historialArr.map((row) => row[headers.value[col]]);
+          const validColumn = column.every(
+            (value) => typeof value === "number" && !isNaN(value)
+          );
+
+          if (validColumn) {
+            const average =
+              column.reduce((acc, value) => acc + value, 0) / column.length;
+            averagesArr.push({ [headers.value[col]]: average });
+          } else {
+            averagesArr.push({ [headers.value[col]]: null }); // Agregar null para columnas no válidas
+          }
+        }
+
+        historial.value = historialArr;
+        averages.value = averagesArr;
+      } else {
+        console.error("Error: La primera fila no es un array de encabezados.");
+      }
     })
     .catch((error) => {
       console.error("Error al procesar el archivo Excel:", error);
     });
 };
+
+
 
 const updateTravel = async () => {
   if (!averages.value || averages.value.length === 0) {
@@ -56,17 +100,17 @@ const updateTravel = async () => {
   } else {
     try {
       buttonClicked.value = true;
+      console.log(averages)
       const updatedTravel = {
         ...props.data,
-        ley_ag: averages.value[0].toFixed(2),
-        ley_fe: averages.value[1].toFixed(2),
-        ley_mn: averages.value[2].toFixed(2),
-        ley_pb: averages.value[3].toFixed(2),
-        ley_zn: averages.value[4].toFixed(2),
+        ley_ag: Object.values(averages.value[0])[0],
+        ley_fe: Object.values(averages.value[1])[0],
+        ley_mn: Object.values(averages.value[2])[0],
+        ley_pb: Object.values(averages.value[3])[0],
+        ley_zn: Object.values(averages.value[4])[0],
         statusGeology: "General",
       };
 
-      datosMuestra();
       const response = await fetch(`${url}/triplist/${props.data._id}`, {
         method: "PUT",
         headers: {
@@ -79,9 +123,12 @@ const updateTravel = async () => {
 
       if (result.status === true) {
         console.log("correcto");
-        showSuccessM.value = true;
-        showForm.value = false;
+        datosMuestra();
         await store.dispatch("get_listControl");
+        showForm.value = false;
+        setTimeout(() => {
+          showSuccessM.value = true;
+        }, 800);
         setTimeout(() => {
           cerrarModal();
         }, 2000);
@@ -124,8 +171,8 @@ const datosMuestra = async () => {
 </script>
 
 <template>
-  <div class="modalCreate-backg" >
-    <Transition name="nested" >
+  <div class="modalCreate-backg">
+    <Transition name="nested" mode="out-in">
       <form
         class="mCreate-content inner"
         :style="{
@@ -188,26 +235,24 @@ const datosMuestra = async () => {
                 <table>
                   <thead>
                     <tr>
-                      <th v-for="(col, index) in historial[0]" :key="index">
+                      <th v-for="(col, index) in headers" :key="index">
                         {{ col }}
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      v-for="(row, rowIndex) in historial.slice(1)"
-                      :key="rowIndex"
-                    >
+                    <tr v-for="(row, rowIndex) in historial" :key="rowIndex">
                       <td v-for="(value, colIndex) in row" :key="colIndex">
-                        {{ isNaN(value) ? value : value.toFixed(2) }}
-                      </td>
+  {{ !isNaN(value) || typeof value === 'string' ? value : '-' }}
+</td>
+
                     </tr>
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td v-for="(average, index) in averages" :key="index">
-                        {{ isNaN(average) ? average : average.toFixed(2) }}
-                      </td>
+                      <td v-for="(average, key) in averages" :key="key">
+            {{ typeof average[key] === 'number' && !isNaN(average[key]) ? average[key] : '-' }}
+          </td>
                     </tr>
                   </tfoot>
                 </table>
@@ -264,7 +309,7 @@ const datosMuestra = async () => {
         </div>
       </form>
     </Transition>
-    <Transition name="bounce" mode="out-in" >
+    <Transition name="bounce" mode="out-in">
       <Success v-if="showSuccessM" />
     </Transition>
   </div>
@@ -338,6 +383,24 @@ const datosMuestra = async () => {
   }
   tfoot {
     font-weight: 700;
+  }
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>
