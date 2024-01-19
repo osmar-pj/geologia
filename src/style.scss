@@ -487,7 +487,7 @@ input[type="checkbox"] {
 }
 /* delay leave of parent element */
 .nested-leave-active {
-  transition-delay: 0.25s;
+  transition-delay: 0.05s;
 }
 
 .nested-enter-from,
@@ -502,12 +502,13 @@ input[type="checkbox"] {
 }
 /* delay enter of nested element */
 .nested-enter-active .inner {
-	transition-delay: 0.25s;
+	transition-delay: 0.05s;
 }
 
 .nested-enter-from .inner,
 .nested-leave-to .inner {
-  transform: translateY(-20px);
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
   /*
   	Hack around a Chrome 96 bug in handling nested opacity transitions.
     This is not needed in other browsers or Chrome 99+ where the bug
