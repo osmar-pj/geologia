@@ -9,6 +9,7 @@ const code = ref('')
 const login = async () => {
   try {
     await store.dispatch('auth_login', code.value)
+    console.log("ingreso")
     router.push('/')
   } catch (error) {
     console.log(error)

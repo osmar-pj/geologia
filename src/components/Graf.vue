@@ -1,45 +1,64 @@
 <script setup>
 import VueApexCharts from "vue3-apexcharts";
-import { computed, ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import ICalendar from "../icons/ICalendar.vue";
+
+const url = import.meta.env.VITE_API_URL;
+
 const store = useStore();
+const showError = ref(false);
+const buttonClicked = ref(false);
 const selectedEstado = ref(new Date());
-const selectedColumns = ref([
-  { title: "Ton", field: "ton" },
-  { title: "Ley Ag", field: "ley_ag" },
-]);
-const data = computed(() => {
-  return store.state.dataFilterTable;
+const selectedColumns = ref("YUMPAG");
+const mining = ["YUMPAG", "UCHUCCHACUA"];
+
+const series = computed(() => {
+  const data = handleGraphic();
+  console.log(data);
+  return data;
+  // return handleGraphic();
 });
 
-const leyes = [
-  { title: "Ton", field: "ton" },
-  { title: "Tonh", field: "tonh" },
-  { title: "Ley Ag", field: "ley_ag" },
-  { title: "Ley Fe", field: "ley_fe" },
-  { title: "Ley Mn", field: "ley_mn" },
-  { title: "Ley Pb", field: "ley_pb" },
-  { title: "Ley Zn", field: "ley_zn" },
-];
+onMounted(async () => {
+  await handleGraphic();
+});
 
-const series = [
-  {
-    name: "Income",
-    type: "column",
-    data: [1093, 2500, 2500, 1500, 2500, 2800, 3800, 4600],
-  },
-  {
-    name: "Cashflow",
-    type: "column",
-    data: [1021, 3000, 3100, 4000, 4100, 4900, 6500, 8500],
-  },
-  {
-    name: "Revenue",
-    type: "line",
-    data: [3000, 2900, 6700, 6600, 7400, 8500, 9000, 8800],
-  },
-];
+const handleGraphic = async () => {
+  if (!selectedEstado.value || selectedColumns.value) {
+    showError.value = true;
+    // setTimeout(hideError, 5000);
+  } else {
+    try {
+      buttonClicked.value = true;
+      const response = await fetch(
+        `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
+          selectedColumns.value
+        }`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+      if (result.status === true) {
+        console.log("correcto", result.data);
+        buttonClicked.value = false;
+      } else {
+        console.log("error");
+        buttonClicked.value = false;
+      }
+      return [
+          { data: result.data}
+      ];
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    }
+  }
+};
 
 const chartOptions = {
   chart: {
@@ -106,7 +125,13 @@ const chartOptions = {
       <div class="g-d-header-title">
         <h3><strong>Análisis</strong> (tiempo real)</h3>
       </div>
-      <div class="g-d-header-btns">
+      <div
+        class="g-d-header-btns"
+        :style="{
+          userSelect: buttonClicked ? 'none' : 'auto',
+          pointerEvents: buttonClicked ? 'none' : 'auto',
+        }"
+      >
         <div>
           <Calendar
             v-model="selectedEstado"
@@ -122,16 +147,16 @@ const chartOptions = {
           </Calendar>
         </div>
         <div>
-          <MultiSelect
+          <Dropdown
             v-model="selectedColumns"
-            :options="leyes"
-            :selectionLimit="2"
-            optionLabel="title"
+            :options="mining"
             display="chip"
           />
         </div>
         <div>
-          <button class="btn-graficar">Graficar</button>
+          <button @click.prevent="handleGraphic" class="btn-graficar">
+            Graficar
+          </button>
         </div>
       </div>
     </div>
@@ -159,9 +184,9 @@ const chartOptions = {
   white-space: nowrap;
   padding-top: 1rem;
   border-radius: var(--br-xxl);
-  border: 1px solid var(--grey-light-2);
+  border: 1px solid var(--grey-light-22);
   padding: 2rem 2rem 0.5rem 2rem;
-
+  background-color: var(--white);
   .g-dash-header {
     display: flex;
     justify-content: space-between;
@@ -208,8 +233,8 @@ const chartOptions = {
 }
 
 .p-calendar .p-inputtext {
-    padding: 10px 20px 10px 50px;
-    width: 150px;
+  padding: 10px 20px 10px 50px;
+  width: 150px;
 }
 .apexcharts-toolbar {
   display: none !important;

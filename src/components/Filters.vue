@@ -75,12 +75,9 @@ const sendFilter = async () => {
       });
 
       const data = await response.json();
-      if (data.status === true) {
-        console.log("correcto");
-        console.log("selected_filters", selectedCategories.value);
+      if (data.status === true) {     
         store.dispatch("filter_list", data);
         store.dispatch("selected_filters", selectedCategories.value);
-        console.log(selectedCategories.value);
         cerrarModal();
         buttonClicked.value = false;
       } else {

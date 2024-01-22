@@ -68,6 +68,7 @@ const store = createStore({
         body: JSON.stringify({ code: payload }),
       });
       const data = await response.json();
+      console.log("Ingreso")
       if (!data.status) return;
       const user = Object.assign({}, data);
       localStorage.setItem("user", JSON.stringify(user));

@@ -12,7 +12,7 @@ const data = computed(() => {
 <template>
   <div class="table-dash">
     <div class="container-t-dash">
-      <table>
+       <table>
         <thead>
           <tr>
             <th v-for="(column, index) in data.columns" :key="index">
@@ -33,7 +33,28 @@ const data = computed(() => {
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> 
+      <!-- <DataTable :value="data.data">
+      <Column
+        v-for="(column, index) in data.columns"
+        :key="index"
+        :field="column.field"
+        :header="column.title"
+      >
+        <template #body="slotProps">
+          {{
+            slotProps.row &&
+            slotProps.row[column.field] !== undefined
+              ? (column.fn
+                  ? column.fn(slotProps.row[column.field])
+                  : typeof slotProps.row[column.field] === "number"
+                  ? slotProps.row[column.field].toFixed(1)
+                  : slotProps.row[column.field]) || column.und
+              : ""
+          }}
+        </template>
+      </Column>
+    </DataTable> -->
     </div>
   </div>
 </template>
@@ -62,8 +83,9 @@ const data = computed(() => {
   white-space: nowrap;
   overflow: hidden;
   padding-top: 1rem;
+  background-color: var(--white);
   border-radius: var(--br-xxl);
-  border: 1px solid var(--grey-light-2);
+  border: 1px solid var(--grey-light-22);
   padding: 2rem;
   table {
     width: 100%;
