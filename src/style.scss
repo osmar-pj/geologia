@@ -66,8 +66,8 @@ pre {
 :root {
   --primary: #26d452;
   --secondary: #338849;
-  --red: #F35959;
-  --red-black:#C33636;
+  --red: #f35959;
+  --red-black: #c33636;
   --tertiary: #fafafa;
   --white: #fff;
   --black: #1a1a1a;
@@ -473,10 +473,9 @@ li {
     }
     .mC-c-footer {
       padding: 1.5rem;
-     
+
       display: flex;
       gap: 1rem;
-
     }
   }
 }
@@ -489,9 +488,9 @@ li {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
- 
-  svg{
+  gap: 0.5rem;
+
+  svg {
     fill: transparent;
     width: 1.4rem;
     height: 1.4rem;
@@ -504,7 +503,8 @@ li {
 }
 
 .btn-success,
-.btn-cancel,.btn-delete {
+.btn-cancel,
+.btn-delete {
   height: 45px;
   padding: 0 1rem;
   font-weight: 500;
@@ -577,7 +577,7 @@ input[type="checkbox"] {
 
 .c-global-header {
   width: 100%;
-  padding: .5rem 2.5rem 1.5rem 2.5rem;
+  padding: 0.5rem 2.5rem 1.5rem 2.5rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -818,8 +818,9 @@ input[type="checkbox"] {
 /*--FILTER--*/
 /*==========================================*/
 
-.filter-enter-active, .filter-leave-active {
-	transition: all 0.3s ease-in-out;
+.filter-enter-active,
+.filter-leave-active {
+  transition: all 0.3s ease-in-out;
 }
 
 .filter-leave-active {
@@ -828,16 +829,15 @@ input[type="checkbox"] {
 
 .filter-enter-from,
 .filter-leave-to {
- 
   opacity: 0;
 }
 
 .filter-enter-active .inner,
-.filter-leave-active .inner { 
+.filter-leave-active .inner {
   transition: all 0.3s ease-in-out;
 }
 .filter-enter-active .inner {
-	transition-delay: 0.25s;
+  transition-delay: 0.25s;
 }
 
 .filter-enter-from .inner,
@@ -872,7 +872,7 @@ input[type="checkbox"] {
   opacity: 0.001;
 }
 
-.list-move, 
+.list-move,
 .list-enter-active,
 .list-leave-active {
   transition: all 0.5s ease-in;
@@ -886,6 +886,30 @@ input[type="checkbox"] {
 
 .list-leave-active {
   position: absolute;
+}
+
+/*==========================================*/
+/*-----------SKELETON-----------------*/
+/*==========================================*/
+.p-skeleton {
+  background-color: #e5e7eb;
+  border-radius: 6px;
+}
+
+.p-skeleton::after {
+  content: '';
+  animation: p-skeleton-animation 1.2s infinite;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translateX(-100%);
+  z-index: 1;
+}
+
+.p-skeleton:after {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
 }
 /*==========================================*/
 /*-----------CALENDAR-----------------*/
@@ -902,8 +926,17 @@ input[type="checkbox"] {
   border: 1px solid var(--grey-light-2);
   border-radius: 10px;
   padding: 1rem;
+  .p-datepicker-decade {
+    font-size: clamp(5px, 8vw, 10px);
+    font-weight: 600;
+  }
   .p-monthpicker {
     gap: 5rem;
+  }
+  .p-yearpicker {
+    .p-yearpicker-year {    
+      font-size: clamp(5px, 8vw, 14px);
+    }
   }
   .p-datepicker-group-container {
     .p-datepicker-prev,
@@ -1024,15 +1057,15 @@ input[type="checkbox"] {
     transition: background-color 0.2s, color 0.2s, border-color 0.2s,
       box-shadow 0.2s;
   }
-  .p-highlight{
+  .p-highlight {
     border-color: var(--primary);
     background: var(--primary);
-    .p-icon{
+    .p-icon {
       color: var(--white);
       width: 0.8rem;
       height: 0.8rem;
     }
-  }  
+  }
 }
 
 /*==========================================*/

@@ -1,13 +1,12 @@
 <script setup>
 import VueApexCharts from "vue3-apexcharts";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, watchEffect, computed } from "vue";
 import { useStore } from "vuex";
 import ICalendar from "../icons/ICalendar.vue";
 
 const url = import.meta.env.VITE_API_URL;
 
 const store = useStore();
-const showError = ref(false);
 const buttonClicked = ref(false);
 const selectedEstado = ref(new Date());
 const selectedColumns = ref("YUMPAG");
@@ -22,61 +21,61 @@ onMounted(async () => {
 });
 
 const handleGraphic = async () => {
-  if (!selectedEstado.value || !selectedColumns.value) {
-    showError.value = true;
-    console.log('error');
-    // setTimeout(hideError, 5000);
-  } else {
-    try {
-      buttonClicked.value = true;
-      const response = await fetch(
-        `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
-          selectedColumns.value
-        }`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const result = await response.json();
-      if (result.status === true) {
-        console.log("correcto", result.data);
-        buttonClicked.value = false;
-      } else {
-        console.log("error");
-        buttonClicked.value = false;
+  try {
+    buttonClicked.value = true;
+    const response = await fetch(
+      `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
+        selectedColumns.value
+      }`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-      store.dispatch("data_analysis", result.data);
-    } catch (error) {
-      console.error("Error al actualizar:", error);
+    );
+
+    const result = await response.json();
+    if (result.status === true) {
+      buttonClicked.value = false;
+    } else {
+      console.log("error");
+      buttonClicked.value = false;
     }
+    store.dispatch("data_analysis", result.data);
+  } catch (error) {
+    console.error("Error al actualizar:", error);
   }
 };
+
+watchEffect(() => {
+  handleGraphic();
+});
 
 const chartOptions = {
   chart: {
     height: 350,
     type: "line",
-    // stacked: false,
+    id: "li",
+    stacked: false,
     fontFamily: "Saira",
     margin: 0,
     padding: 0,
   },
-  plotOptions: {
-    bar: {
-      borderRadius: 10, // Radio de esquina para las barras
-      borderWidth: 1, // Ancho del borde de las barras
-    },
-  },
   dataLabels: {
     enabled: false,
   },
-  // stroke: {
-  //   show: false,
-  // },
+  // colors: ['rgb(0, 143, 251);', '#C5EDAC', '#66C7F4'],
+
+  stroke: {
+    width: [4, 4, 4],
+  },
+  plotOptions: {
+    bar: {
+      borderRadius: 5,
+      borderWidth: 1,
+    },
+  },
 
   xaxis: {
     lines: {
@@ -94,24 +93,58 @@ const chartOptions = {
     axisBorder: {
       show: false,
     },
-    type: 'datetime'
+    type: "datetime",
   },
-  yaxis: {
-    labels: {
-      style: {
-        colors: "#6e6d7a",
-        fontSize: "12px",
+  yaxis: [
+    {
+      seriesName: "Column A",
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      title: {
+        text: "Toneladas",
       },
     },
-  },
-  legend: {
-    show: true, // Ocultar la leyenda
+    {
+      opposite: true,
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      title: {
+        text: "Leyes",
+      },
+    },
+  ],
+  tooltip: {
+    shared: false,
+    intersect: true,
+    x: {
+      show: false,
+    },
   },
   grid: {
     show: true,
-    borderColor: "#d0d0d0",
-    strokeWidth: 1,
+    borderColor: "#e6e6e6",
+    strokeWidth: 0.5,
     position: "back",
+  },
+  stroke: {
+    width: 1.5,
+  },
+  legend: {
+    show: true,
+    position: "top",
+    horizontalAlign: "left",
+  },
+  markers: {
+    size: 5,
+    strokeWidth: 1,
   },
 };
 </script>
@@ -132,11 +165,15 @@ const chartOptions = {
         <div>
           <Calendar
             v-model="selectedEstado"
+            id="spanish"
+            :locale="es"
             view="month"
             dateFormat="mm/yy"
             aria-placeholder="mm/yy"
             showIcon
             iconDisplay="input"
+            :yearNavigator="true"
+            
           >
             <template #inputicon="{ clickCallback }">
               <ICalendar />
@@ -150,21 +187,21 @@ const chartOptions = {
             display="chip"
           />
         </div>
-        <div>
-          <button @click.prevent="handleGraphic" class="btn-graficar">
-            Graficar
-          </button>
-        </div>
       </div>
     </div>
     <div class="g-dash-body">
-      <div id="chart">
-        <VueApexCharts
-          height="180"
-          :options="chartOptions"
-          :series="series"
-        />
-      </div>
+      <template v-if="buttonClicked">
+        <Skeleton height="220px"  ></Skeleton>
+      </template>
+      <template v-else>
+        <div id="chart">
+          <VueApexCharts
+            height="220"
+            :options="chartOptions"
+            :series="series"
+          />
+        </div>
+      </template>
     </div>
   </div>
 </template>

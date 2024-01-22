@@ -25,54 +25,81 @@ const store = createStore({
     get_data_analysis: (state) => {
       const dataAg = state.dataAnalysis.map(i => {
         return {
-            x: new Date(i.date_extraction),
+            x: new Date(i.timestamp*1000),
             y: parseFloat(i.Ag.toFixed(1)),
           }
       })
       const dataFe = state.dataAnalysis.map(i => {
         return {
-            x: new Date(i.date_extraction),
+            x: new Date(i.timestamp*1000),
             y: parseFloat(i.Fe.toFixed(1)),
           }
       })
       const dataMn = state.dataAnalysis.map(i => {
         return {
-            x: new Date(i.date_extraction),
+            x: new Date(i.timestamp*1000),
             y: parseFloat(i.Mn.toFixed(1)),
           }
       })
       const dataPb = state.dataAnalysis.map(i => {
         return {
-            x: new Date(i.date_extraction),
+            x: new Date(i.timestamp*1000),
             y: parseFloat(i.Pb.toFixed(1)),
           }
       })
       const dataZn = state.dataAnalysis.map(i => {
         return {
-            x: new Date(i.date_extraction),
+            x: new Date(i.timestamp*1000),
             y: parseFloat(i.Zn.toFixed(1)),
+          }
+      })
+      const tonh = state.dataAnalysis.map(i => {
+        return {
+            x: new Date(i.timestamp*1000),
+            y: parseFloat(i.tonh.toFixed(1)),
+          }
+      })
+      const ton_prog = state.dataAnalysis.map(i => {
+        return {
+            x: new Date(i.timestamp*1000),
+            y: parseFloat(i.ton_prog.toFixed(1)),
           }
       })
       const series = [
         {
           name: "Ley de Ag",
+          type: "line",
           data: dataAg
         },
         {
           name: "Ley de Fe",
+          type: "line",
           data: dataFe
         },
         {
           name: "Ley de Mn",
+          type: "line",
           data: dataMn
         },
         {
           name: "Ley de Pb",
+          type: "line",
           data: dataPb
         },
         {
           name: "Ley de Zn",
+          type: "line",
           data: dataZn
+        },
+        {
+          name: "Tonelada",
+          type: "column",
+          data: tonh
+        },
+        {
+          name: "Tonelada Prog",
+          type: "column",
+          data: ton_prog
         }
       ]
       return series

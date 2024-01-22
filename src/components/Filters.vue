@@ -4,6 +4,7 @@ import { useStore } from "vuex";
 import IFilter from "../icons/IFilter.vue";
 import IDrag from "../icons/IDrag.vue";
 import IStart from "../icons/IStart.vue";
+import IClose from "../icons/IClose.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -23,7 +24,7 @@ const cerrarModal = () => {
 };
 
 const cleanFilter = () => {
-  selectedCategories.value = ["mining", "year", "month", "ubication"];
+  selectedCategories.value = ["mining", "year", "month","ubication"];
   sendFilter();
   cerrarModal();
 };
@@ -57,6 +58,9 @@ const handleDrop = (index) => {
   selectedCategories.value.splice(index, 0, droppedItem);
   draggableItem.value = null;
   console.log(selectedCategories.value);
+};
+const deselectItem = (index) => {
+  selectedCategories.value.splice(index, 1);
 };
 
 const sendFilter = async () => {
@@ -111,7 +115,6 @@ const sendFilter = async () => {
         <div class="mF-c-header">
           <div class="mF-h-title">
             <h2>Filtrar</h2>
-            <h4>Seleccione lo que desea filtrar</h4>
           </div>
           <span @click="cerrarModal" class="mF-h-close" type="button">
             <img src="../assets/img/i-close.svg" alt="" />
@@ -153,13 +156,14 @@ const sendFilter = async () => {
                 :class="{ dragend: index, draggableItem }"
                 class="views-item"
               >
-                <IDrag />
-                <div>
+              <div class="item-info">
+                  <IDrag />
                   <span>
                     {{ item }}
                   </span>
-                  <p class="i-selecte-active">seleccionado</p>
+                 
                 </div>
+                <button class="item-delete" @click="deselectItem(index)" type="button">  <IClose /> </button>
               </li>
             </TransitionGroup>
           </div>
@@ -328,13 +332,14 @@ const sendFilter = async () => {
           flex-direction: column;
           gap: 0.3rem;
           .views-item {
-            padding: 10px 15px;
+            padding: 6px 15px;
             border-radius: var(--br-m);
             background-color: var(--grey-light-11);
             font-size: clamp(6px, 8vw, 14px);
             line-height: 0.8rem;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 0.5rem;
             transition: all 0.35s ease-in;
             cursor: pointer;
@@ -348,13 +353,20 @@ const sendFilter = async () => {
               background-color: var(--white);
               box-shadow: 0 0px 20px rgba(0, 0, 0, 0.1);
             }
-            svg {
-              width: 1.4rem;
-              height: 1.4rem;
-              color: var(--grey-light-3);
-              fill: transparent;
-              stroke-width: 1.7;
+            .item-info{
+              display: flex;
+            align-items: center;
+            gap: 0.5rem;
+              svg {
+                width: 1.4rem;
+                height: 1.4rem;
+                color: var(--grey-light-3);
+                fill: transparent;
+                stroke-width: 1.7;
+              }
             }
+
+
             .i-selecte-active {
               padding-top: 0.2rem;
               font-size: clamp(6px, 8vw, 10px);
@@ -377,6 +389,29 @@ const sendFilter = async () => {
           background-color: var(--secondary);
         }
       }
+    }
+  }
+}
+
+.item-delete{
+  width: auto;
+  height: auto;
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border-radius: var(--br-s);
+  svg{
+    color: var(--grey-light-3);
+    fill: transparent;
+    width: 1.4rem !important;
+    height: 1.4rem !important;
+    stroke-width: 1.5;
+  }
+  &:hover{  
+    transform: scale(1.02);
+    svg{
+      color: var(--red);
+     
     }
   }
 }

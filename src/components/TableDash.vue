@@ -12,7 +12,7 @@ const data = computed(() => {
 <template>
   <div class="table-dash">
     <div class="container-t-dash">
-       <table>
+      <table>
         <thead>
           <tr>
             <th v-for="(column, index) in data.columns" :key="index">
@@ -33,7 +33,7 @@ const data = computed(() => {
             </td>
           </tr>
         </tbody>
-      </table> 
+      </table>
       <!-- <DataTable :value="data.data">
       <Column
         v-for="(column, index) in data.columns"
@@ -134,6 +134,11 @@ const data = computed(() => {
   tbody tr {
     z-index: 99;
     background-color: var(--white);
+  }
+  tr:nth-child(even) {
+    background-color:var(--grey-light-1);
+    border-top: 1px solid var(--grey-light-22);
+    border-bottom: 1px solid var(--grey-light-22);
   }
 }
 </style>
