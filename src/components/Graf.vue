@@ -42,6 +42,7 @@ const handleGraphic = async () => {
       console.log("error");
       buttonClicked.value = false;
     }
+    console.log("result", result.data)
     store.dispatch("data_analysis", result.data);
   } catch (error) {
     console.error("Error al actualizar:", error);
@@ -57,7 +58,7 @@ const chartOptions = {
     height: 350,
     type: "line",
     id: "li",
-    stacked: false,
+    // stacked: false,
     fontFamily: "Saira",
     margin: 0,
     padding: 0,
@@ -65,7 +66,7 @@ const chartOptions = {
   dataLabels: {
     enabled: false,
   },
-  // colors: ['rgb(0, 143, 251);', '#C5EDAC', '#66C7F4'],
+  colors: ['rgb(0, 143, 251);', '#C5EDAC', '#66C7F4'],
 
   stroke: {
     width: [4, 4, 4],
@@ -97,7 +98,7 @@ const chartOptions = {
   },
   yaxis: [
     {
-      seriesName: "Column A",
+      seriesName: "Ley de Ag",
       axisTicks: {
         show: false,
       },
@@ -105,8 +106,11 @@ const chartOptions = {
         show: false,
       },
       title: {
-        text: "Toneladas",
+        text: "Ley Ag",
       },
+    },
+    {
+      show: false
     },
     {
       opposite: true,
@@ -117,9 +121,16 @@ const chartOptions = {
         show: false,
       },
       title: {
-        text: "Leyes",
+        text: "Tonelaje",
       },
+      min: 0,
+      max: 4000
     },
+    {
+      show: false,
+      min: 0,
+      max: 4000
+    }
   ],
   tooltip: {
     shared: false,

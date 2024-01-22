@@ -29,28 +29,10 @@ const store = createStore({
             y: parseFloat(i.Ag.toFixed(1)),
           }
       })
-      const dataFe = state.dataAnalysis.map(i => {
+      const dataLey_prog = state.dataAnalysis.map(i => {
         return {
             x: new Date(i.timestamp*1000),
-            y: parseFloat(i.Fe.toFixed(1)),
-          }
-      })
-      const dataMn = state.dataAnalysis.map(i => {
-        return {
-            x: new Date(i.timestamp*1000),
-            y: parseFloat(i.Mn.toFixed(1)),
-          }
-      })
-      const dataPb = state.dataAnalysis.map(i => {
-        return {
-            x: new Date(i.timestamp*1000),
-            y: parseFloat(i.Pb.toFixed(1)),
-          }
-      })
-      const dataZn = state.dataAnalysis.map(i => {
-        return {
-            x: new Date(i.timestamp*1000),
-            y: parseFloat(i.Zn.toFixed(1)),
+            y: parseFloat(i.ley_prog.toFixed(1)),
           }
       })
       const tonh = state.dataAnalysis.map(i => {
@@ -72,24 +54,9 @@ const store = createStore({
           data: dataAg
         },
         {
-          name: "Ley de Fe",
+          name: "Ley de Ag Prog.",
           type: "line",
-          data: dataFe
-        },
-        {
-          name: "Ley de Mn",
-          type: "line",
-          data: dataMn
-        },
-        {
-          name: "Ley de Pb",
-          type: "line",
-          data: dataPb
-        },
-        {
-          name: "Ley de Zn",
-          type: "line",
-          data: dataZn
+          data: dataLey_prog
         },
         {
           name: "Tonelada",
