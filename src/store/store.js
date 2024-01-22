@@ -13,12 +13,70 @@ const store = createStore({
     dataListFilters: [],
     dataFilterTable:[],
     dataSelectedFilters: [],
+    dataAnalysis: [],
     rumaList: [],
     rumaTotal: [],
     tajoList: [],
     userModal: null,
     errior: null,
-    loading: false,
+    loading: false
+  },
+  getters: {
+    get_data_analysis: (state) => {
+      const dataAg = state.dataAnalysis.map(i => {
+        return {
+            x: new Date(i.date_extraction),
+            y: parseFloat(i.Ag.toFixed(1)),
+          }
+      })
+      const dataFe = state.dataAnalysis.map(i => {
+        return {
+            x: new Date(i.date_extraction),
+            y: parseFloat(i.Fe.toFixed(1)),
+          }
+      })
+      const dataMn = state.dataAnalysis.map(i => {
+        return {
+            x: new Date(i.date_extraction),
+            y: parseFloat(i.Mn.toFixed(1)),
+          }
+      })
+      const dataPb = state.dataAnalysis.map(i => {
+        return {
+            x: new Date(i.date_extraction),
+            y: parseFloat(i.Pb.toFixed(1)),
+          }
+      })
+      const dataZn = state.dataAnalysis.map(i => {
+        return {
+            x: new Date(i.date_extraction),
+            y: parseFloat(i.Zn.toFixed(1)),
+          }
+      })
+      const series = [
+        {
+          name: "Ley de Ag",
+          data: dataAg
+        },
+        {
+          name: "Ley de Fe",
+          data: dataFe
+        },
+        {
+          name: "Ley de Mn",
+          data: dataMn
+        },
+        {
+          name: "Ley de Pb",
+          data: dataPb
+        },
+        {
+          name: "Ley de Zn",
+          data: dataZn
+        }
+      ]
+      return series
+    }
   },
   mutations: {
     authLogin(state, payload) {
@@ -53,6 +111,9 @@ const store = createStore({
     },
     getSelectedFilters(state, payload) {
       state.dataSelectedFilters = payload      
+    },
+    getDataAnalysis(state, payload) {
+      state.dataAnalysis = payload
     },
     loading(state, payload) {
       state.loading = payload
@@ -194,11 +255,18 @@ const store = createStore({
       
       }
     },
-    filter_list: async ({ commit},data) => {      
+    filter_list: async ({ commit}, data) => {      
       commit("getFilterTable", data)      
     },
-    selected_filters: async ({ commit},data) => {      
+    selected_filters: async ({ commit}, data) => {      
       commit("getSelectedFilters", data)      
+    },
+    data_analysis: async ({ commit }, data) => {
+      try {
+        commit("getDataAnalysis", data);
+      }  catch (error) {
+        console.log(error)
+      }
     },
   },
   modules: {},

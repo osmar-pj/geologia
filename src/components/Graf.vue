@@ -14,10 +14,7 @@ const selectedColumns = ref("YUMPAG");
 const mining = ["YUMPAG", "UCHUCCHACUA"];
 
 const series = computed(() => {
-  const data = handleGraphic();
-  console.log(data);
-  return data;
-  // return handleGraphic();
+  return store.getters.get_data_analysis;
 });
 
 onMounted(async () => {
@@ -25,8 +22,9 @@ onMounted(async () => {
 });
 
 const handleGraphic = async () => {
-  if (!selectedEstado.value || selectedColumns.value) {
+  if (!selectedEstado.value || !selectedColumns.value) {
     showError.value = true;
+    console.log('error');
     // setTimeout(hideError, 5000);
   } else {
     try {
@@ -51,9 +49,7 @@ const handleGraphic = async () => {
         console.log("error");
         buttonClicked.value = false;
       }
-      return [
-          { data: result.data}
-      ];
+      store.dispatch("data_analysis", result.data);
     } catch (error) {
       console.error("Error al actualizar:", error);
     }
@@ -64,7 +60,7 @@ const chartOptions = {
   chart: {
     height: 350,
     type: "line",
-    stacked: false,
+    // stacked: false,
     fontFamily: "Saira",
     margin: 0,
     padding: 0,
@@ -78,9 +74,9 @@ const chartOptions = {
   dataLabels: {
     enabled: false,
   },
-  stroke: {
-    show: false,
-  },
+  // stroke: {
+  //   show: false,
+  // },
 
   xaxis: {
     lines: {
@@ -98,6 +94,7 @@ const chartOptions = {
     axisBorder: {
       show: false,
     },
+    type: 'datetime'
   },
   yaxis: {
     labels: {
@@ -108,7 +105,7 @@ const chartOptions = {
     },
   },
   legend: {
-    show: false, // Ocultar la leyenda
+    show: true, // Ocultar la leyenda
   },
   grid: {
     show: true,
@@ -163,7 +160,6 @@ const chartOptions = {
     <div class="g-dash-body">
       <div id="chart">
         <VueApexCharts
-          type="line"
           height="180"
           :options="chartOptions"
           :series="series"
