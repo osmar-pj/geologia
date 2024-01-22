@@ -3,6 +3,8 @@ import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import BindRuma from "../components/BindRuma.vue";
 import DeactivateRuma from "../components/DeactivateRuma.vue";
+import Bind from "../icons/Bind.vue";
+import IRuma from "../icons/IRuma.vue";
 
 const store = useStore();
 const formattedDate = ref("");
@@ -43,7 +45,6 @@ onMounted(async () => {
 const dataRuma = computed(() => {
   return store.state.rumaTotal;
 });
-
 </script>
 
 <template>
@@ -56,13 +57,15 @@ const dataRuma = computed(() => {
       <span>{{ formattedDate }} | Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-      <button class="btn-unirRuma" @click="openBindRuma()">Unir Rumas</button>
+      <button class="btn-unirRuma" @click="openBindRuma()">
+        <Bind /> Unir Rumas
+      </button>
     </div>
   </div>
   <div class="c-global-c-rumas">
     <div v-for="(ruma, index) in dataRuma" :key="index" class="card-ruma">
       <div class="c-ruma-body">
-        <img src="../assets/img/i-ruma.svg" alt="" />
+       <IRuma/>
         <h3>{{ ruma.ruma_Id }}</h3>
         <span>
           <strong>{{
@@ -81,7 +84,9 @@ const dataRuma = computed(() => {
         </div>
         <div class="c-r-body-info">
           <div class="c-r-body-i-item">
-            <span class="ton-total">{{ ruma.tonh ? ruma.tonh.toFixed(1) : 0 }}</span> 
+            <span class="ton-total">{{
+              ruma.tonh ? ruma.tonh.toFixed(1) : 0
+            }}</span>
             <p>TMH</p>
           </div>
           <div class="c-r-body-i-item">
@@ -96,11 +101,15 @@ const dataRuma = computed(() => {
     </div>
   </div>
   <Transition :duration="550" name="nested">
-  <BindRuma v-if="showBindRuma" @cerrarModal="showBindRuma = false" />
-</Transition>
+    <BindRuma v-if="showBindRuma" @cerrarModal="showBindRuma = false" />
+  </Transition>
   <Transition :duration="550" name="nested">
-  <DeactivateRuma v-if="showDeactivateRuma" @cerrarModal="showDeactivateRuma = false" :rumaIdToDeactivate="store.state.rumaIdToDeactivate"/>
-</Transition>
+    <DeactivateRuma
+      v-if="showDeactivateRuma"
+      @cerrarModal="showDeactivateRuma = false"
+      :rumaIdToDeactivate="store.state.rumaIdToDeactivate"
+    />
+  </Transition>
 </template>
 
 <style lang="scss">
@@ -117,67 +126,6 @@ const dataRuma = computed(() => {
     padding: 2px 5px;
     border-radius: 8px;
   }
-}
-
-.c-global-header {
-  width: 100%;
-  padding: 1.5rem 2.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  .global-h-title {
-    span {
-      color: var(--grey-1);
-      font-size: clamp(6px, 8vw, 14px);
-      line-height: 1.1rem;
-      font-weight: 400;
-    }
-  }
-  .global-h-button {
-    .radio-inputs {
-      position: relative;
-      display: flex;
-      flex-wrap: wrap;
-      border-radius: 12px;
-      background-color: var(--grey-light-1);
-      box-sizing: border-box;
-      padding: 6px;
-      width: 300px;
-      font-size: 14px;
-    }
-
-    .radio-inputs .radio {
-      flex: 1 1 auto;
-      text-align: center;
-    }
-
-    .radio-inputs .radio input {
-      display: none;
-    }
-
-    .radio-inputs .radio .name {
-      display: flex;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      border: none;
-      padding: 0.5rem 0;
-      color: var(--grey-1);
-      transition: all 0.15s ease-in-out;
-    }
-
-    .radio-inputs .radio input:checked + .name {
-      background-color: var(--primary);
-      color: var(--white);
-      font-weight: 500;
-    }
-  }
-  //   @include md {
-  //     padding: 1.5rem 5rem;
-  //   }
 }
 
 .c-global-c-rumas {
@@ -211,9 +159,11 @@ const dataRuma = computed(() => {
       align-items: center;
       padding: 1.5rem 1.5rem 1.5rem 1.5rem;
       flex: 1 1;
-      img {
-        width: 2.5rem;
-        height: 2.5rem;
+      svg {
+        width: 2rem;
+        height: 2rem;
+        stroke-width: 1.5;
+        fill: transparent;
       }
       h3 {
         font-weight: 600;
@@ -312,7 +262,15 @@ const dataRuma = computed(() => {
   color: var(--white);
   font-weight: 500;
   min-width: 150px;
-  &:hover{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  &:hover {
     background-color: var(--secondary);
   }
 }

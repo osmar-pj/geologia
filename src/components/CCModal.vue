@@ -3,6 +3,7 @@ import readXlsxFile from "read-excel-file";
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
+import Edit from "../icons/Edit.vue";
 
 const url = import.meta.env.VITE_API_URL;
 
@@ -146,10 +147,10 @@ const updateTravel = async () => {
         showForm.value = false;
         setTimeout(() => {
           showSuccessM.value = true;
-        }, 800);
+        }, 600);
         setTimeout(() => {
           cerrarModal();
-        }, 2000);
+        }, 5000);
       } else {
         console.log("error");
         buttonClicked.value = false;
@@ -202,10 +203,10 @@ const datosMuestra = async () => {
         <div class="mC-c-header">
           <div class="mC-h-title">
             <div class="mC-c-title-icon">
-              <img src="../assets/img/i-compl.svg" alt="" />
+              <Edit />
             </div>
             <div class="mC-c-title-text">
-              <h2>Completar campos</h2>
+              <h2>Completar leyes</h2>
               <h4>Rellenar la información restante del viaje</h4>
             </div>
           </div>

@@ -24,14 +24,14 @@
     </div>
 
     <div className="header-right">
-       <span> > Regresar al Dashboard</span> 
+       <span> Home > Dashboard</span> 
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .c-header {
-  height: 70px;
+  height: 55px;
   display: flex;
   justify-content: space-between;
   padding: 0 1.5rem;

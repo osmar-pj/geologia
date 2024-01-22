@@ -273,19 +273,47 @@ const openDelete = (data) => {
       <Column field="Acciones" header="Acciones" v-if="props.showActionsColumn">
         <template #body="slotProps">
           <div className="btns">
-            <button
+            <Button
+              outlined
+              class="item-btn table-btn-edit"
               @click="openModal(slotProps.data)"
               :userModal="store.state.userModal"
+              v-tooltip.bottom="{
+                value: 'Completar',
+                pt: {
+                  arrow: {
+                    style: {
+                      borderBottomColor: 'var(--primary-color)',
+                    },
+                  },
+                  text: 'bg-primary font-medium',
+                },
+              }"
             >
-              <Edit/>
-            </button>
-            <button
+              <Edit />
+            </Button>
+
+            <Button
+              outlined
               @click="openDelete(slotProps.data)"
               :userModal="store.state.userModal"
               v-if="props.showItem"
+              class="item-btn table-btn-delete"
+              v-tooltip.bottom="{
+                value: 'Eliminar',
+                pt: {
+                  arrow: {
+                    style: {
+                      borderBottomColor: 'var(--primary-color)',
+                    },
+                  },
+                  text: 'bg-primary font-medium',
+                },
+              }"
             >
-              <Delete/>
-            </button>
+            <Delete />
+            </Button>
+            
           </div>
         </template>
       </Column>
@@ -315,80 +343,7 @@ const openDelete = (data) => {
 </template>
 
 <style lang="scss">
-.c-global-header {
-  width: 100%;
-  padding: 1.5rem 2.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  .global-h-title {
-    span {
-      color: var(--grey-1);
-      font-size: clamp(6px, 8vw, 14px);
-      line-height: 1.1rem;
-      font-weight: 400;
-    }
-    .g-h-t-primary {
-      display: flex;
-      align-items: flex-end;
-      gap: 0.5rem;
-      span {
-        color: var(--grey-2);
-        font-size: clamp(6px, 8vw, 14px);
-        font-weight: 600;
-        line-height: 1.1rem;
-        background-color: var(--grey-light-1);
-        padding: 2px 5px;
-        border-radius: 8px;
-      }
-    }
-  }
-  .global-h-button {
-    .radio-inputs {
-      position: relative;
-      display: flex;
-      flex-wrap: wrap;
-      border-radius: 12px;
-      background-color: var(--grey-light-1);
-      box-sizing: border-box;
-      padding: 6px;
-      width: 300px;
-      font-size: 14px;
-    }
 
-    .radio-inputs .radio {
-      flex: 1 1 auto;
-      text-align: center;
-    }
-
-    .radio-inputs .radio input {
-      display: none;
-    }
-
-    .radio-inputs .radio .name {
-      display: flex;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      border: none;
-      padding: 0.5rem 0;
-      color: var(--grey-1);
-      transition: all 0.15s ease-in-out;
-    }
-
-    .radio-inputs .radio input:checked + .name {
-      background-color: var(--primary);
-      color: var(--white);
-      font-weight: 500;
-    }
-  }
-  //   @include md {
-  //     padding: 1.5rem 5rem;
-  //   }
-}
 
 .c-global-c-content {
   display: flex;
@@ -496,17 +451,44 @@ const openDelete = (data) => {
 
 .btns {
   display: flex;
-  gap: .8rem;
-  button {
-    padding: 0 ;
+  gap: 0.8rem;
+  margin: auto 0;
+  .item-btn {
+    padding: 0;
     display: grid;
     place-items: center;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: auto;
+    height: auto;
+    border: none;
+    border-radius: 0;
+
     svg {
+      cursor: pointer;
       width: 1.4rem;
       height: 1.4rem;
       color: var(--grey-2);
+      fill: white;
+      stroke-width: 1.6;
+      transition: all 0.25s ease-out;
+    }
+    &:hover {
+      transform: scale(1.15);
+      background-color: transparent;
+    }
+  }
+
+  .table-btn-edit {
+    &:hover {
+      svg {
+        color: var(--primary);
+      }
+    }
+  }
+  .table-btn-delete {
+    &:hover {
+      svg {
+        color: var(--red);
+      }
     }
   }
 }
@@ -515,16 +497,37 @@ const openDelete = (data) => {
   font-size: clamp(7px, 8vw, 13px);
   text-transform: capitalize;
   text-align: center;
-  border-radius: 8px;
-  padding: 5px 8px;
+  border-radius: 12px;
+  padding: 5px 10px 5px 17px;
+  position: relative;
+  width: auto;
+  &:before {
+    position: absolute;
+    content: "";
+
+    border-radius: 50%;
+    width: 5px;
+    height: 5px;
+    left: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 .t-completo {
   color: #45a452;
   background-color: #ebf9ea;
+  border: 1px solid #45a452;
+  &:before {
+    background-color: #45a452;
+  }
 }
 .t-incompleto {
   color: #ecb11a;
   background-color: #fdf7e9;
+  border: 1px solid #ecb11a;
+  &:before {
+    background-color: #ecb11a;
+  }
 }
 
 .td-user {

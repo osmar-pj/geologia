@@ -2,6 +2,13 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import IDash from "../icons/IDash.vue";
+import IControl from "../icons/IControl.vue";
+import CQuality from "../icons/CQuality.vue";
+import CRuma from "../icons/CRuma.vue";
+import IList from "../icons/IList.vue";
+import ILogout from "../icons/ILogout.vue";
+
 const router = useRouter();
 const store = useStore();
 const active = ref("/");
@@ -57,42 +64,35 @@ const logout = async () => {
           @click.prevent="goToPage('/')"
           :class="active == '/' ? 'active' : ''"
         >
-          <div class="nav-select"></div>
+          <div class="nav-select"> <IDash/> </div>
           <span>Dashboard</span>
         </li>
         <li
           @click.prevent="goToPage('list')"
           :class="active == 'list' ? 'active' : ''"
         >
-          <div class="nav-select"></div>
+          <div class="nav-select"><IList/></div>
           <span>Lista</span>
         </li>
         <li
           @click.prevent="goToPage('oreControl')"
           :class="active == 'oreControl' ? 'active' : ''"
         >
-          <div class="nav-select"></div>
+          <div class="nav-select"><IControl/></div>
           <span>Ore Control</span>
         </li>
         <li
           @click.prevent="goToPage('controlCalidad')"
           :class="active == 'controlCalidad' ? 'active' : ''"
         >
-          <div class="nav-select"></div>
+          <div class="nav-select"><CQuality/></div>
           <span>Control de Calidad</span>
-        </li>
-        <li
-          @click.prevent="goToPage('programacion')"
-          :class="active == 'programacion' ? 'active' : ''"
-        >
-          <div class="nav-select"></div>
-          <span>Programación</span>
-        </li>
+        </li>       
         <li
           @click.prevent="goToPage('ruma')"
-          :class="active == 'programacion' ? 'active' : ''"
+          :class="active == 'ruma' ? 'active' : ''"
         >
-          <div class="nav-select"></div>
+          <div class="nav-select"><CRuma/></div>
           <span>Control de Rumas</span>
         </li>
       </ul>
@@ -120,7 +120,7 @@ const logout = async () => {
     <div class="sidebar-footer">
       <div className="s-footer-logout">
         <a href="" @click.prevent="logout">
-          
+          <ILogout/>
           <h4>Salir</h4>
         </a>
       </div>
@@ -130,7 +130,7 @@ const logout = async () => {
 </template>
 
 <style lang="scss">
-@import "../style.scss";
+@import "../mixins.scss";
 .c-sidebar {
   width: 280px;
   background-color: #0f1217;
@@ -149,8 +149,8 @@ const logout = async () => {
     position: relative;
     padding: 1rem 1.8rem;
     .s-header-avatar {
-      width: 35px;
-      height: 35px;
+      width: 33px;
+      height: 33px;
       border-radius: 50%;
       display: grid;
       place-items: center;
@@ -177,7 +177,7 @@ const logout = async () => {
         max-width: 160px;
       }
       span {
-        color: var(--grey-2);
+        color: var(--grey-light-3);
         font-size: clamp(5px, 8vw, 12px);
         white-space: nowrap;
         overflow: hidden;
@@ -229,7 +229,7 @@ const logout = async () => {
       flex-direction: column;
       .s-c-t-general {
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         gap: 0.5rem;
         h1 {
           color: var(--white);
@@ -238,9 +238,10 @@ const logout = async () => {
         span {
           background-color: #fb5663;
           color: var(--white);
-          padding: 2px 6px;
-          border-radius: 8px;
+          padding: 2px 4px;
+          border-radius: 5px;
           font-size: clamp(5px, 8vw, 12px);
+          line-height: 1rem;
         }
       }
       .s-c-t-info {
@@ -262,14 +263,15 @@ const logout = async () => {
       gap: 0.3rem;
       padding-top: 2rem;
       li {
+        
         border-radius: 10px;
-        padding: 0.7rem 1rem;
+        padding: 0.7rem 1.2rem;
         width: 100%;
         cursor: pointer;
         transition: all 0.5s ease-in-out;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: .8rem;
         height: 45px;
         .nav-select {
           display: grid;
@@ -277,21 +279,24 @@ const logout = async () => {
           color: var(--secundary);
           svg {
             width: 1.4rem;
-            fill: var(--white);
+            height: 1.4rem;
+            color: var(--grey-light-3);
+            fill: transparent;
+            stroke-width:1.7;
           }
         }
 
-        &:hover {
-          opacity: 1;
-          background-color: var(--secondary);
-        }
         span {
-          color: var(--white);
+          color: var(--grey-light-3);
           font-size: clamp(5px, 8vw, 14px);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           max-width: 160px;
+        }
+        &:hover {
+          opacity: 1;
+          background-color: var(--secondary);
         }
       }
     }
@@ -363,14 +368,16 @@ const logout = async () => {
         gap: 0.4rem;
         padding: 10px 18px 10px 12px;
         border-radius: 10px;
+        transition: all 0.25s ease-out;
         h4 {
           color: var(--white);
           font-weight: normal;
         }
         svg {
-          fill: var(--grey-2);
-          width: 1.2rem;
-          height: 1.2rem;
+          fill: transparent;
+          stroke-width:1.7;          
+          width: 1.4rem;
+          height: 1.4rem;
         }
         &:hover {
           background-color: #1b1f22;

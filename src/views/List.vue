@@ -1,7 +1,7 @@
 <script setup>
 import TableList from "../components/Table.vue";
-import { computed, onMounted } from "vue"
-import { useStore } from "vuex"
+import { computed, onMounted } from "vue";
+import { useStore } from "vuex";
 const store = useStore()
 
 onMounted(async () => {
@@ -15,6 +15,7 @@ const data = computed(() => {
 
 <template>
     <TableList :showActionsColumn="false" :data="data" :showColum="true" />
+    
 </template>
 
 <style lang="scss">

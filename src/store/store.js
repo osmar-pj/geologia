@@ -10,6 +10,9 @@ const store = createStore({
     dataList: [],
     dataListControl: [],
     dataListGeneral: [],
+    dataListFilters: [],
+    dataFilterTable:[],
+    dataSelectedFilters: [],
     rumaList: [],
     rumaTotal: [],
     tajoList: [],
@@ -41,6 +44,15 @@ const store = createStore({
     },
     getRumaTotal(state, payload) {
       state.rumaTotal = payload
+    },
+    getListFilters(state, payload) {
+      state.dataListFilters = payload
+    },
+    getFilterTable(state, payload) {
+      state.dataFilterTable = payload      
+    },
+    getSelectedFilters(state, payload) {
+      state.dataSelectedFilters = payload      
     },
     loading(state, payload) {
       state.loading = payload
@@ -93,7 +105,6 @@ const store = createStore({
           },
         });
         const data = await response.json();
-        console.log(data);
         commit("getListControl", data);
         commit("loading", false);
       } catch (error) {
@@ -113,6 +124,23 @@ const store = createStore({
         const data = await response.json();
   
         commit("getListGeneral", data);
+        commit("loading", false);
+      }  catch (error) {
+      
+      }
+    },
+    get_listFilters: async ({ commit }) => {
+      try {
+        commit("loading", true);
+        const response = await fetch(`${url}/listgeology`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": true,
+          },
+        });
+        const data = await response.json();
+        commit("getListFilters", data);
         commit("loading", false);
       }  catch (error) {
       
@@ -164,6 +192,12 @@ const store = createStore({
       }  catch (error) {
       
       }
+    },
+    filter_list: async ({ commit},data) => {      
+      commit("getFilterTable", data)      
+    },
+    selected_filters: async ({ commit},data) => {      
+      commit("getSelectedFilters", data)      
     },
   },
   modules: {},

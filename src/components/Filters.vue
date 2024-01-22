@@ -1,0 +1,386 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import IFilter from "../icons/IFilter.vue";
+import IDrag from "../icons/IDrag.vue";
+import IStart from "../icons/IStart.vue";
+
+const url = import.meta.env.VITE_API_URL;
+const store = useStore();
+
+const dataFilters = ref([]);
+const selectedCategories = ref(["mining", "year", "month", "ubication"]);
+const draggableItem = ref([null]);
+const showFilters = ref(false);
+const showError = ref(false);
+const buttonClicked = ref(false);
+
+const openModal = () => {
+  showFilters.value = true;
+};
+const cerrarModal = () => {
+  showFilters.value = false;
+};
+
+const cleanFilter = () => {
+  selectedCategories.value = ["mining", "year", "month", "ubication"];
+  sendFilter();
+  cerrarModal();
+};
+
+onMounted(async () => {
+  await store.dispatch("get_listFilters");
+  dataFilters.value = store.state.dataListFilters.columns.filter(
+    (i) => i.type === "object"
+  );
+  await sendFilter();
+});
+
+const hideError = () => {
+  showError.value = false;
+};
+const handleDragStart = (index) => {
+  draggableItem.value = index;
+};
+
+const handleDragOver = (event) => {
+  event.preventDefault();
+};
+const handleDragEnd = () => {
+  draggableItem.value = null;
+};
+const handleDrop = (index) => {
+  const droppedItem = selectedCategories.value.splice(
+    draggableItem.value,
+    1
+  )[0];
+  selectedCategories.value.splice(index, 0, droppedItem);
+  draggableItem.value = null;
+  console.log(selectedCategories.value);
+};
+
+const sendFilter = async () => {
+  if (!selectedCategories.value || selectedCategories.value.length === 0) {
+    showError.value = true;
+    setTimeout(hideError, 5000);
+  } else {
+    try {
+      buttonClicked.value = true;
+      const response = await fetch(`${url}/listgeology`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ arr: selectedCategories.value }),
+      });
+
+      const data = await response.json();
+      if (data.status === true) {
+        console.log("correcto");
+        console.log("selected_filters", selectedCategories.value);
+        store.dispatch("filter_list", data);
+        store.dispatch("selected_filters", selectedCategories.value);
+        console.log(selectedCategories.value);
+        cerrarModal();
+        buttonClicked.value = false;
+      } else {
+        console.log("error");
+        buttonClicked.value = false;
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    }
+  }
+};
+</script>
+<template>
+  <button class="btn-filters" @click="openModal()">
+    <IFilter />
+    Filtrar <span>{{ selectedCategories.length }}</span>
+  </button>
+  <Transition :duration="550" name="filter">
+    <div
+      class="modalFilters-backg"
+      v-if="showFilters"
+      @cerrarModal="showFilters = false"
+    >
+      <form
+        class="modalFilters-content inner"
+        :style="{
+          userSelect: buttonClicked ? 'none' : 'auto',
+          pointerEvents: buttonClicked ? 'none' : 'auto',
+        }"
+      >
+        <div class="mF-c-header">
+          <div class="mF-h-title">
+            <h2>Filtrar</h2>
+            <h4>Seleccione lo que desea filtrar</h4>
+          </div>
+          <span @click="cerrarModal" class="mF-h-close" type="button">
+            <img src="../assets/img/i-close.svg" alt="" />
+          </span>
+        </div>
+        <div class="mF-c-body">
+          <div className="mF-b-imputs">
+            <div class="mF-imputs-item" v-if="store.state.loading">
+              <div class="loader"></div>
+            </div>
+            <div
+              v-for="category of dataFilters"
+              :key="category.key"
+              class="mF-imputs-item"
+            >
+              <Checkbox
+                v-model="selectedCategories"
+                :inputId="category.key"
+                name="category"
+                :value="category.name"
+              />
+              <label :for="category.key">{{ category.name }}</label>
+            </div>
+            <span class="label-error" v-if="showError"
+              >*Selecciona al menos un item</span
+            >
+          </div>
+          <span class="views-title">Categorias seleccionados</span>
+          <div class="mF-b-view">
+            <TransitionGroup name="list" tag="ul">
+              <li
+                v-for="(item, index) in selectedCategories"
+                :key="index"
+                :draggable="true"
+                @dragstart="handleDragStart(index)"
+                @dragover="handleDragOver"
+                @drop="handleDrop(index)"
+                @dragend="handleDragEnd"
+                :class="{ dragend: index, draggableItem }"
+                class="views-item"
+              >
+                <IDrag />
+                <div>
+                  <span>
+                    {{ item }}
+                  </span>
+                  <p class="i-selecte-active">seleccionado</p>
+                </div>
+              </li>
+            </TransitionGroup>
+          </div>
+        </div>
+        <div class="mF-c-footer">
+          <template v-if="buttonClicked">
+            <div class="loader"></div>
+          </template>
+          <template v-else>
+            <button @click="cleanFilter" class="btn-cancel" type="button">
+              Limpiar
+            </button>
+            <button
+              @click.prevent="sendFilter"
+              class="btn-success"
+              type="submit"
+            >
+              <IStart /> Filtrar
+            </button>
+          </template>
+        </div>
+      </form>
+    </div>
+  </Transition>
+</template>
+
+<style lang="scss">
+.btn-filters {
+  background-color: var(--white);
+  padding: 10px 20px;
+  border: 1px solid var(--grey-light-2);
+  border-radius: 10px;
+  min-width: 150px;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease-out;
+  color: var(--black);
+  gap: 0.5rem;
+  svg {
+    fill: transparent;
+    color: var(--grey-2);
+    stroke-width: 1.5;
+  }
+  span {
+    background-color: var(--grey-light-11);
+    border-radius: 5px;
+    padding: 0;
+    min-width: 22px;
+    height: 22px;
+    font-weight: 500;
+    font-size: clamp(6.5px, 8vw, 13px);
+  }
+}
+.modalFilters-backg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 5;
+  overflow: hidden;
+  .modalFilters-content {
+    position: absolute;
+    right: 0;
+    top: 0;
+    max-width: 350px;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    background-color: var(--white);
+    
+    .mF-c-header {
+      padding: 1.5rem;
+
+      .mF-h-title {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+        text-align: left;
+
+        h2 {
+          font-size: clamp(6px, 8vw, 18px);
+          color: var(--black);
+          font-weight: 600;
+          letter-spacing: -0.03em;
+        }
+        h4 {
+          padding-top: 0.1rem;
+          font-weight: 500;
+          color: var(--grey-2);
+          font-size: clamp(6px, 8vw, 13px);
+        }
+      }
+      .mF-h-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background-color: var(--grey-light-1);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        img {
+          width: 0.5rem;
+          // @include md {
+          //   width: 0.6rem;
+          // }
+        }
+        padding: 0;
+        &:hover {
+          background-color: var(--grey-light-22);
+        }
+        // @include md {
+        //   width: 30px;
+        //   height: 30px;
+        //   top: 20px;
+        //   right: 40px;
+        // }
+      }
+    }
+    .mF-c-body {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 0.5rem 1.5rem;
+      overflow: auto;
+      flex: 1 1;
+      .mF-b-imputs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .mF-imputs-item {
+          flex: 1 1 100px;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          label {
+            font-size: clamp(6px, 8vw, 14px);
+            line-height: 0.8rem;
+          }
+        }
+      }
+
+      .mF-b-view {
+        border: 1px solid var(--grey-light-22);
+        border-radius: var(--br-m);
+        padding: 1rem;
+        .views-title {
+          font-size: clamp(6px, 8vw, 14px);
+          font-weight: 600;
+          color: var(--grey-2);
+        }
+        ul {
+          display: flex;
+          flex-direction: column;
+          gap: 0.3rem;
+          .views-item {
+            padding: 10px 15px;
+            border-radius: var(--br-m);
+            background-color: var(--grey-light-11);
+            font-size: clamp(6px, 8vw, 14px);
+            line-height: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.35s ease-in;
+            cursor: pointer;
+            &:hover {
+              background-color: var(--white);
+              box-shadow: 0 0px 15px rgba(0, 0, 0, 0.1);
+              transform: scale(1.05);
+            }
+            &:active {
+              transform: scale(1.02);
+              background-color: var(--white);
+              box-shadow: 0 0px 20px rgba(0, 0, 0, 0.1);
+            }
+            svg {
+              width: 1.4rem;
+              height: 1.4rem;
+              color: var(--grey-light-3);
+              fill: transparent;
+              stroke-width: 1.7;
+            }
+            .i-selecte-active {
+              padding-top: 0.2rem;
+              font-size: clamp(6px, 8vw, 10px);
+              line-height: 0.6rem;
+              color: var(--grey-light-3);
+            }
+          }
+        }
+      }
+    }
+    .mF-c-footer {
+      padding: 1.5rem;
+
+      display: flex;
+      gap: 1rem;
+
+      .btn-success {
+        background-color: var(--primary);
+        &:hover {
+          background-color: var(--secondary);
+        }
+      }
+    }
+  }
+}
+</style>

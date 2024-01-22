@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import IPassword from '../icons/IPassword.vue';
 const router = useRouter()
 const store = useStore()
 const code = ref('')
@@ -27,7 +28,7 @@ const login = async () => {
           <div class="Login-imputs-item">
             <label>Código de acceso</label>
             <div class="imputs-i-input">
-              <img src="../assets/img/lock.svg" alt="" />
+              <IPassword/>
               <input
                 type="password"
                 name="password"
@@ -112,13 +113,18 @@ const login = async () => {
   }
   .imputs-i-input {
     position: relative;
-    img {
+    svg {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
       left: 15px;
-      width: 1rem;
+      width: 1.4rem;
+      height: 1.4rem;
+      
+      stroke-width: 1.5;
+      color: var(--grey-2);
     }
+    
   }
 }
 
