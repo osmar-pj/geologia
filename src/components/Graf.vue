@@ -42,7 +42,7 @@ const handleGraphic = async () => {
       console.log("error");
       buttonClicked.value = false;
     }
-    console.log("result", result.data)
+    console.log("result", result.data);
     store.dispatch("data_analysis", result.data);
   } catch (error) {
     console.error("Error al actualizar:", error);
@@ -64,9 +64,17 @@ const chartOptions = {
     padding: 0,
   },
   dataLabels: {
-    enabled: false,
+    enabled: true,
+    enabledOnSeries: [0],
+    formatter: (val) => {
+      if (val === null) {
+        return "";
+      } else {
+        return val.toFixed(2);
+      }
+    },
   },
-  colors: ['rgb(0, 143, 251);', '#C5EDAC', '#66C7F4'],
+  colors: ["rgb(255, 69, 96)", "#C5EDAC", "rgb(0, 143, 251)", "#66C7F4"],
 
   stroke: {
     width: [4, 4, 4],
@@ -87,6 +95,7 @@ const chartOptions = {
         colors: "#6e6d7a",
         fontSize: "12px",
       },
+      
     },
     axisTicks: {
       show: false,
@@ -108,9 +117,18 @@ const chartOptions = {
       title: {
         text: "Ley Ag",
       },
+      labels: {
+        formatter: (val) => {
+          if (val === null) {
+            return "";
+          } else {
+            return val.toFixed(0);
+          }
+        },
+      },
     },
     {
-      show: false
+      show: false,
     },
     {
       opposite: true,
@@ -124,13 +142,22 @@ const chartOptions = {
         text: "Tonelaje",
       },
       min: 0,
-      max: 4000
+      max: 4000,
+      labels: {
+        formatter: (val) => {
+          if (val === null) {
+            return "";
+          } else {
+            return val.toFixed(0);
+          }
+        },
+      },
     },
     {
       show: false,
       min: 0,
-      max: 4000
-    }
+      max: 4000,
+    },
   ],
   tooltip: {
     shared: false,
@@ -138,6 +165,7 @@ const chartOptions = {
     x: {
       show: false,
     },
+    
   },
   grid: {
     show: true,
@@ -164,14 +192,13 @@ const chartOptions = {
   <div class="graphic-dash">
     <div class="g-dash-header">
       <div class="g-d-header-title">
-        <h3><strong>Análisis</strong> (tiempo real)</h3>
+        <h3>
+          <strong>Cumplimiento de Producción </strong> (Análisis)
+        </h3>
       </div>
       <div
         class="g-d-header-btns"
-        :style="{
-          userSelect: buttonClicked ? 'none' : 'auto',
-          pointerEvents: buttonClicked ? 'none' : 'auto',
-        }"
+        
       >
         <div>
           <Calendar
@@ -184,7 +211,6 @@ const chartOptions = {
             showIcon
             iconDisplay="input"
             :yearNavigator="true"
-            
           >
             <template #inputicon="{ clickCallback }">
               <ICalendar />
@@ -202,7 +228,7 @@ const chartOptions = {
     </div>
     <div class="g-dash-body">
       <template v-if="buttonClicked">
-        <Skeleton height="220px"  ></Skeleton>
+        <Skeleton height="220px"></Skeleton>
       </template>
       <template v-else>
         <div id="chart">
@@ -234,7 +260,9 @@ const chartOptions = {
   .g-dash-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
+    padding-bottom: 1rem;
     .g-d-header-title {
       display: flex;
       h3 {
@@ -258,28 +286,7 @@ const chartOptions = {
   }
 }
 
-.p-input-icon-left > i,
-.p-input-icon-left > svg,
-.p-input-icon-right > i,
-.p-input-icon-right > svg {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-top: 0;
-  left: 17px;
-  fill: transparent;
-  width: 1.4rem;
-  height: 1.4rem;
-}
 
-.p-calendar {
-  position: relative;
-}
-
-.p-calendar .p-inputtext {
-  padding: 10px 20px 10px 50px;
-  width: 150px;
-}
 .apexcharts-toolbar {
   display: none !important;
 }

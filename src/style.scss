@@ -84,6 +84,10 @@ pre {
   --br-xxl: 15px;
 }
 
+:root {
+  --header-height: /* Tamaño real del .c-global-header */;
+}
+
 /*//////////////////////////////////////////////////////////////////
 [ SCROLLBAR ]*/
 
@@ -202,7 +206,7 @@ input {
   outline: none;
   background-color: var(--white);
   border: none;
-  height: 40px;
+  
   width: 100%;
   text-align: left;
   border-radius: 10px;
@@ -212,7 +216,7 @@ input {
   border: 1.5px solid var(--grey-light-2);
   transition: all 0.25s ease-out;
   @include md {
-    height: 45px;
+   
     font-size: clamp(7px, 8vw, 14px);
   }
 
@@ -915,19 +919,42 @@ input[type="checkbox"] {
 /*-----------CALENDAR-----------------*/
 /*==========================================*/
 .p-calendar {
+  height: 40px;
   width: 100%;
+  position: relative;
   .p-inputtext {
-    padding: 10px 20px;
+    color: var(--grey-2);
+      background-color: var(--white);
+    font-size: clamp(5px, 8vw, 13px);    
+    padding: 10px 10px 10px 40px;
+    width: 120px;
   }
 }
+.p-input-icon-left > i,
+.p-input-icon-left > svg,
+.p-input-icon-right > i,
+.p-input-icon-right > svg {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 0;
+  left: 17px;
+  fill: transparent;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+
 .p-datepicker {
   background-color: var(--white);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--grey-light-2);
   border-radius: 10px;
   padding: 1rem;
+  min-width: 180px;
+  left: 0;
   .p-datepicker-decade {
-    font-size: clamp(5px, 8vw, 10px);
+    font-size: clamp(5px, 8vw, 13px);
     font-weight: 600;
   }
   .p-monthpicker {
@@ -935,7 +962,7 @@ input[type="checkbox"] {
   }
   .p-yearpicker {
     .p-yearpicker-year {    
-      font-size: clamp(5px, 8vw, 14px);
+      font-size: clamp(5px, 8vw, 13px);
     }
   }
   .p-datepicker-group-container {
@@ -966,7 +993,7 @@ input[type="checkbox"] {
         width: auto;
         color: var(--black);
         font-weight: 600;
-        font-size: clamp(5px, 8vw, 14px);
+        font-size: clamp(5px, 8vw, 13px);
         padding: 0;
       }
     }
@@ -992,6 +1019,7 @@ input[type="checkbox"] {
 
 .p-datepicker-group {
   .p-datepicker-header {
+    height: 40px;
     display: flex;
   }
 }
@@ -1250,11 +1278,11 @@ input[type="checkbox"] {
 }
 .p-dropdown {
   background-color: var(--white);
-  padding: 10px 20px;
+  padding: 10px 18px;
   border: 1px solid var(--grey-light-2);
   border-radius: 10px;
   min-width: 160px;
-  height: 45px;
+  height: 40px;
   display: flex;
   align-items: center;
   transition: all 0.25s ease-out;
@@ -1268,7 +1296,7 @@ input[type="checkbox"] {
     color: var(--grey-2);
   }
   .p-dropdown-label {
-    font-size: clamp(7px, 8vw, 14px);
+    font-size: clamp(7px, 8vw, 13px);
     font-weight: 400;
   }
 }
@@ -1285,9 +1313,10 @@ input[type="checkbox"] {
 .p-dropdown-items {
   .p-dropdown-item {
     border-radius: 8px;
-    padding: 8px 15px;
+    padding: 12px 15px;
     transition: all 0.35s ease-out;
-    font-size: clamp(7px, 8vw, 14px);
+    font-size: clamp(7px, 8vw, 13px);
+    line-height: .8rem;
     &:hover {
       background-color: var(--grey-light-1);
     }

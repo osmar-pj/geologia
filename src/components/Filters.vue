@@ -5,6 +5,8 @@ import IFilter from "../icons/IFilter.vue";
 import IDrag from "../icons/IDrag.vue";
 import IStart from "../icons/IStart.vue";
 import IClose from "../icons/IClose.vue";
+import ICategory from "../icons/ICategory.vue";
+import IItem from "../icons/IItem.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -24,7 +26,7 @@ const cerrarModal = () => {
 };
 
 const cleanFilter = () => {
-  selectedCategories.value = ["mining", "year", "month","ubication"];
+  selectedCategories.value = ["mining", "year", "month", "ubication"];
   sendFilter();
   cerrarModal();
 };
@@ -79,7 +81,7 @@ const sendFilter = async () => {
       });
 
       const data = await response.json();
-      if (data.status === true) {     
+      if (data.status === true) {
         store.dispatch("filter_list", data);
         store.dispatch("selected_filters", selectedCategories.value);
         cerrarModal();
@@ -121,51 +123,65 @@ const sendFilter = async () => {
           </span>
         </div>
         <div class="mF-c-body">
-          <div className="mF-b-imputs">
-            <div class="mF-imputs-item" v-if="store.state.loading">
-              <div class="loader"></div>
+          <div class="mF-b-categories">
+            <div class="categories-title">
+              <ICategory /><span> Categorias ({{ selectedCategories.length }})</span>
             </div>
-            <div
-              v-for="category of dataFilters"
-              :key="category.key"
-              class="mF-imputs-item"
-            >
-              <Checkbox
-                v-model="selectedCategories"
-                :inputId="category.key"
-                name="category"
-                :value="category.name"
-              />
-              <label :for="category.key">{{ category.name }}</label>
+            <div class="categories-contenedor">
+              <div class="mF-imputs-item" v-if="store.state.loading">
+                <div class="loader"></div>
+              </div>
+              <div
+                v-for="category of dataFilters"
+                :key="category.key"
+                class="mF-imputs-item"
+              >
+                <Checkbox
+                  v-model="selectedCategories"
+                  :inputId="category.key"
+                  name="category"
+                  :value="category.name"
+                />
+                <label :for="category.key">{{ category.name }}</label>
+              </div>
             </div>
             <span class="label-error" v-if="showError"
               >*Selecciona al menos un item</span
             >
           </div>
-          <span class="views-title">Categorias seleccionados</span>
-          <div class="mF-b-view">
-            <TransitionGroup name="list" tag="ul">
-              <li
-                v-for="(item, index) in selectedCategories"
-                :key="index"
-                :draggable="true"
-                @dragstart="handleDragStart(index)"
-                @dragover="handleDragOver"
-                @drop="handleDrop(index)"
-                @dragend="handleDragEnd"
-                :class="{ dragend: index, draggableItem }"
-                class="views-item"
-              >
-              <div class="item-info">
-                  <IDrag />
-                  <span>
-                    {{ item }}
-                  </span>
-                 
-                </div>
-                <button class="item-delete" @click="deselectItem(index)" type="button">  <IClose /> </button>
-              </li>
-            </TransitionGroup>
+          <div class="mF-b-categories">
+            <div class="categories-title">
+              <IItem /><span> Items seleccionados ({{ selectedCategories.length }})</span>
+            </div>
+            <div class="categories-items">
+              <TransitionGroup name="list" tag="ul">
+                <li
+                  v-for="(item, index) in selectedCategories"
+                  :key="index"
+                  :draggable="true"
+                  @dragstart="handleDragStart(index)"
+                  @dragover="handleDragOver"
+                  @drop="handleDrop(index)"
+                  @dragend="handleDragEnd"
+                  :class="{ dragend: index, draggableItem }"
+                  class="views-item"
+                >
+                  <div class="item-info">
+                    <IDrag />
+                    <span>
+                      {{ item }}
+                    </span>
+                  </div>
+                  <button
+                    class="item-delete"
+                    @click="deselectItem(index)"
+                    type="button"
+                  >
+                    <IClose />
+                  </button>
+                </li>
+              </TransitionGroup>
+            </div>
           </div>
         </div>
         <div class="mF-c-footer">
@@ -240,7 +256,7 @@ const sendFilter = async () => {
     padding: 1rem;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     background-color: var(--white);
-    
+
     .mF-c-header {
       padding: 1.5rem;
 
@@ -297,81 +313,93 @@ const sendFilter = async () => {
     .mF-c-body {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
       padding: 0.5rem 1.5rem;
       overflow: auto;
       flex: 1 1;
-      .mF-b-imputs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-
-        .mF-imputs-item {
-          flex: 1 1 100px;
+      .mF-b-categories {
+        .categories-title {
+          padding-bottom: .8rem;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          label {
+          gap: .5rem;
+          span {
             font-size: clamp(6px, 8vw, 14px);
             line-height: 0.8rem;
+            color: var(--grey-2);
+            font-weight: 500;
+          }
+          svg{
+            width: 1.4rem;
+                  height: 1.4rem;
+                  color: var(--grey-light-3);
+                  fill: transparent;
+                  stroke-width: 1.7;
           }
         }
-      }
-
-      .mF-b-view {
-        border: 1px solid var(--grey-light-22);
-        border-radius: var(--br-m);
-        padding: 1rem;
-        .views-title {
-          font-size: clamp(6px, 8vw, 14px);
-          font-weight: 600;
-          color: var(--grey-2);
-        }
-        ul {
+        .categories-contenedor {
           display: flex;
-          flex-direction: column;
-          gap: 0.3rem;
-          .views-item {
-            padding: 6px 15px;
-            border-radius: var(--br-m);
-            background-color: var(--grey-light-11);
-            font-size: clamp(6px, 8vw, 14px);
-            line-height: 0.8rem;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          .mF-imputs-item {
+            flex: 1 1 100px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 0.5rem;
-            transition: all 0.35s ease-in;
-            cursor: pointer;
-            &:hover {
-              background-color: var(--white);
-              box-shadow: 0 0px 15px rgba(0, 0, 0, 0.1);
-              transform: scale(1.05);
+            label {
+              font-size: clamp(6px, 8vw, 14px);
+              line-height: 0.8rem;
             }
-            &:active {
-              transform: scale(1.02);
-              background-color: var(--white);
-              box-shadow: 0 0px 20px rgba(0, 0, 0, 0.1);
-            }
-            .item-info{
+          }
+        }
+        .categories-items {
+          border: 1px solid var(--grey-light-22);
+          border-radius: var(--br-m);
+          padding: 1rem;
+          ul {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            .views-item {
+              padding: 6px 15px;
+              border-radius: var(--br-m);
+              background-color: var(--grey-light-11);
+              font-size: clamp(6px, 8vw, 14px);
+              line-height: 0.8rem;
               display: flex;
-            align-items: center;
-            gap: 0.5rem;
-              svg {
-                width: 1.4rem;
-                height: 1.4rem;
-                color: var(--grey-light-3);
-                fill: transparent;
-                stroke-width: 1.7;
+              align-items: center;
+              justify-content: space-between;
+              gap: 0.5rem;
+              transition: all 0.35s ease-in;
+              cursor: pointer;
+              &:hover {
+                background-color: var(--white);
+                box-shadow: 0 0px 15px rgba(0, 0, 0, 0.1);
+                transform: scale(1.05);
               }
-            }
-
-
-            .i-selecte-active {
-              padding-top: 0.2rem;
-              font-size: clamp(6px, 8vw, 10px);
-              line-height: 0.6rem;
-              color: var(--grey-light-3);
+              &:active {
+                transform: scale(1.02);
+                background-color: var(--white);
+                box-shadow: 0 0px 20px rgba(0, 0, 0, 0.1);
+              }
+              .item-info {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                svg {
+                  width: 1.4rem;
+                  height: 1.4rem;
+                  color: var(--grey-light-3);
+                  fill: transparent;
+                  stroke-width: 1.7;
+                }
+              }
+              .i-selecte-active {
+                padding-top: 0.2rem;
+                font-size: clamp(6px, 8vw, 10px);
+                line-height: 0.6rem;
+                color: var(--grey-light-3);
+              }
             }
           }
         }
@@ -393,25 +421,24 @@ const sendFilter = async () => {
   }
 }
 
-.item-delete{
+.item-delete {
   width: auto;
   height: auto;
   display: grid;
   place-items: center;
   padding: 3px;
   border-radius: var(--br-s);
-  svg{
+  svg {
     color: var(--grey-light-3);
     fill: transparent;
     width: 1.4rem !important;
     height: 1.4rem !important;
     stroke-width: 1.5;
   }
-  &:hover{  
+  &:hover {
     transform: scale(1.02);
-    svg{
+    svg {
       color: var(--red);
-     
     }
   }
 }

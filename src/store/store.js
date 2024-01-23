@@ -26,25 +26,25 @@ const store = createStore({
       const dataAg = state.dataAnalysis.map(i => {
         return {
             x: new Date(i.timestamp*1000),
-            y: parseFloat(i.Ag.toFixed(1)),
+            y: i.Ag,
           }
       })
       const dataLey_prog = state.dataAnalysis.map(i => {
         return {
             x: new Date(i.timestamp*1000),
-            y: parseFloat(i.ley_prog.toFixed(1)),
+            y: i.ley_prog,
           }
       })
       const tonh = state.dataAnalysis.map(i => {
         return {
             x: new Date(i.timestamp*1000),
-            y: parseFloat(i.tonh.toFixed(1)),
+            y: i.tonh,
           }
       })
       const ton_prog = state.dataAnalysis.map(i => {
         return {
             x: new Date(i.timestamp*1000),
-            y: parseFloat(i.ton_prog.toFixed(1)),
+            y: i.ton_prog,
           }
       })
       const series = [
