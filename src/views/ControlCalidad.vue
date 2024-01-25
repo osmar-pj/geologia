@@ -23,7 +23,7 @@ const data = computed(() => {
 </script>
 
 <template>
-    <TableList :showActionsColumn="true" title="Viajes recientes, por completar" :data="data" :showColum="false" :showItem="false"/>
+    <TableList :showActionsColumn="true" title="Viajes, Control de calidad" :data="data" :showColum="false" :showItem="false"/>
 </template>
 
 <style lang="scss">

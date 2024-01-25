@@ -19,7 +19,7 @@ const data = computed(() => {
 </script>
 
 <template>
-    <TableList :showActionsColumn="true" title="Viajes recientes, por completar" :data="data" :showColum="false" :showItem="true" />
+    <TableList :showActionsColumn="true" title="Viajes, Ore Control" :data="data" :showColum="false" :showItem="true" />
 </template>
 
 <style lang="scss">

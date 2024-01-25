@@ -102,6 +102,13 @@ const logout = async () => {
           <div class="nav-select"><CRuma/></div>
           <span>Mapa de Rumas</span>
         </li>
+        <li
+          @click.prevent="goToPage('planta')"
+          :class="active == 'planta' ? 'active' : ''"
+        >
+          <div class="nav-select"><CRuma/></div>
+          <span>Planta </span>
+        </li>
       </ul>
       <div class="s-content-msg">
         <div class="s-c-msg-header"><span>Mensajes</span></div>

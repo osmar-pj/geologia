@@ -9,6 +9,7 @@ import CEdit from "../icons/CEdit.vue";
 import Delete from "../icons/Delete.vue";
 import ISave from "../icons/ISave.vue";
 
+const store = useStore();
 class CustomCircle extends fabric.Circle {
   constructor(options) {
     super(options)
@@ -27,40 +28,44 @@ class CustomText extends fabric.Textbox {
   }
 }
 const visible = ref(false)
-const rumas = computed(() => {
-  return  [
-    { ley_ag: 2.66, cod_tableta: '12', ton: 15000, mining: 'Yumpag', x: 100, y: 50 },
-    { ley_ag: 2.78, cod_tableta: '4', ton: 500, mining: 'Uchucchacua', x: 100, y: 50 },
-    { ley_ag: 21.23, cod_tableta: 'E1', ton: 1200, mining: 'Uchucchacua', x: 100, y: 50 },
-    { ley_ag: 19.23, cod_tableta: 'E1', ton: 1700, mining: 'Uchucchacua', x: 100, y: 50 },
-    { ley_ag: 9.12, cod_tableta: 'E2', ton: 11500, mining: 'Uchucchacua', x: 100, y:50 }
-  ]
-})
+// const rumas = computed(() => {
+//   return  [
+//     { ley_ag: 2.66, cod_tableta: '12', ton: 15000, mining: 'Yumpag', x: 100, y: 50 },
+//     { ley_ag: 2.78, cod_tableta: '4', ton: 500, mining: 'Uchucchacua', x: 100, y: 50 },
+//     { ley_ag: 21.23, cod_tableta: 'E1', ton: 1200, mining: 'Uchucchacua', x: 100, y: 50 },
+//     { ley_ag: 19.23, cod_tableta: 'E1', ton: 1700, mining: 'Uchucchacua', x: 100, y: 50 },
+//     { ley_ag: 9.12, cod_tableta: 'E2', ton: 11500, mining: 'Uchucchacua', x: 100, y:50 }
+//   ]
+// })
+const rumas = ref([])
 const canvas = ref()
 
 onMounted(() => {
-  canvas.value.forEachObject((o) => {
-    o.hasBorders = false
-    o.selectable = false
-  })
+  // canvas.value.forEachObject((o) => {
+  //   o.hasBorders = false
+  //   o.selectable = false
+  // })
 })
-const handleCreated = (fabricCanvas) => {
+const handleCreated = async(fabricCanvas) => {
+  await store.dispatch("ruma_total");
+  rumas.value=store.state.rumaTotal
+  console.log(rumas.value)
   canvas.value = fabricCanvas
   const max = 24000
   const min = 200
   rumas.value.forEach((r) => {
-    const d = (r.ton - min)*100/(max - min)
-    const d2 = Math.floor((r.ton - min)*85/(max - min))
-    const delta = Math.floor(10 + (r.ton - min)*100/(max - min))
-    const delta_left = r.ton*0.65 / min
+    const d = (r.tonh - min)*100/(max - min)
+    const d2 = Math.floor((r.tonh - min)*85/(max - min))
+    const delta = Math.floor(10 + (r.tonh - min)*100/(max - min))
+    const delta_left = r.tonh*0.65 / min
     const circle = new CustomCircle({
       radius: delta,
-      fill: '#ffd435',
+      fill: '#9FE5C2',
       left: r.x,
       top: r.y
     })
     const text = new CustomText('', {
-      text: `${r.ley_ag}\n${r.cod_tableta}\n${r.ton}t`,
+      text: `${r.ley_ag}\n${r.cod_tableta}\n${r.tonh}t`,
       fontSize: Math.log(delta) * 4,
       fill: 'gray',
       textAlign: 'center',
@@ -313,6 +318,7 @@ const remove = () => {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.02);
   top: 5px;
   left: 5px;
+  
   .btn-map {
     color: var(--grey-2);
     background-color: var(--grey-light-1);
@@ -342,5 +348,8 @@ const remove = () => {
   margin: 0 2.5rem;
   flex: 1 1;
   position: relative;
+  background-image: url("../assets/img/map-ruma.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 </style>

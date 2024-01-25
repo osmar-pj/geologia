@@ -14,6 +14,7 @@ const router = createRouter({
             // { path: '/programacion', name: 'Programacion', component: () => import('../views/Programacion.vue'), meta: { requireAuth: true } },
             { path: '/ruma', name: 'Ruma', component: () => import('../views/Ruma.vue'), meta: { requireAuth: true } },
             { path: '/map', name: 'Map', component: () => import('../views/Map.vue'), meta: { requireAuth: true } },
+            { path: '/planta', name: 'Planta', component: () => import('../views/planta.vue'), meta: { requireAuth: true } },
         ] },
     ]
 })

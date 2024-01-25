@@ -28,12 +28,10 @@ const openModal = (data) => {
   }
 };
 
-
 const openDelete = (e) => {
   store.state.userModal = e;
   showModalDelete.value = true;
 };
-
 
 const formattedDate = ref("");
 

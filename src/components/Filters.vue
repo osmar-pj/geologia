@@ -408,9 +408,8 @@ const sendFilter = async () => {
     }
     .mF-c-footer {
       padding: 1.5rem;
-
       display: flex;
-      gap: 1rem;
+      gap: .5rem;
 
       .btn-success {
         background-color: var(--primary);
