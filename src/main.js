@@ -17,59 +17,60 @@ import Button from 'primevue/button';
 import Tooltip from 'primevue/tooltip';
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
+import InputText from 'primevue/inputtext';
 
 const app = createApp(App)
 
 app.use(router)
 app.use(store)
 app.use(PrimeVue, {ripple: true})
-app.use(PrimeVue, {
-    locale: {
-        firstDayOfWeek: 1,
-        dayNames: [
-          "Domingo",
-          "Lunes",
-          "Martes",
-          "Miércoles",
-          "Jueves",
-          "Viernes",
-          "Sábado"
-        ],
-        dayNamesShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-        dayNamesMin: ["D", "L", "M", "X", "J", "V", "S"],
-        monthNames: [
-          "Enero",
-          "Febrero",
-          "Marzo",
-          "Abril",
-          "Mayo",
-          "Junio",
-          "Julio",
-          "Agosto",
-          "Septiembre",
-          "Octubre",
-          "Noviembre",
-          "Diciembre"
-        ],
-        monthNamesShort: [
-          "Ene",
-          "Feb",
-          "Mar",
-          "Abr",
-          "May",
-          "Jun",
-          "Jul",
-          "Ago",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dic"
-        ],
-        today: "Hoy",
-        clear: "Borrar",
-        weekHeader: "Sm"
-      }
-});
+// app.use(PrimeVue, {
+//     locale: {
+//         firstDayOfWeek: 1,
+//         dayNames: [
+//           "Domingo",
+//           "Lunes",
+//           "Martes",
+//           "Miércoles",
+//           "Jueves",
+//           "Viernes",
+//           "Sábado"
+//         ],
+//         dayNamesShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+//         dayNamesMin: ["D", "L", "M", "X", "J", "V", "S"],
+//         monthNames: [
+//           "Enero",
+//           "Febrero",
+//           "Marzo",
+//           "Abril",
+//           "Mayo",
+//           "Junio",
+//           "Julio",
+//           "Agosto",
+//           "Septiembre",
+//           "Octubre",
+//           "Noviembre",
+//           "Diciembre"
+//         ],
+//         monthNamesShort: [
+//           "Ene",
+//           "Feb",
+//           "Mar",
+//           "Abr",
+//           "May",
+//           "Jun",
+//           "Jul",
+//           "Ago",
+//           "Sep",
+//           "Oct",
+//           "Nov",
+//           "Dic"
+//         ],
+//         today: "Hoy",
+//         clear: "Borrar",
+//         weekHeader: "Sm"
+//       }
+// });
 
 app.component('Dropdown', Dropdown)
 app.component('MultiSelect', MultiSelect)
@@ -81,4 +82,5 @@ app.component('Button', Button)
 app.directive('tooltip', Tooltip);
 app.component('Calendar', Calendar);
 app.component('Checkbox', Checkbox);
+app.component('InputText', InputText);
 app.mount('#app')

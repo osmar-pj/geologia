@@ -105,7 +105,7 @@ const updateTravel = async () => {
 <template>
   <div class="modalCreate-backg">
     <form
-      class="mCreate-content inner"
+      class="mCreate-content mCreate-3 inner"
       :style="{
         userSelect: buttonClicked ? 'none' : 'auto',
         pointerEvents: buttonClicked ? 'none' : 'auto',
@@ -255,5 +255,9 @@ const updateTravel = async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.mCreate-3{
+  max-width: 380px !important;
 }
 </style>

@@ -1,8 +1,5 @@
 <script setup>
 import Graf from "../components/Graf.vue";
-import TotalesDash from "../components/TotalesDash.vue";
-import Filters from "../components/Filters.vue";
-import TableDash from "../components/TableDash.vue";
 
 </script>
 
@@ -15,13 +12,11 @@ import TableDash from "../components/TableDash.vue";
       <span>Hoy| Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-      <Filters />
+     
     </div>
   </div>
   <div class="c-global-c-content">
-    <!-- <TotalesDash /> -->
     <Graf />
-    <TableDash />
   </div>
 </template>
 
@@ -61,9 +56,6 @@ import TableDash from "../components/TableDash.vue";
     }
   }
   .global-h-button {
-   
-
-   
   }
   //   @include md {
   //     padding: 1.5rem 5rem;
@@ -173,6 +165,4 @@ import TableDash from "../components/TableDash.vue";
   //   padding: 3rem;
   // }
 }
-
-
 </style>

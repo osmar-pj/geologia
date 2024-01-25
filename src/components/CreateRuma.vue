@@ -110,7 +110,7 @@ const createRuma = async () => {
 
 <style lang="scss">
 .mC-imputs-more {
-  flex: 0 1 150px;
+  flex: 0 1 130px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -126,7 +126,8 @@ const createRuma = async () => {
   justify-content: center;
   gap: 0.3rem;
   border: 1px solid var(--primary);
-  transition: all 0.35s ease-in;
+  height: 40px;
+  width: 100%;
   svg {
     color: var(--primary);
     width: 1.3rem;

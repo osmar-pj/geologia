@@ -83,7 +83,7 @@ const sendFilter = async () => {
       const data = await response.json();
       if (data.status === true) {
         store.dispatch("filter_list", data);
-        store.dispatch("selected_filters", selectedCategories.value);
+           
         cerrarModal();
         buttonClicked.value = false;
       } else {
@@ -208,12 +208,11 @@ const sendFilter = async () => {
 
 <style lang="scss">
 .btn-filters {
-  background-color: var(--white);
-  padding: 10px 20px;
+  background-color: var(--white);  
   border: 1px solid var(--grey-light-2);
   border-radius: 10px;
-  min-width: 150px;
-  min-height: 45px;
+  min-width: 100px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,6 +223,8 @@ const sendFilter = async () => {
     fill: transparent;
     color: var(--grey-2);
     stroke-width: 1.5;
+    width: 1.4rem;
+    height: 1.4rem;
   }
   span {
     background-color: var(--grey-light-11);

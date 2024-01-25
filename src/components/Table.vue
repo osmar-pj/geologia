@@ -20,14 +20,14 @@ const showModalDelete = ref(false);
 const showOCModal = ref(false);
 const showCCModal = ref(false);
 const modalData = ref(null);
-
+console.log(props.data);
 const openModal = (data) => {
   modalData.value = data;
 
   if (data.statusGeology === "QualityControl") {
     showCCModal.value = true;
     showOCModal.value = false;
-  } else if (data.statusGeology === "OreControl") {
+  } else if (data.statusGeology === "General") {
     showCCModal.value = false;
     showOCModal.value = true;
   }
@@ -73,7 +73,7 @@ const openDelete = (data) => {
       :value="data"
       dataKey="travel_Id"
       paginator
-      :rows="20"
+      :rows="100"
       scrollable
       tableStyle="width: 100%"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
@@ -89,7 +89,11 @@ const openDelete = (data) => {
         </div>
     </template> -->
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
-
+      <Column header="#" headerStyle="width:3rem">
+        <template #body="slotProps">
+            {{ slotProps.index + 1 }}
+        </template>
+    </Column>
       <Column field="fecha" header="Fecha" sortable>
         <template #body="slotProps">
           <div class="td-user">
@@ -122,16 +126,18 @@ const openDelete = (data) => {
       </Column>
       <Column field="operador" header="Operador" sortable>
         <template #body="slotProps">
-          <div class="td-user">
-            <span class="t-siglas">{{
-              slotProps.data.operador
-                ? slotProps.data.operador
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((word) => word.charAt(0))
-                    .join("")
-                : ""
-            }}</span>
+          <div v-if="slotProps.data.operador" class="td-user">
+            <span class="t-siglas">
+              {{
+                slotProps.data.operador
+                  ? slotProps.data.operador
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((word) => word.charAt(0))
+                      .join("")
+                  : ""
+              }}
+            </span>
             <div class="t-name">
               <h4>
                 {{
@@ -149,13 +155,25 @@ const openDelete = (data) => {
               </h5>
             </div>
           </div>
+          <div v-else class="td-user">
+            <h4 :class="{ 'text-red': slotProps.data.operador === '' }">
+              Faltante
+            </h4>
+          </div>
         </template>
       </Column>
       <Column field="vehiculo" header="Vehículo" sortable>
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.vehiculo }}</h4>
+              <h4 :class="{ 'text-red': slotProps.data.vehiculo === '' }">
+                {{
+                  slotProps.data.vehiculo !== ""
+                    ? slotProps.data.vehiculo
+                    : "faltante"
+                }}
+              </h4>
+
               <h5>vehiculo</h5>
             </div>
           </div>
@@ -165,9 +183,11 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>
+              <h4 :class="{ 'text-red': slotProps.data.vagones === '' }">
                 {{
-                  slotProps.data.vagones !== 0 ? slotProps.data.vagones : "-"
+                  slotProps.data.vagones !== ""
+                    ? slotProps.data.vagones
+                    : "faltante"
                 }}
               </h4>
               <h5>
@@ -181,7 +201,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ton }} TMH</h4>
+              <h4>{{ slotProps.data.ton.toFixed(2) }} TMH</h4>
               <h5>{{ slotProps.data.material }}</h5>
             </div>
           </div>
@@ -211,7 +231,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ley_ag }}</h4>
+              <h4>{{ slotProps.data.ley_ag.toFixed(2) }}</h4>
               <h5>valor</h5>
             </div>
           </div>
@@ -221,7 +241,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ley_fe }}</h4>
+              <h4>{{ slotProps.data.ley_fe.toFixed(2) }}</h4>
               <h5>valor</h5>
             </div>
           </div>
@@ -231,7 +251,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ley_mn }}</h4>
+              <h4>{{ slotProps.data.ley_mn.toFixed(2) }}</h4>
               <h5>valor</h5>
             </div>
           </div>
@@ -241,7 +261,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ley_pb }}</h4>
+              <h4>{{ slotProps.data.ley_pb.toFixed(2) }}</h4>
               <h5>valor</h5>
             </div>
           </div>
@@ -251,7 +271,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ley_zn }}</h4>
+              <h4>{{ slotProps.data.ley_zn.toFixed(2) }}</h4>
               <h5>valor</h5>
             </div>
           </div>
@@ -311,9 +331,8 @@ const openDelete = (data) => {
                 },
               }"
             >
-            <Delete />
+              <Delete />
             </Button>
-            
           </div>
         </template>
       </Column>
@@ -343,8 +362,6 @@ const openDelete = (data) => {
 </template>
 
 <style lang="scss">
-
-
 .c-global-c-content {
   display: flex;
   flex-direction: column;
@@ -449,6 +466,11 @@ const openDelete = (data) => {
   // }
 }
 
+.text-red {
+  color: var(--grey-light-2);
+  font-size: clamp(7px, 8vw, 12px) !important;
+  font-family: 500;
+}
 .btns {
   display: flex;
   gap: 0.8rem;
@@ -549,9 +571,7 @@ const openDelete = (data) => {
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
-    h4 {
-      text-transform: capitalize;
-    }
+
     h5 {
       text-transform: lowercase;
       font-size: clamp(6px, 8vw, 12px);
@@ -563,7 +583,8 @@ const openDelete = (data) => {
     }
     h4 {
       font-weight: 500;
-      font-size: clamp(6px, 8vw, 14px);
+      font-size: clamp(6px, 8vw, 13.5px);
+      text-transform: capitalize;
       //   @include md {
       //     font-size: clamp(6px, 8vw, 14px);
       //   }

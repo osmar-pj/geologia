@@ -1,20 +1,25 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import IPassword from '../icons/IPassword.vue';
-const router = useRouter()
-const store = useStore()
-const code = ref('')
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import IPassword from "../icons/IPassword.vue";
+const router = useRouter();
+const store = useStore();
+
+const code = ref("");
+const buttonClicked = ref(false);
+
 const login = async () => {
   try {
-    await store.dispatch('auth_login', code.value)
-    console.log("ingreso")
-    router.push('/')
+    buttonClicked.value = true;
+    await store.dispatch("auth_login", code.value);
+    console.log("ingreso");
+    router.push("/");
   } catch (error) {
-    console.log(error)
+    buttonClicked.value = false;
+    console.log(error);
   }
-}
+};
 </script>
 
 <template>
@@ -25,11 +30,17 @@ const login = async () => {
           <h1>Bienvenido de nuevo</h1>
           <h4>Bienvenido, por favor ingrese sus datos</h4>
         </div>
-        <div class="login-c-body">                      
+        <div
+          class="login-c-body"
+          :style="{
+            userSelect: buttonClicked ? 'none' : 'auto',
+            pointerEvents: buttonClicked ? 'none' : 'auto',
+          }"
+        >
           <div class="Login-imputs-item">
             <label>Código de acceso</label>
             <div class="imputs-i-input">
-              <IPassword/>
+              <IPassword />
               <input
                 type="password"
                 name="password"
@@ -41,14 +52,21 @@ const login = async () => {
                 maxlength="8"
               />
             </div>
-          </div>          
+          </div>
         </div>
         <div class="login-c-footer">
-          <button class="btn-success" type=""  @click.prevent="login">Continuar</button>
-          <p>
-            Al ingresar, acepta los Términos de servicio y la Política de
-            privacidad.
-          </p>
+          <template v-if="buttonClicked">
+            <div class="loader"></div>
+          </template>
+          <template v-else>
+            <button class="btn-success" type="button" @click.prevent="login">
+              Continuar
+            </button>
+            <p>
+              Al ingresar, acepta los Términos de servicio y la Política de
+              privacidad.
+            </p>
+          </template>
         </div>
       </div>
     </form>
@@ -56,7 +74,6 @@ const login = async () => {
 </template>
 
 <style lang="scss">
-
 .L-Home {
   padding: 10vh 10vw;
   display: flex;
@@ -71,7 +88,7 @@ const login = async () => {
     .login-c-header {
       padding: 2.5rem 2.5rem 2rem 2.5rem;
       text-align: center;
-      h1{
+      h1 {
         letter-spacing: -0.03em;
       }
       h4 {
@@ -121,11 +138,10 @@ const login = async () => {
       left: 15px;
       width: 1.4rem;
       height: 1.4rem;
-      
+
       stroke-width: 1.5;
       color: var(--grey-2);
     }
-    
   }
 }
 

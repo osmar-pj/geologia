@@ -95,6 +95,13 @@ const logout = async () => {
           <div class="nav-select"><CRuma/></div>
           <span>Control de Rumas</span>
         </li>
+        <li
+          @click.prevent="goToPage('map')"
+          :class="active == 'map' ? 'active' : ''"
+        >
+          <div class="nav-select"><CRuma/></div>
+          <span>Mapa de Rumas</span>
+        </li>
       </ul>
       <div class="s-content-msg">
         <div class="s-c-msg-header"><span>Mensajes</span></div>
@@ -141,6 +148,7 @@ const logout = async () => {
   height: 100vh;
   position: absolute;
   z-index: 2;
+  left: -100%;
   .sidebar-header {
     height: 80px;
     display: flex;
@@ -213,6 +221,7 @@ const logout = async () => {
         background-color: #1b1f22;
         border: 1px solid #1b1f22;
         color: var(--white);
+        height: 40px;
         &:focus {
           border: 1px solid var(--grey-2);
         }

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700&display=swap");
 
 /*//////////////////////////////////////////////////////////////////
 [ IMPORTS]*/
@@ -85,7 +85,7 @@ pre {
 }
 
 :root {
-  --header-height: /* Tamaño real del .c-global-header */;
+  --header-height: /* Tamaño real del .c-global-header */ ;
 }
 
 /*//////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ p {
   line-height: 0.9rem;
 
   @include md {
-    font-size: clamp(7px, 8vw, 14px);
+    font-size: clamp(7px, 8vw, 13.5px);
     line-height: 1rem;
   }
 }
@@ -206,7 +206,7 @@ input {
   outline: none;
   background-color: var(--white);
   border: none;
-  
+
   width: 100%;
   text-align: left;
   border-radius: 10px;
@@ -216,8 +216,7 @@ input {
   border: 1.5px solid var(--grey-light-2);
   transition: all 0.25s ease-out;
   @include md {
-   
-    font-size: clamp(7px, 8vw, 14px);
+    font-size: clamp(7px, 8vw, 13.5px);
   }
 
   &:focus {
@@ -275,13 +274,13 @@ textarea {
 
 button {
   font-family: "Saira", sans-serif;
-  height: 45px;
+ 
   transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
   cursor: pointer;
   border: none;
   color: var(--white);
   border: none;
-  width: 100%;
+ 
   text-align: center;
   border-radius: 10px;
   font-size: clamp(5.5px, 8vw, 12px);
@@ -289,7 +288,7 @@ button {
   padding: 0.7rem 1rem;
   @include md {
     padding: 0.8rem 1rem;
-    font-size: clamp(6.5px, 8vw, 14px);
+    font-size: clamp(6.5px, 8vw, 13.5px);
   }
 }
 
@@ -428,7 +427,7 @@ li {
         gap: 0.5rem;
 
         .mC-imputs-item {
-          flex: 1 1 200px;
+          flex: 1 1 100px;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
@@ -477,9 +476,9 @@ li {
     }
     .mC-c-footer {
       padding: 1.5rem;
-
       display: flex;
-      gap: 1rem;
+      justify-content: flex-end;
+      gap: .5rem;
     }
   }
 }
@@ -509,10 +508,11 @@ li {
 .btn-success,
 .btn-cancel,
 .btn-delete {
-  height: 45px;
-  padding: 0 1rem;
+  height: 40px;
+  width: 100%;
+  padding: 0 1.2rem;
   font-weight: 500;
-  transition: all 0.35s ease-in;
+ 
   &:hover {
     color: var(--white);
   }
@@ -901,7 +901,7 @@ input[type="checkbox"] {
 }
 
 .p-skeleton::after {
-  content: '';
+  content: "";
   animation: p-skeleton-animation 1.2s infinite;
   height: 100%;
   left: 0;
@@ -913,7 +913,12 @@ input[type="checkbox"] {
 }
 
 .p-skeleton:after {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
+  );
 }
 /*==========================================*/
 /*-----------CALENDAR-----------------*/
@@ -924,8 +929,8 @@ input[type="checkbox"] {
   position: relative;
   .p-inputtext {
     color: var(--grey-2);
-      background-color: var(--white);
-    font-size: clamp(5px, 8vw, 13px);    
+    background-color: var(--white);
+    font-size: clamp(5px, 8vw, 13px);
     padding: 10px 10px 10px 40px;
     width: 120px;
   }
@@ -944,7 +949,6 @@ input[type="checkbox"] {
   height: 1.1rem;
 }
 
-
 .p-datepicker {
   background-color: var(--white);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
@@ -961,7 +965,7 @@ input[type="checkbox"] {
     gap: 5rem;
   }
   .p-yearpicker {
-    .p-yearpicker-year {    
+    .p-yearpicker-year {
       font-size: clamp(5px, 8vw, 13px);
     }
   }
@@ -1007,6 +1011,9 @@ input[type="checkbox"] {
       &:hover {
         background-color: var(--grey-light-22);
       }
+    }
+    .p-disabled{
+      color: var(--grey-light-3);
     }
     .p-highlight {
       background-color: var(--primary);
@@ -1104,10 +1111,10 @@ input[type="checkbox"] {
   color: var(--white);
   border-radius: 8px;
   color: var(--white);
-  font-size: clamp(5px, 8vw, 12px);
+  font-size: clamp(5px, 8vw, 13 px);
   font-weight: 500;
-  padding: 4px 10px;
-  margin-top: 10px;
+  padding: 4px 12px;
+  margin-left: 10px;
 }
 .p-tooltip-arrow {
   color: #1b1f22;
@@ -1298,6 +1305,7 @@ input[type="checkbox"] {
   .p-dropdown-label {
     font-size: clamp(7px, 8vw, 13px);
     font-weight: 400;
+    user-select: none;
   }
 }
 .p-dropdown-panel {
@@ -1313,10 +1321,12 @@ input[type="checkbox"] {
 .p-dropdown-items {
   .p-dropdown-item {
     border-radius: 8px;
-    padding: 12px 15px;
+    padding: 10px 15px;
     transition: all 0.35s ease-out;
     font-size: clamp(7px, 8vw, 13px);
-    line-height: .8rem;
+    line-height: 0.8rem;
+    cursor: pointer;
+    user-select: none;
     &:hover {
       background-color: var(--grey-light-1);
     }
@@ -1355,7 +1365,7 @@ input[type="checkbox"] {
 .p-datatable {
   width: 100%;
   color: var(--black);
-  font-size: clamp(6px, 8vw, 14px);
+ 
   line-height: 0.7rem;
   font-weight: 500;
   border-collapse: collapse;
@@ -1365,7 +1375,7 @@ input[type="checkbox"] {
   table {
     width: 100%;
     color: var(--black);
-    font-size: clamp(6px, 8vw, 14px);
+    font-size: clamp(6px, 8vw, 13.5px);
     line-height: 0.7rem;
     font-weight: 500;
     border-collapse: collapse;
@@ -1415,11 +1425,8 @@ input[type="checkbox"] {
   }
 
   td {
-    padding: 9px 12px;
-
-    // @include md {
-    //   padding: 15px;
-    // }
+    padding: 9.5px 12px;
+    border-top: 1px solid var(--grey-light-11);
   }
 
   tbody tr {
