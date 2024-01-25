@@ -183,7 +183,7 @@ const hour = (t)  => {
           </div>
         </template>
       </Column>
-      <Column field="vagones" header="Vagones">
+      <Column field="vagones" header="Vehiculo">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -195,7 +195,7 @@ const hour = (t)  => {
                 }}
               </h4>
               <h5>
-                {{ slotProps.data.vagones !== 0 ? "vagones" : "No aplica" }}
+                {{ slotProps.data.vagones !== 0 ? "camion" : "No aplica" }}
               </h5>
             </div>
           </div>

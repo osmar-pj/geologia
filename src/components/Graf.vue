@@ -22,43 +22,12 @@ const maxDate = ref(new Date());
 minDate.value.setMonth(prevMonth);
 minDate.value.setFullYear(prevYear);
 
-const series = computed(() => {
-  return store.getters.get_data_analysis;
-});
+// const series = computed(() => {
+//   return store.getters.get_data_analysis;
+// });
 
-graficData.value = (() => {
-  if (graficData.value && graficData.value > 0) {
-    const dataAg = graficData.value.map((i) => ({
-      x: new Date(i.timestamp * 1000),
-      y: i.Ag,
-    }));
-    const dataLey_prog = graficData.value.map((i) => ({
-      x: new Date(i.timestamp * 1000),
-      y: i.ley_prog,
-    }));
-    const tonh = graficData.value.map((i) => ({
-      x: new Date(i.timestamp * 1000),
-      y: i.tonh,
-    }));
-    const ton_prog = graficData.value.map((i) => ({
-      x: new Date(i.timestamp * 1000),
-      y: i.ton_prog,
-    }));
 
-    const series = [
-      { name: "Ley de Ag", type: "line", data: dataAg },
-      { name: "Ley de Ag Prog.", type: "line", data: dataLey_prog },
-      { name: "Tonelada", type: "column", data: tonh },
-      { name: "Tonelada Prog", type: "column", data: ton_prog },
-    ];
-    
-    return series;
-  } else {
-    return [];
-  }
-})();
-
-console.log(graficData.series)
+// console.log(graficData.series)
 
 onMounted(async () => {
   await handleGraphic();
@@ -88,8 +57,49 @@ const handleGraphic = async () => {
     }
 
     analysisData.value = result.meta;
-    graficData.value = result.data;
-    store.dispatch("data_analysis", result.data);
+    graficData.value = [
+      {
+        name: "Ley Ag Ejec.",
+        type: "line",
+        data: result.data.map((item) => {
+          return {
+            x: new Date(item.timestamp * 1000),
+            y: item.Ag,
+          };
+        }),
+      },
+      {
+        name: "Ley Ag Prog.",
+        type: "line",
+        data: result.data.map((item) => {
+          return {
+            x: new Date(item.timestamp * 1000),
+            y: item.ley_prog,
+          };
+        }),
+      },
+      {
+        name: "Tonelaje Ejec.",
+        type: "column",
+        data: result.data.map((item) => {
+          return {
+            x: new Date(item.timestamp * 1000),
+            y: item.tonh,
+          };
+        }),
+      },
+      {
+        name: "Tonelaje Prog.",
+        type: "column",
+        data: result.data.map((item) => {
+          return {
+            x: new Date(item.timestamp * 1000),
+            y: item.ton_prog,
+          };
+        }),
+      },
+    ]
+    // store.dispatch("data_analysis", result.data);
   } catch (error) {
     console.error("Error al actualizar:", error);
   }
@@ -306,7 +316,7 @@ const chartOptions = {
           <VueApexCharts
             height="270"
             :options="chartOptions"
-            :series="series"
+            :series="graficData"
           />
         </div>
       </template>

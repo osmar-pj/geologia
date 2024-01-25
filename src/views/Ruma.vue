@@ -45,7 +45,7 @@ onMounted(async () => {
 
 const data = computed(() => {
   return store.state.rumaTotal;
-});
+})
 
 const filteredDataMining1 = computed(() => {
   return data.value.filter((ruma) => ruma.ubication === "Cancha Colquicocha" && ruma.mining === "YUMPAG");

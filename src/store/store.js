@@ -240,7 +240,6 @@ const store = createStore({
           },
         });
         const data = await response.json();
-        console.log(data);
         commit("getRumaTotal", data.rumas);
       } catch (error) {}
     },
