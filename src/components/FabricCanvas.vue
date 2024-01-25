@@ -16,7 +16,7 @@ onMounted(() => {
   fabric.Object.prototype.cornerColor = 'red';
   fabric.Object.prototype.cornerStyle = 'circle';
   fabric.Object.prototype.borderColor = 'red';
-  fabric.Object.prototype.padding = '25';
+  fabric.Object.prototype.padding = '5';
 
   // canvas.on("mouse:dblclick", (e) => {
   //   emit("mouse:dblclick", e);

@@ -243,6 +243,19 @@ const store = createStore({
         commit("getRumaTotal", data.rumas);
       } catch (error) {}
     },
+    ruma_update: async ({ commit }, data) => {
+      try {
+        const response = await fetch(`${url}/ruma/${data.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data.data),
+        });
+        const dataResponse = await response.json();
+        commit("getRumaTotal", data.rumas);
+      } catch (error) {}
+    },
     tajo_list: async ({ commit }) => {
       try {
         const response = await fetch(`${url}/tajoGeo`, {

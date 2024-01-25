@@ -27,6 +27,16 @@ class CustomText extends fabric.Textbox {
     this.mining = options.mining
   }
 }
+
+class CustomRect extends fabric.Rect {
+  constructor(options) {
+    super(options)
+    this.cod_tableta = options.cod_tableta
+    this.ton = options.ton
+    this.mining = options.mining
+  }
+}
+
 const visible = ref(false)
 // const rumas = computed(() => {
 //   return  [
@@ -47,35 +57,47 @@ onMounted(() => {
   // })
 })
 const handleCreated = async(fabricCanvas) => {
+  const selectColor = (mining, dominio) => {
+    if (mining == 'YUMPAG') {
+      if (dominio == 'Ag/Alabandita') return '#8CBEB249'
+      if (dominio == 'Ag/Carbonatos') return '#9FE5C249'
+      if (dominio == 'Polimetálico') return 'yellow'
+    }
+    if (mining == 'UCHUCCHACUA') {
+      if (dominio == 'Ag/Alabandita') return '#fb5663'
+      if (dominio == 'Ag/Carbonatos') return '#FF9900'
+      if (dominio == 'Polimetálico') return '#6666FF'
+    }
+  }
   await store.dispatch("ruma_total");
   rumas.value=store.state.rumaTotal
   console.log(rumas.value)
   canvas.value = fabricCanvas
-  const max = 24000
-  const min = 200
+  const max = 30000
+  const min = 100
   rumas.value.forEach((r) => {
-    const d = (r.tonh - min)*100/(max - min)
-    const d2 = Math.floor((r.tonh - min)*85/(max - min))
+    const d = (r.tonh - min) * 100/(max - min)
+    const d2 = Math.floor((r.tonh - min) * 85/(max - min))
     const delta = Math.floor(10 + (r.tonh - min)*100/(max - min))
-    const delta_left = r.tonh*0.65 / min
+    const delta_left = r.tonh * 0.65 / min
     const circle = new CustomCircle({
-      radius: delta,
-      fill: '#9FE5C2',
+      radius: delta + 10,
+      fill: selectColor(r.mining, r.dominio),
       left: r.x,
       top: r.y
     })
     const text = new CustomText('', {
-      text: `${r.ley_ag}\n${r.cod_tableta}\n${r.tonh}t`,
-      fontSize: Math.log(delta) * 4,
-      fill: 'gray',
+      text: `${r.ley_ag.toFixed(2)}\n${r.cod_tableta}\n${r.tonh}_T`,
+      fontSize: Math.log(delta) * 4.5,
+      fill: r.mining == 'YUMPAG' ? 'black' : 'white',
       textAlign: 'center',
-      left: r.x + delta_left,
+      left: r.x + delta_left * 0.5,
       top: r.y + d2 - 10
     })
     const group = new fabric.Group([circle, text], {
     })
     // add new feature to group call id
-    group.id = r.cod_tableta
+    group.id = r._id
     canvas.value.add(markRaw(group))
   })
   canvas.value.hasControls = false
@@ -85,28 +107,31 @@ const handleCreated = async(fabricCanvas) => {
 }
 
 
-const handleClick = () => {
+const handleClick = (r) => {
   // crea el circulo nnuevo
   if (!canvas.value) return
-  const circle = new fabric.Circle({
-    radius: 50,
-    fill: 'blue',
-    left: 50,
-    top: 50
+  const d = (r.tonh - min) * 100/(max - min)
+  const d2 = Math.floor((r.tonh - min) * 85/(max - min))
+  const delta = Math.floor(10 + (r.tonh - min)*100/(max - min))
+  const delta_left = r.tonh * 0.65 / min
+  const circle = new CustomCircle({
+    radius: delta + 10,
+    fill: selectColor(r.mining, r.dominio),
+    left: r.x,
+    top: r.y
   })
-
-  const text = new fabric.Text('new', {
-    fontSize: 15,
-    fill: 'white',
+  const text = new CustomText('', {
+    text: `${r.ley_ag.toFixed(2)}\n${r.cod_tableta}\n${r.tonh}_T`,
+    fontSize: Math.log(delta) * 4.5,
+    fill: r.mining == 'YUMPAG' ? 'black' : 'gray',
     textAlign: 'center',
-    left: 80,
-    top: 60
+    left: r.x + delta_left * 0.5,
+    top: r.y + d2 - 10
   })
-
   const group = new fabric.Group([circle, text], {
-    left: 150,
-    top: 150
   })
+  // add new feature to group call id
+  group.id = r._id
   group.hasControls = false
   group.hasBorders = false
   group.selectable = true
@@ -116,14 +141,28 @@ const handleClick = () => {
 }
 
 const handleSelect = (e) => {
-  // console.log('selected', e)
+  // const objectsSelected = canvas.value.getActiveObjects()
+  // if (objectsSelected.length > 1) {
+  //   // crear nueva ruma
+  //   const newRuma = 
+  //   handleClick()
+  //   // eliminar ruma seleccionada
+    
+  //   canvas.value.renderAll()
+  // } else {
+  //   visible.value = false
+  // }
   
 }
 const handleUpdate = (e) => {
   const objectsSelected = canvas.value.getActiveObjects() 
-  console.log(objectsSelected.map(o => {
-    return [o.id, o.left, o.top]
-  }))
+  objectsSelected.forEach(async (o) => {
+    o.data = {
+      x: o.left,
+      y: o.top
+    }
+    await store.dispatch("ruma_update", o);
+  })
 }
 
 const handleMove = (e) => {
@@ -301,6 +340,7 @@ const remove = () => {
     <FabricCanvas
       @canvas-created="handleCreated"     
       @click:selected="handleSelect"
+      @click:updated="handleUpdate"
     />
   </div>
 </template>
