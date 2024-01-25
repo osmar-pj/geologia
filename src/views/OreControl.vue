@@ -1,9 +1,12 @@
 <script setup>
 import TableList from "../components/Table.vue";
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, computed, inject } from "vue"
 import { useStore } from "vuex"
 const store = useStore()
-
+const socket = inject("socket")
+socket.on('trip', (data) => {
+  console.log(data)
+})
 onMounted(async () => {
     await store.dispatch('get_list')
 })

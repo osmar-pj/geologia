@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router/router'
 import PrimeVue from 'primevue/config'
 import store from './store/store'
+import io from 'socket.io-client'
 
 import Dropdown from 'primevue/dropdown';
 import MultiSelect from 'primevue/multiselect';
@@ -20,6 +21,8 @@ import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
 
 const app = createApp(App)
+const socket = io(import.meta.env.VITE_API_URL)
+app.provide('socket', socket)
 
 app.use(router)
 app.use(store)
@@ -83,4 +86,5 @@ app.directive('tooltip', Tooltip);
 app.component('Calendar', Calendar);
 app.component('Checkbox', Checkbox);
 app.component('InputText', InputText);
+
 app.mount('#app')

@@ -1,14 +1,12 @@
 <script setup>
-import CreateRuma from "../components/CreateRuma.vue";
-import { watch, ref, defineProps, defineEmits, onMounted, computed } from "vue";
+import { watch, ref, defineProps, defineEmits, onMounted, computed, inject } from "vue";
 import { useStore } from "vuex";
+import CreateRuma from "../components/CreateRuma.vue";
 import Success from "../components/Success.vue";
 import Edit from "../icons/Edit.vue";
 const url = import.meta.env.VITE_API_URL;
-
 const props = defineProps(["data"]);
 const emit = defineEmits();
-
 const cerrarModal = () => {
   emit("cerrarModal");
 };
@@ -36,7 +34,7 @@ onMounted(async () => {
   await store.dispatch("ruma_list");
   await store.dispatch("tajo_list");
   dataTajo.value = store.state.tajoList;
-});
+})
 
 const dataRuma = computed(() => {
   return store.state.rumaList;
