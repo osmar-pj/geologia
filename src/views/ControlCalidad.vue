@@ -6,6 +6,7 @@ const store = useStore()
 
 onMounted(async () => {
     await store.dispatch('get_listControl')
+    console.log(store.state.dataListControl)
 })
 
 const data = computed(() => {

@@ -20,14 +20,13 @@ const showModalDelete = ref(false);
 const showOCModal = ref(false);
 const showCCModal = ref(false);
 const modalData = ref(null);
-console.log(props.data);
 const openModal = (data) => {
   modalData.value = data;
 
   if (data.statusGeology === "QualityControl") {
     showCCModal.value = true;
     showOCModal.value = false;
-  } else if (data.statusGeology === "General") {
+  } else if (data.statusGeology === "OreControl") {
     showCCModal.value = false;
     showOCModal.value = true;
   }
@@ -35,7 +34,12 @@ const openModal = (data) => {
 const openDelete = (data) => {
   modalData.value = data;
   showModalDelete.value = true;
-};
+}
+const hour = (t)  => {
+  const date = new Date(t)
+  const hour = `${date.getHours()}:${date.getMinutes()}`
+  return hour
+}
 </script>
 
 <template>
@@ -93,13 +97,13 @@ const openDelete = (data) => {
         <template #body="slotProps">
             {{ slotProps.index + 1 }}
         </template>
-    </Column>
+      </Column>
       <Column field="fecha" header="Fecha" sortable>
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.fecha }}</h4>
-              <h5>{{ slotProps.data.hora }} hora</h5>
+              <h4>{{ slotProps.data.date }}</h4>
+              <h5>{{ hour(slotProps.data.timestamp) }} hora</h5>
             </div>
           </div>
         </template>
@@ -108,7 +112,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.turno }}</h4>
+              <h4>{{ slotProps.data.turn }}</h4>
               <h5>turno</h5>
             </div>
           </div>
@@ -118,7 +122,7 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.mina }}</h4>
+              <h4>{{ slotProps.data.mining }}</h4>
               <h5>mina</h5>
             </div>
           </div>
@@ -157,24 +161,24 @@ const openDelete = (data) => {
           </div>
           <div v-else class="td-user">
             <h4 :class="{ 'text-red': slotProps.data.operador === '' }">
-              Faltante
+              --
             </h4>
           </div>
         </template>
       </Column>
-      <Column field="vehiculo" header="Vehículo" sortable>
+      <Column field="tag" header="Tag/Ubicacion" sortable>
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4 :class="{ 'text-red': slotProps.data.vehiculo === '' }">
+              <h4 :class="{ 'text-red': slotProps.data.tag === '' }">
                 {{
-                  slotProps.data.vehiculo !== ""
-                    ? slotProps.data.vehiculo
+                  slotProps.data.tag !== ""
+                    ? slotProps.data.tag
                     : "faltante"
                 }}
               </h4>
 
-              <h5>vehiculo</h5>
+              <h5> {{ slotProps.data.ubication }} </h5>
             </div>
           </div>
         </template>
@@ -185,7 +189,7 @@ const openDelete = (data) => {
             <div class="t-name">
               <h4 :class="{ 'text-red': slotProps.data.vagones === '' }">
                 {{
-                  slotProps.data.vagones !== ""
+                  slotProps.data.vagones !== null
                     ? slotProps.data.vagones
                     : "faltante"
                 }}
@@ -201,8 +205,8 @@ const openDelete = (data) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>{{ slotProps.data.ton.toFixed(2) }} TMH</h4>
-              <h5>{{ slotProps.data.material }}</h5>
+              <h4>{{ slotProps.data.tonh.toFixed(2) }} TMH</h4>
+              <h5>{{ slotProps.data.dominio }}</h5>
             </div>
           </div>
         </template>
@@ -212,7 +216,7 @@ const openDelete = (data) => {
           <div class="td-user">
             <div class="t-name">
               <h4>{{ slotProps.data.tajo || "faltante" }}</h4>
-              <h5>{{ slotProps.data.tipo || "faltante" }}</h5>
+              <h5>{{ slotProps.data.type || "faltante" }}</h5>
             </div>
           </div>
         </template>
@@ -227,7 +231,7 @@ const openDelete = (data) => {
           </div>
         </template>
       </Column>
-      <Column field="ley_ag" header="Ley Ag" v-if="props.showColum">
+      <!-- <Column field="ley_ag" header="Ley Ag" v-if="props.showColum">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -276,7 +280,7 @@ const openDelete = (data) => {
             </div>
           </div>
         </template>
-      </Column>
+      </Column> -->
       <Column field="statusMina" header="Status" sortable>
         <template #body="slotProps">
           <h4
@@ -296,7 +300,7 @@ const openDelete = (data) => {
             <Button
               outlined
               class="item-btn table-btn-edit"
-              @click="openModal(slotProps.data)"
+              @click.prevent="openModal(slotProps.data)"
               :userModal="store.state.userModal"
               v-tooltip.bottom="{
                 value: 'Completar',
@@ -313,7 +317,7 @@ const openDelete = (data) => {
               <Edit />
             </Button>
 
-            <Button
+            <!-- <Button
               outlined
               @click="openDelete(slotProps.data)"
               :userModal="store.state.userModal"
@@ -332,7 +336,7 @@ const openDelete = (data) => {
               }"
             >
               <Delete />
-            </Button>
+            </Button> -->
           </div>
         </template>
       </Column>

@@ -112,6 +112,12 @@ const store = createStore({
     loading(state, payload) {
       state.loading = payload;
     },
+    addDataListOreControl(state, payload) {
+      state.dataList.push(payload);
+    },
+    addDataListControlCalidad(state, payload) {
+      state.dataListControl.push(payload);
+    },
   },
   actions: {
     auth_login: async ({ commit }, payload) => {

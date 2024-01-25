@@ -12,8 +12,8 @@ const cerrarModal = () => {
 };
 const store = useStore();
 const dataTajo = ref([]);
-const selectedTipo = ref("TAJO");
-const selectedTajo = ref("");
+const selectedTipo = ref(props.data.type ? props.data.type : "TAJO");
+const selectedTajo = ref(props.data.tajo ? {name: props.data.tajo} : "");
 const selectedRuma = ref("");
 const showError = ref(false);
 const buttonClicked = ref(false);
@@ -33,7 +33,7 @@ watch(selectedTipo, handleTipoChange);
 onMounted(async () => {
   await store.dispatch("ruma_list");
   await store.dispatch("tajo_list");
-  dataTajo.value = store.state.tajoList;
+  dataTajo.value = store.state.tajoList
 })
 
 const dataRuma = computed(() => {
@@ -45,14 +45,6 @@ const hideError = () => {
 };
 
 const updateTravel = async () => {
-  console.log(
-    "tipo:",
-    selectedTipo.value,
-    "tajo:",
-    selectedTajo.value,
-    "ruma:",
-    selectedRuma.value
-  );
   if (
     (!selectedTipo.value && selectedTipo.value !== 0) ||
     !selectedTajo.value ||
@@ -61,21 +53,20 @@ const updateTravel = async () => {
     !selectedRuma.value.ruma_Id
   ) {
     showError.value = true;
-
     setTimeout(hideError, 5000);
   } else {
     try {
       buttonClicked.value = true;
       const updatedTravel = {
         ...props.data,
-        tipo: selectedTipo.value,
+        type: selectedTipo.value,
         tajo: selectedTajo.value.name,
         ruma: selectedRuma.value.ruma_Id,
         statusGeology: "QualityControl",
-      };
+      }
 
-      const response = await fetch(`${url}/triplist`, {
-        method: "POST",
+      const response = await fetch(`${url}/triplist/${props.data._id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -87,7 +78,8 @@ const updateTravel = async () => {
       if (result.status === true) {
         console.log("Correcto");
         await store.dispatch("get_list");
-
+        console.log('UPDATED',result.data)
+        await store.commit("addDataListControlCalidad", result.data);
         cerrarModal();
       } else {
         console.log("error");
@@ -126,19 +118,19 @@ const updateTravel = async () => {
       <div class="mC-c-body">
         <div className="mC-b-info">
           <p>
-            El viaje programado el <strong>'{{ data.fecha }} '</strong>,
+            El viaje programado el <strong>'{{ data.date }} '</strong>,
             conducido por <strong> {{ data.operador }} </strong> asociado al
-            vehículo <strong>'{{ data.vehiculo }} '</strong>, transportó
-            <strong>{{ data.ton }} toneladas</strong> de
-            <strong>{{ data.material }} </strong> en
+            vehículo <strong>'{{ data.tag }} '</strong>, transportó
+            <strong>{{ data.tonh }} toneladas</strong> de
+            <strong>{{ data.dominio }} </strong> en
             <strong>{{ data.vagones }} vagones</strong>. El vehículo, con el
-            tipo <strong>'{{ data.tipo }} '</strong>, se dirigió al tajo
+            tipo <strong>'{{ data.type }} '</strong>, se dirigió al tajo
             denominado <strong>'{{ data.tajo }} '</strong>. La tableta no fue
             especificada, y el estado final del viaje fue
-            <strong>'{{ data.status }}'</strong>.
+            <strong>'{{ data.ubication }}'</strong>.
           </p>
         </div>
-        <div className="mC-b-imputs" v-if="data.tipo === '' || data.tajo === 0">
+        <div className="mC-b-imputs" v-if="!data.type || !data.tajo">
           <div class="radio-inputs">
             <label>
               <input
@@ -173,8 +165,8 @@ const updateTravel = async () => {
           <Transition name="fade" mode="out-in">
             <div
               class="mC-imputs-item"
-              v-show="
-                selectedTipo === 'TAJO' && (data.tipo === '' || data.tajo === 0)
+              v-if="
+                selectedTipo === 'TAJO' && (!data.type || !data.tajo)
               "
             >
               <label>Selecciona un Tajo</label>

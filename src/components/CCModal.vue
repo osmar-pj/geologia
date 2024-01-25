@@ -112,14 +112,12 @@ const handleFileChange = (event) => {
 
 const updateTravel = async () => {
   if (!averages.value || averages.value.length === 0) {
-    console.log(averages);
     showError.value = true;
     setTimeout(hideError, 5000);
   } else {
     
     try {
       buttonClicked.value = true;
-      console.log(averages);
       const updatedTravel = {
         ...props.data,
         ley_ag: averages.value[0].AG,
@@ -217,7 +215,7 @@ const datosMuestra = async () => {
         <div class="mC-c-body">
           <div className="mC-b-info">
             <p>
-              El viaje programado el <strong>'{{ data.fecha }} '</strong>,
+              El viaje programado el <strong>'{{ data.date }} '</strong>,
               conducido por <strong> {{ data.operador }} </strong> asociado al
               vehículo <strong>'{{ data.vehiculo }} '</strong>, transportó
               <strong>{{ data.ton }} toneladas</strong> de
