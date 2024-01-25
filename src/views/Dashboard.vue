@@ -16,7 +16,8 @@ import Graf from "../components/Graf.vue";
     </div>
   </div>
   <div class="c-global-c-content">
-    <Graf />
+    <Graf ruta="YUMPAG"/>
+    <Graf ruta="UCHUCCHACUA"/>
   </div>
 </template>
 

@@ -4,8 +4,9 @@ import { ref, onMounted, computed, inject } from "vue"
 import { useStore } from "vuex"
 const store = useStore()
 const socket = inject("socket")
-socket.on('trip', (data) => {
+socket.on('OreControl', (data) => {
     store.commit('addDataListOreControl', data)
+    
 })
 onMounted(async () => {
     await store.dispatch('get_list')

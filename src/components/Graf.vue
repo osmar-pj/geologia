@@ -5,32 +5,60 @@ import { useStore } from "vuex";
 import ICalendar from "../icons/ICalendar.vue";
 
 const url = import.meta.env.VITE_API_URL;
-
+const props = defineProps(["ruta"]);
 const store = useStore();
 const buttonClicked = ref(false);
 const selectedEstado = ref(new Date());
-const selectedColumns = ref("YUMPAG");
-const mining = ["YUMPAG", "UCHUCCHACUA"];
 const analysisData = ref(null);
-
+const graficData = ref(null);
 
 let today = new Date();
 let month = today.getMonth();
 let year = today.getFullYear();
-
-let prevMonth = (month < 6) ? 12 - (6 - month) : month - 6;
-let prevYear = (month < 6) ? year - 1 : year;
-
+let prevMonth = month < 6 ? 12 - (6 - month) : month - 6;
+let prevYear = month < 6 ? year - 1 : year;
 const minDate = ref(new Date());
 const maxDate = ref(new Date());
-
 minDate.value.setMonth(prevMonth);
 minDate.value.setFullYear(prevYear);
-
 
 const series = computed(() => {
   return store.getters.get_data_analysis;
 });
+
+graficData.value = (() => {
+  if (graficData.value && graficData.value > 0) {
+    const dataAg = graficData.value.map((i) => ({
+      x: new Date(i.timestamp * 1000),
+      y: i.Ag,
+    }));
+    const dataLey_prog = graficData.value.map((i) => ({
+      x: new Date(i.timestamp * 1000),
+      y: i.ley_prog,
+    }));
+    const tonh = graficData.value.map((i) => ({
+      x: new Date(i.timestamp * 1000),
+      y: i.tonh,
+    }));
+    const ton_prog = graficData.value.map((i) => ({
+      x: new Date(i.timestamp * 1000),
+      y: i.ton_prog,
+    }));
+
+    const series = [
+      { name: "Ley de Ag", type: "line", data: dataAg },
+      { name: "Ley de Ag Prog.", type: "line", data: dataLey_prog },
+      { name: "Tonelada", type: "column", data: tonh },
+      { name: "Tonelada Prog", type: "column", data: ton_prog },
+    ];
+    
+    return series;
+  } else {
+    return [];
+  }
+})();
+
+console.log(graficData.series)
 
 onMounted(async () => {
   await handleGraphic();
@@ -41,7 +69,7 @@ const handleGraphic = async () => {
     buttonClicked.value = true;
     const response = await fetch(
       `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
-        selectedColumns.value
+        props.ruta
       }`,
       {
         method: "GET",
@@ -58,8 +86,9 @@ const handleGraphic = async () => {
       console.log("error");
       buttonClicked.value = false;
     }
-    
+
     analysisData.value = result.meta;
+    graficData.value = result.data;
     store.dispatch("data_analysis", result.data);
   } catch (error) {
     console.error("Error al actualizar:", error);
@@ -72,7 +101,6 @@ watchEffect(() => {
 
 const chartOptions = {
   chart: {
-    height: 350,
     type: "line",
     id: "li",
     // stacked: false,
@@ -215,22 +243,25 @@ const chartOptions = {
     strokeWidth: 1,
   },
 };
-
-
 </script>
 
 <template>
   <div class="graphic-dash">
+    {{ series }}
     <div class="g-dash-header">
       <div class="g-d-header-title">
-        <h3><strong>Cumplimiento de Producción </strong> (Análisis)</h3>
+        <h3>
+          <strong>Cumplimiento de Producción {{ props.ruta }} </strong>
+          (Análisis)
+        </h3>
       </div>
       <div class="g-d-header-btns">
         <div>
           <Calendar
-            v-model="selectedEstado"           
+            v-model="selectedEstado"
             view="month"
-            :minDate="minDate" :maxDate="maxDate" 
+            :minDate="minDate"
+            :maxDate="maxDate"
             manualInput="false"
             dateFormat="mm/yy"
             aria-placeholder="mm/yy"
@@ -243,35 +274,37 @@ const chartOptions = {
             </template>
           </Calendar>
         </div>
-        <div>
-          <Dropdown
-            v-model="selectedColumns"
-            :options="mining"
-            display="chip"
-          />
-        </div>
       </div>
       <div class="g-d-header-totales">
         <div class="g-d-h-totales-item">
           <span>Programado</span>
-          <h4> Ley/ {{ analysisData ? analysisData.aver_ley_prog.toFixed(2) : 0 }}</h4>
-          <h4> Tonelada/ {{ analysisData ? analysisData.total_ton_prog.toFixed(2) : 0 }}</h4>
+          <h4>
+            Ley/ {{ analysisData ? analysisData.aver_ley_prog.toFixed(2) : 0 }}
+          </h4>
+          <h4>
+            Tonelada/
+            {{ analysisData ? analysisData.total_ton_prog.toFixed(2) : 0 }}
+          </h4>
         </div>
         <div class="g-d-h-totales-item">
           <span>Ejecutado</span>
-          <h4> Ley/ {{ analysisData ? analysisData.aver_ley.toFixed(2) : 0 }}</h4>
-          <h4> Tonelada/ {{ analysisData ? analysisData.total_ton.toFixed(2) : 0 }}</h4>
+          <h4>
+            Ley/ {{ analysisData ? analysisData.aver_ley.toFixed(2) : 0 }}
+          </h4>
+          <h4>
+            Tonelada/ {{ analysisData ? analysisData.total_ton.toFixed(2) : 0 }}
+          </h4>
         </div>
       </div>
     </div>
     <div class="g-dash-body">
       <template v-if="buttonClicked">
-        <Skeleton height="350px"></Skeleton>
+        <Skeleton height="270px"></Skeleton>
       </template>
       <template v-else>
         <div id="chart">
           <VueApexCharts
-            height="350"
+            height="270"
             :options="chartOptions"
             :series="series"
           />
@@ -337,7 +370,7 @@ const chartOptions = {
     .g-d-header-totales {
       display: flex;
       gap: 1rem;
-      .g-d-h-totales-item {        
+      .g-d-h-totales-item {
         span {
           font-size: clamp(6px, 8vw, 12px);
           line-height: 0.6rem;
@@ -345,7 +378,7 @@ const chartOptions = {
           color: var(--grey-light-3);
         }
         h4 {
-          padding-top: .5rem;
+          padding-top: 0.5rem;
           font-size: clamp(6px, 8vw, 14px);
           line-height: 0.8rem;
           font-weight: 500;

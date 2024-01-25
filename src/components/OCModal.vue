@@ -78,7 +78,7 @@ const updateTravel = async () => {
       if (result.status === true) {
         console.log("Correcto");
         await store.dispatch("get_list");
-        console.log('UPDATED',result.data)
+        console.log('UPDATED',result.data);
         await store.commit("addDataListControlCalidad", result.data);
         cerrarModal();
       } else {

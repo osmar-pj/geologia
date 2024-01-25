@@ -118,6 +118,9 @@ const store = createStore({
     addDataListControlCalidad(state, payload) {
       state.dataListControl.push(payload);
     },
+    lesstDataListControlCalidad(state, payload) {
+      state.dataListControl.slice(payload, 1);
+    },
   },
   actions: {
     auth_login: async ({ commit }, payload) => {

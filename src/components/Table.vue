@@ -316,7 +316,6 @@ const hour = (t)  => {
             >
               <Edit />
             </Button>
-
             <!-- <Button
               outlined
               @click="openDelete(slotProps.data)"
@@ -477,6 +476,7 @@ const hour = (t)  => {
 }
 .btns {
   display: flex;
+  justify-content: center;
   gap: 0.8rem;
   margin: auto 0;
   .item-btn {
@@ -504,18 +504,14 @@ const hour = (t)  => {
   }
 
   .table-btn-edit {
-    &:hover {
-      svg {
-        color: var(--primary);
-      }
-    }
+  svg{
+    color: var(--primary);
+  
+  }
+   
   }
   .table-btn-delete {
-    &:hover {
-      svg {
-        color: var(--red);
-      }
-    }
+    
   }
 }
 
