@@ -25,6 +25,7 @@ class CustomText extends fabric.Textbox {
     this.cod_tableta = options.cod_tableta
     this.ton = options.ton
     this.mining = options.mining
+    this.fontFamily = options.fontFamily || "Saira";
   }
 }
 
@@ -92,7 +93,8 @@ const handleCreated = async(fabricCanvas) => {
       fill: r.mining == 'YUMPAG' ? 'black' : 'white',
       textAlign: 'center',
       left: r.x + delta_left * 0.5,
-      top: r.y + d2 - 10
+      top: r.y + d2 - 10,
+      fontFamily: "Saira",
     })
     const group = new fabric.Group([circle, text], {
     })
@@ -389,7 +391,9 @@ const remove = () => {
   flex: 1 1;
   position: relative;
   background-image: url("../assets/img/map-ruma.svg");
-  background-repeat: no-repeat;
   background-size: contain;
+  background-repeat: no-repeat;
+  // background-position: center;
+  
 }
 </style>

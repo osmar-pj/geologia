@@ -34,15 +34,15 @@ const handleFileChange = (event) => {
   readXlsxFile(file)
     .then((rows) => {
       const historialArr = [];
-      const averagesArr = [];
 
       // Obtener encabezados de columnas
       if (Array.isArray(rows[0])) {
-        headers.value = rows[0].map(header => header.toUpperCase());
+        headers.value = rows[0].map((header) => header.toUpperCase());
 
         for (let row = 1; row < rows.length; row++) {
           const rowData = rows[row];
 
+          // Verificar si la fila tiene algún valor nulo
           const hasNullValue = rowData.some((value) => value === null);
 
           if (hasNullValue) {
@@ -52,6 +52,7 @@ const handleFileChange = (event) => {
             return;
           }
 
+          // Verificar si la fila tiene todos los valores válidos
           const validRow = rowData.every(
             (value) => value !== "" && value !== 0
           );
@@ -63,6 +64,8 @@ const handleFileChange = (event) => {
               const value = isNaN(rowData[col])
                 ? rowData[col]
                 : parseFloat(rowData[col]);
+
+              // Redondear a 2 decimales si es un número
               rowObject[header] =
                 typeof value === "number"
                   ? parseFloat(value.toFixed(2))
@@ -73,34 +76,8 @@ const handleFileChange = (event) => {
           }
         }
 
-        for (let col = 0; col < headers.value.length; col++) {
-          const column = historialArr.map((row) => row[headers.value[col]]);
-          const validColumn = column.every(
-            (value) => typeof value === "number" && !isNaN(value)
-          );
-
-          if (validColumn) {
-            const average =
-              column.reduce((acc, value) => acc + value, 0) / column.length;
-            averagesArr.push({
-              [headers.value[col]]: parseFloat(average.toFixed(2)),
-            });
-          } else {
-            averagesArr.push({ [headers.value[col]]: "" }); // Agregar null para columnas no válidas
-          }
-        }
-
-        let result = averagesArr.reduce((acc, obj) => {
-          Object.keys(obj).forEach((key) => {
-            acc[key] = obj[key];
-          });
-          return acc;
-        }, {});
-
-        const filteredAverages = averagesArr.filter(obj => Object.values(obj)[0] !== '' && Object.values(obj)[0] !== null);
-        averages.value = filteredAverages; 
-
-        historial.value = [...historialArr, ...[result]];
+        // Actualizar historial con los datos procesados
+        historial.value = [...historialArr];
       } else {
         console.error("Error: La primera fila no es un array de encabezados.");
       }
@@ -111,11 +88,11 @@ const handleFileChange = (event) => {
 };
 
 const updateTravel = async () => {
+  console.log(historial, averages);
   if (!averages.value || averages.value.length === 0) {
     showError.value = true;
     setTimeout(hideError, 5000);
   } else {
-    
     try {
       buttonClicked.value = true;
       const updatedTravel = {
@@ -159,6 +136,10 @@ const updateTravel = async () => {
   }
 };
 
+const formatCurrency = (value) => {
+  return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
+};
+
 const datosMuestra = async () => {
   if (!averages.value || averages.value.length === 0) {
     showError.value = true;
@@ -185,11 +166,50 @@ const datosMuestra = async () => {
     }
   }
 };
+
+const dataTableClass = "table-exel";
+const editingRows = ref([]);
+const onRowEditSave = (event) => {
+  let { newData, index } = event;
+
+  historial.value[index] = newData;
+};
+
+
+const calculateColumnAverage = (columnName) => {
+  const columnValues = historial.value.map((row) => row[columnName]);
+  const validColumnValues = columnValues.filter((value) => !isNaN(value));
+
+  if (validColumnValues.length > 0) {
+    const average =
+      validColumnValues.reduce((acc, value) => acc + value, 0) /
+      validColumnValues.length;
+
+    // Almacenar el promedio en la variable averages
+    averages.value[columnName] = parseFloat(average.toFixed(2));
+
+    return parseFloat(average.toFixed(2));
+  } else {
+    // Si no hay valores válidos, establecer el promedio en 0
+    averages.value[columnName] = 0;
+    return "";
+  }
+};
+
+
+console.log(historial, averages);
+
+const confirmDeleteProduct = (rowData) => {
+  const index = historial.value.indexOf(rowData);
+  if (index !== -1) {
+    historial.value.splice(index, 1);
+  }
+};
 </script>
 
 <template>
-  <div class="modalCreate-backg ">
-    <Transition name="nested" >
+  <div class="modalCreate-backg">
+    <Transition name="nested">
       <form
         class="mCreate-content CCModal inner"
         :style="{
@@ -243,32 +263,108 @@ const datosMuestra = async () => {
                 </label>
               </div>
               <span class="label-error" v-if="showError"
-                >*Documento requerido</span
+                >*Ingrese documento</span
               >
               <div class="view-excel" v-if="historial.length">
                 <h4 class="text-excel">
                   Datos procesados del <strong>archivo Excel</strong>
                 </h4>
-                <table>
-                  <thead>
-                    <tr>
-                      <th v-for="(col, index) in headers" :key="index">
-                        {{ col }}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(row, rowIndex) in historial" :key="rowIndex">
-                      <td v-for="(value, colIndex) in row" :key="colIndex">
-                        {{
-                          !isNaN(value) || typeof value === "string"
-                            ? value
-                            : "-"
-                        }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <DataTable
+                  :value="historial"
+                  v-model:editingRows="editingRows"
+                  editMode="row"
+                  @row-edit-save="onRowEditSave"
+                  :class="dataTableClass"
+                  :pt="{
+                    table: { style: 'min-width: 5rem' },
+                    column: {
+                      bodycell: ({ state }) => ({
+                        style:
+                          state['d_editing'] &&
+                          'padding-top: 0.6rem; padding-bottom: 0.6rem',
+                      }),
+                    },
+                  }"
+                >
+                  <Column
+                    v-for="(col, index) in headers"
+                    :key="index"
+                    :field="col"
+                    :header="col"
+                    :editable="true"
+                  >
+                    <template #body="{ data, field }">
+                      {{ data[field] }}
+                    </template>
+                    <template #editor="{ data, field }">
+                      <component
+                        :is="
+                          typeof data[field] === 'number'
+                            ? 'InputNumber'
+                            : 'InputText'
+                        "
+                        v-model="data[field]"
+                        :mode="typeof data[field] === 'number' ? 'decimal' : ''"
+                        autofocus
+                      />
+                    </template>
+                    <template #footer="{ footerData }">
+                      {{ calculateColumnAverage(col) }}
+                    </template>
+                  </Column>
+                 
+                  <Column
+                    :rowEditor="true"
+                    style="width: 10%; min-width: 2rem"
+                    bodyStyle="text-align:center"
+                  >
+                    <template #rowEditor="{ data, index }">
+                      <Button
+                      v-if="!data.editing"
+                        icon="pi pi-pencil"
+                        outlined
+                        rounded
+                        severity="primary"
+                        @click="editRow(index)"
+                      ></Button>
+                      <Button
+                      v-if="data.editing"
+                        icon="pi pi-check"
+                        outlined
+                        rounded
+                        severity="success"
+                        @click="saveRow(index)"
+                      ></Button>
+                      <Button
+                      v-if="data.editing"
+                        icon="pi pi-times"
+                        outlined
+                        rounded
+                        severity="danger"
+                        @click="cancelEditRow(index)"
+                      ></Button>
+                    </template>
+                  </Column>
+                  <Column
+                    :rowEditor="true"
+                    style="width: 10%; min-width: 2rem"
+                    bodyStyle="text-align:center"
+                  >
+                    <template #body="slotProps">
+                      <Button
+                      v-if="!data.editing"
+                        icon="pi pi-trash"
+                        outlined
+                        rounded
+                        severity="danger"
+                        @click="confirmDeleteProduct(slotProps.data)"
+                        class="btn-excel-delet"
+                      >
+                        X
+                      </Button>
+                    </template>
+                  </Column>
+                </DataTable>
               </div>
             </div>
           </div>
@@ -292,16 +388,85 @@ const datosMuestra = async () => {
         </div>
       </form>
     </Transition>
-    <Transition name="bounce" >
+    <Transition name="bounce">
       <Success v-if="showSuccessM" />
     </Transition>
   </div>
 </template>
 
 <style lang="scss">
+.CCModal {
+  max-width: 700px !important;
+}
+.table-exel {
+  .p-datatable-table {
+    td {
+      padding: 4px 0;
+      border-top: 1px solid var(--grey-light-11);
+    }
+    .p-column-header-content {
+      justify-content: center;
+    }
+  }
 
-.CCModal{
-  max-width: 600px !important;
+  .columnheader {
+    text-align: center;
+  }
+  .p-editable-column {
+    width: 60px;
+    height: 20px !important;
+    text-align: center;
+    padding: 0 12px !important;
+    .p-inputtext {
+      height: 30px;
+      border-radius: 5px;
+      padding: 3px 10px;
+      font-size: clamp(6px, 8vw, 13.5px);
+      text-align: center;
+    }
+  }
+  .p-cell-editing {
+    padding: 4px !important;
+  }
+  .p-row-editor-init {
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    border-radius: 0;
+    .p-icon {
+      width: 0.8rem;
+      height: 0.8rem;
+      color: var(--primary);
+    }
+  }
+  .p-cell-editing {
+    .p-row-editor-save,
+    .p-row-editor-cancel {
+      color: var(--primary);
+      height: 30px;
+      width: 30px;
+      padding: 0;
+    }
+    .p-row-editor-cancel {
+      padding-left: 0.5rem;
+    }
+  }
+  .p-datatable-tfoot {
+    td {
+      text-align: center;
+      font-weight: 600;
+      font-size: clamp(6px, 8vw, 14px);
+    }
+  }
+  .btn-excel-delet {
+    color: var(--primary);
+    height: 30px;
+    width: 30px;
+    padding: 0;
+  }
+  .p-datatable-wrapper {
+    overflow: unset !important;
+  }
 }
 .table-excel {
   width: 100%;
@@ -325,64 +490,8 @@ const datosMuestra = async () => {
         font-weight: 600;
       }
     }
-    table {
-      width: 100%;
-      color: var(--black);
-      font-size: clamp(6px, 8vw, 14px);
-      line-height: 0.7rem;
-      font-weight: 500;
-      border-collapse: collapse;
-      white-space: nowrap;
-    }
-
-    thead {
-      color: var(--grey-1);
-      text-align: left;
-      background-color: var(--grey-light-1);
-      font-size: clamp(6px, 8vw, 11px);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
-    th {
-      padding: 10px 12px;
-      font-weight: normal !important;
-      text-align: center;
-      div {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        img {
-          width: 0.5rem;
-        }
-      }
-      &:first-child {
-        border-radius: 8px 0px 0px 8px !important;
-      }
-      &:last-child {
-        border-radius: 0 8px 8px 0px !important;
-      }
-    }
-    td {
-      padding: 9px 12px;
-      text-align: center;
-    }
-
-    tbody tr {
-      z-index: 99;
-      background-color: var(--white);
-      &:last-child {
-        font-weight: 600;
-      }
-    }
-    table tr td:first-child,
-    table tr th:first-child {
-      font-weight: 600;
-    }
   }
 }
-
 .bounce-enter-active {
   animation: bounce-in 0.5s;
 }

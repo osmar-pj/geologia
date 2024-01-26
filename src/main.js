@@ -2,6 +2,11 @@ import { createApp } from 'vue'
 import './style.scss'
 import 'primevue/resources/primevue.min.css'
 
+
+
+// import 'primevue/resources/themes/saga-blue/theme.css';
+
+
 import App from './App.vue'
 import router from './router/router'
 import PrimeVue from 'primevue/config'
@@ -19,6 +24,9 @@ import Tooltip from 'primevue/tooltip';
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
+import ColumnGroup from 'primevue/columngroup';   
+import Row from 'primevue/row';
 
 const app = createApp(App)
 const socket = io(import.meta.env.VITE_API_URL)
@@ -86,5 +94,7 @@ app.directive('tooltip', Tooltip);
 app.component('Calendar', Calendar);
 app.component('Checkbox', Checkbox);
 app.component('InputText', InputText);
-
+app.component('InputNumber', InputNumber);
+app.component('ColumnGroup', ColumnGroup);
+app.component('Row', Row);
 app.mount('#app')

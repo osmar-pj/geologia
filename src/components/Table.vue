@@ -77,7 +77,7 @@ const hour = (t)  => {
       :value="data"
       dataKey="travel_Id"
       paginator
-      :rows="100"
+      :rows="20"
       scrollable
       tableStyle="width: 100%"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
@@ -231,56 +231,7 @@ const hour = (t)  => {
           </div>
         </template>
       </Column>
-      <!-- <Column field="ley_ag" header="Ley Ag" v-if="props.showColum">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_ag.toFixed(2) }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_fe" header="Ley Fe" v-if="props.showColum">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_fe.toFixed(2) }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_mn" header="Ley Mn" v-if="props.showColum">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_mn.toFixed(2) }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_pb" header="Ley Pb" v-if="props.showColum">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_pb.toFixed(2) }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column>
-      <Column field="ley_zn" header="Ley Zn" v-if="props.showColum">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>{{ slotProps.data.ley_zn.toFixed(2) }}</h4>
-              <h5>valor</h5>
-            </div>
-          </div>
-        </template>
-      </Column> -->
+      
       <Column field="statusMina" header="Status" sortable>
         <template #body="slotProps">
           <h4

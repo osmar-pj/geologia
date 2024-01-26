@@ -24,7 +24,7 @@ const login = async () => {
 
 <template>
   <section class="L-Home">
-    <form action="" onSubmit="{handleSubmit}">
+    <form action="" >
       <div class="login-container">
         <div class="login-c-header">
           <h1>Bienvenido de nuevo</h1>

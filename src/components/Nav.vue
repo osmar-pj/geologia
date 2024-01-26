@@ -326,7 +326,7 @@ const logout = async () => {
         margin-bottom: 0.8rem;
       }
       .s-c-msg-items {
-        height: 300px;
+        height: 200px;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
         overflow-x: auto;
@@ -373,7 +373,7 @@ const logout = async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.8rem;
+    padding: .5rem 1.8rem .5rem 1.8rem;
     .s-footer-logout {
       display: flex;
       align-items: center;
