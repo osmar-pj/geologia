@@ -1,41 +1,27 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import Filters from "../components/filters.vue";
 const store = useStore();
 
-const data = computed(() => {
-  return store.state.dataFilterTable;
-});
-const lazyLoading = ref(false);
-const loadLazyTimeout = ref();
+const data = computed(() => store.state.dataFilterTable);
+const selectedColumns = ref([]);
 
-const loadCarsLazy = (event) => {
-  !lazyLoading.value && (lazyLoading.value = true);
-
-  if (loadLazyTimeout.value) {
-    clearTimeout(loadLazyTimeout.value);
+const onToggle = (val) => {
+  if (data.value.columns && data.value.columns.length > 0) {
+    selectedColumns.value = data.value.columns.filter((col) => val.includes(col));
+  } else {
+    console.error("data.columns no tiene elementos");
   }
-
-  //simulate remote connection with a timeout
-  loadLazyTimeout.value = setTimeout(() => {
-    let _virtualCars = [...virtualCars.value];
-    let { first, last } = event;
-
-    //load data of required page
-    const loadedCars = cars.value.slice(first, last);
-
-    //populate page of virtual cars
-    Array.prototype.splice.apply(_virtualCars, [
-      ...[first, last - first],
-      ...loadedCars,
-    ]);
-
-    virtualCars.value = _virtualCars;
-    lazyLoading.value = false;
-  }, Math.random() * 1000 + 250);
 };
+
+watch(data, () => {
+  selectedColumns.value = data.value.columns || [];
+  console.log(selectedColumns.value); // Mueve el console.log aquí dentro
+});
+
+console.log(selectedColumns)
 </script>
 
 <template>
@@ -43,7 +29,7 @@ const loadCarsLazy = (event) => {
     <div class="global-h-title">
       <div class="g-h-t-primary">
         <h1>Análisis por filtros,tiempo real</h1>
-        <span>{{ data.data ?  data.data.length : 0 }}</span>
+        <span>{{ data.data ? data.data.length : 0 }}</span>
       </div>
       <span>| Dia terminado en Mina </span>
     </div>
@@ -58,23 +44,26 @@ const loadCarsLazy = (event) => {
       paginator
       :rows="20"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
-      currentPageReportTemplate="Página {currentPage} de {totalPages}"      
-      :virtualScrollerOptions="{
-        lazy: true,
-        onLazyLoad: loadCarsLazy,
-        itemSize: 46,
-        delay: 200,
-        showLoader: true,
-        loading: lazyLoading,
-        numToleratedItems: 10,
-      }"
+      currentPageReportTemplate="Página {currentPage} de {totalPages}"
     >
+      <template #header>
+        <div style="text-align: left">
+          <!-- <MultiSelect
+            :modelValue="selectedColumns"
+            :options="data.columns"
+            optionLabel="title"
+            @update:modelValue="onToggle"
+            display="chip"
+            placeholder="Select Columns"
+          /> -->
+        </div>
+      </template>
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>
       <Column header="#" headerStyle="width:3rem">
         <template #body="slotProps">
-            {{ slotProps.index + 1 }}
+          {{ slotProps.index + 1 }}
         </template>
-    </Column>
+      </Column>
       <Column
         v-for="(column, index) in data.columns"
         :key="index"
@@ -82,9 +71,19 @@ const loadCarsLazy = (event) => {
         :header="column.title"
         sortable
       >
-        <template #loading>
-          
-          <Skeleton height="40px"  ></Skeleton>          
+        <template #body="slotProps">
+          <div class="td-user">
+            <div class="t-name">
+              <h4>
+                {{
+                  column && column.fn === "fixed"
+                    ? slotProps.data[column.field].toFixed(2)
+                    : slotProps.data[column.field]
+                }}
+              </h4>
+              <h5>unidad</h5>
+            </div>
+          </div>
         </template>
       </Column>
     </DataTable>

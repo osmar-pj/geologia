@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
 import Edit from "../icons/Edit.vue";
+import Delete from "../icons/Delete.vue";
 
 const url = import.meta.env.VITE_API_URL;
 
@@ -77,7 +78,7 @@ const handleFileChange = (event) => {
         }
 
         // Actualizar historial con los datos procesados
-        historial.value = [...historialArr];
+        historial.value = historialArr.map(item => ({ ...item, disabled: false }));
       } else {
         console.error("Error: La primera fila no es un array de encabezados.");
       }
@@ -177,24 +178,33 @@ const onRowEditSave = (event) => {
 
 
 const calculateColumnAverage = (columnName) => {
-  const columnValues = historial.value.map((row) => row[columnName]);
-  const validColumnValues = columnValues.filter((value) => !isNaN(value));
+  const enabledRows = historial.value.filter((row) => !row.disabled);
+  
+  if (enabledRows.length > 0) {
+    const validColumnValues = enabledRows.map((row) => row[columnName])
+      .filter((value) => !isNaN(value));
 
-  if (validColumnValues.length > 0) {
-    const average =
-      validColumnValues.reduce((acc, value) => acc + value, 0) /
-      validColumnValues.length;
+    if (validColumnValues.length > 0) {
+      const average =
+        validColumnValues.reduce((acc, value) => acc + value, 0) /
+        validColumnValues.length;
 
-    // Almacenar el promedio en la variable averages
-    averages.value[columnName] = parseFloat(average.toFixed(2));
+      // Almacenar el promedio en la variable averages
+      averages.value[columnName] = parseFloat(average.toFixed(2));
 
-    return parseFloat(average.toFixed(2));
+      return parseFloat(average.toFixed(2));
+    } else {
+      // Si no hay valores válidos, establecer el promedio en 0
+      averages.value[columnName] = 0;
+      return "";
+    }
   } else {
-    // Si no hay valores válidos, establecer el promedio en 0
+    // Si no hay filas habilitadas, establecer el promedio en 0
     averages.value[columnName] = 0;
     return "";
   }
 };
+
 
 
 console.log(historial, averages);
@@ -202,9 +212,13 @@ console.log(historial, averages);
 const confirmDeleteProduct = (rowData) => {
   const index = historial.value.indexOf(rowData);
   if (index !== -1) {
-    historial.value.splice(index, 1);
+    historial.value[index].disabled = true;
+    historial.value[index].editing = false;
   }
 };
+
+
+
 </script>
 
 <template>
@@ -275,6 +289,7 @@ const confirmDeleteProduct = (rowData) => {
                   editMode="row"
                   @row-edit-save="onRowEditSave"
                   :class="dataTableClass"
+                  :rowClassName="(rowData) => rowData.disabled ? 'disabled-row' : ''"
                   :pt="{
                     table: { style: 'min-width: 5rem' },
                     column: {
@@ -291,7 +306,8 @@ const confirmDeleteProduct = (rowData) => {
                     :key="index"
                     :field="col"
                     :header="col"
-                    :editable="true"
+                    :editable="col.disabled"
+                    
                   >
                     <template #body="{ data, field }">
                       {{ data[field] }}
@@ -360,7 +376,7 @@ const confirmDeleteProduct = (rowData) => {
                         @click="confirmDeleteProduct(slotProps.data)"
                         class="btn-excel-delet"
                       >
-                        X
+                        <Delete/>
                       </Button>
                     </template>
                   </Column>
@@ -397,6 +413,10 @@ const confirmDeleteProduct = (rowData) => {
 <style lang="scss">
 .CCModal {
   max-width: 700px !important;
+}
+.disabled-row {
+  /* Estilos para las filas desactivadas */
+  opacity: 0.5; /* Ejemplo: Opacidad reducida */
 }
 .table-exel {
   .p-datatable-table {
@@ -459,10 +479,16 @@ const confirmDeleteProduct = (rowData) => {
     }
   }
   .btn-excel-delet {
-    color: var(--primary);
-    height: 30px;
-    width: 30px;
     padding: 0;
+   svg{
+    cursor: pointer;
+    width: 1.3rem;
+    height: 1.3rem;
+    color: var(--grey-2);
+    fill: transparent;
+    stroke-width: 1.6;
+    transition: all 0.25s ease-out;
+  }
   }
   .p-datatable-wrapper {
     overflow: unset !important;

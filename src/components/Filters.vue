@@ -12,7 +12,7 @@ const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 
 const dataFilters = ref([]);
-const selectedCategories = ref(["mining", "year", "month", "ubication"]);
+const selectedCategories = ref([]);
 const draggableItem = ref([null]);
 const showFilters = ref(false);
 const showError = ref(false);
@@ -26,7 +26,7 @@ const cerrarModal = () => {
 };
 
 const cleanFilter = () => {
-  selectedCategories.value = ["mining", "year", "month", "ubication"];
+  selectedCategories.value = [];
   sendFilter();
   cerrarModal();
 };
@@ -66,10 +66,7 @@ const deselectItem = (index) => {
 };
 
 const sendFilter = async () => {
-  if (!selectedCategories.value || selectedCategories.value.length === 0) {
-    showError.value = true;
-    setTimeout(hideError, 5000);
-  } else {
+  
     try {
       buttonClicked.value = true;
       const response = await fetch(`${url}/listgeology`, {
@@ -81,9 +78,10 @@ const sendFilter = async () => {
       });
 
       const data = await response.json();
+      console.log(data);
       if (data.status === true) {
+        console.log(data);
         store.dispatch("filter_list", data);
-           
         cerrarModal();
         buttonClicked.value = false;
       } else {
@@ -93,7 +91,7 @@ const sendFilter = async () => {
     } catch (error) {
       console.error("Error al actualizar:", error);
     }
-  }
+  
 };
 </script>
 <template>
