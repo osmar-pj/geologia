@@ -1,5 +1,6 @@
 <script setup>
 import readXlsxFile from "read-excel-file";
+import Papa from "papaparse";
 import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
@@ -7,20 +8,9 @@ import Edit from "../icons/Edit.vue";
 import Delete from "../icons/Delete.vue";
 
 const url = import.meta.env.VITE_API_URL;
-
+const store = useStore();
 const props = defineProps(["data"]);
 const emit = defineEmits(["cerrarModal"]);
-
-const store = useStore();
-
-const historial = ref([]);
-const averages = ref([]);
-const headers = ref([]);
-const showError = ref(false);
-const buttonClicked = ref(false);
-const showSuccessM = ref(false);
-const showForm = ref(true);
-
 const cerrarModal = () => {
   emit("cerrarModal");
 };
@@ -29,67 +19,53 @@ const hideError = () => {
   showError.value = false;
 };
 
-const handleFileChange = (event) => {
+const csvData = ref([]);
+const averages = ref([]);
+const headers = ref([]);
+const showError = ref(false);
+const buttonClicked = ref(false);
+const showSuccessM = ref(false);
+const showForm = ref(true);
+const selectedProducts = ref();
+const handleFileUpload = (event) => {
   const file = event.target.files[0];
 
-  readXlsxFile(file)
-    .then((rows) => {
-      const historialArr = [];
-
-      // Obtener encabezados de columnas
-      if (Array.isArray(rows[0])) {
-        headers.value = rows[0].map((header) => header.toUpperCase());
-
-        for (let row = 1; row < rows.length; row++) {
-          const rowData = rows[row];
-
-          // Verificar si la fila tiene algún valor nulo
-          const hasNullValue = rowData.some((value) => value === null);
-
-          if (hasNullValue) {
-            console.error(
-              "Error: Se encontró un valor null en la fila. No se puede procesar."
-            );
-            return;
+  if (file) {
+    Papa.parse(file, {
+      header: true,
+      complete: (result) => {
+        // Filtrar las filas completamente vacías y convertir cadenas numéricas en números
+        const filteredData = result.data.map(row => {
+          const newRow = { disable: false,};
+          for (const key in row) {
+            if (row[key] !== '') {
+              newRow[key] = isNaN(row[key]) ? row[key] : parseFloat(row[key]);
+            }
           }
+          newRow['promedio'] = key === 'Ag (ozt)' || key === 'Fe (pct)' || key === 'Mn (pct)' || key === 'Pb (pct)' || key === 'Zn (pct)';
 
-          // Verificar si la fila tiene todos los valores válidos
-          const validRow = rowData.every(
-            (value) => value !== "" && value !== 0
-          );
+          return newRow;
+        });
 
-          if (validRow) {
-            const rowObject = {};
+        // Filtrar las filas vacías después de la data ya filtrada
+        const finalData = filteredData.filter(row => Object.values(row).some(value => value !== ''));
 
-            headers.value.forEach((header, col) => {
-              const value = isNaN(rowData[col])
-                ? rowData[col]
-                : parseFloat(rowData[col]);
+        // Limpiar el array existente y agregar los datos filtrados
+        csvData.value.length = 0;
+        csvData.value.push(...finalData);
 
-              // Redondear a 2 decimales si es un número
-              rowObject[header] =
-                typeof value === "number"
-                  ? parseFloat(value.toFixed(2))
-                  : value;
-            });
-
-            historialArr.push(rowObject);
-          }
-        }
-
-        // Actualizar historial con los datos procesados
-        historial.value = historialArr.map(item => ({ ...item, disabled: false }));
-      } else {
-        console.error("Error: La primera fila no es un array de encabezados.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error al procesar el archivo Excel:", error);
+        console.log('Final Data:', finalData);
+      },
+      error: (error) => {
+        console.error('Error parsing CSV:', error.message);
+      },
     });
+  }
 };
 
+
 const updateTravel = async () => {
-  console.log(historial, averages);
+  console.log(csvData, averages);
   if (!averages.value || averages.value.length === 0) {
     showError.value = true;
     setTimeout(hideError, 5000);
@@ -137,10 +113,6 @@ const updateTravel = async () => {
   }
 };
 
-const formatCurrency = (value) => {
-  return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
-};
-
 const datosMuestra = async () => {
   if (!averages.value || averages.value.length === 0) {
     showError.value = true;
@@ -152,13 +124,13 @@ const datosMuestra = async () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ data: historial.value }),
+        body: JSON.stringify({ data: csvData.value }),
       });
 
       const result = await response.json();
 
       if (result.status === true) {
-        console.log("correcto historial");
+        console.log("correcto csvData");
       } else {
         console.log("error");
       }
@@ -172,22 +144,20 @@ const dataTableClass = "table-exel";
 const editingRows = ref([]);
 const onRowEditSave = (event) => {
   let { newData, index } = event;
-
-  historial.value[index] = newData;
+  csvData.value[index] = newData;
 };
 
-
 const calculateColumnAverage = (columnName) => {
-  const enabledRows = historial.value.filter((row) => !row.disabled);
-  
+  const enabledRows = csvData.value.filter((row) => !row.disabled);
+
   if (enabledRows.length > 0) {
-    const validColumnValues = enabledRows.map((row) => row[columnName])
+    const validColumnValues = enabledRows
+      .map((row) => row[columnName])
       .filter((value) => !isNaN(value));
 
     if (validColumnValues.length > 0) {
-      const average =
-        validColumnValues.reduce((acc, value) => acc + value, 0) /
-        validColumnValues.length;
+      const sum = validColumnValues.reduce((acc, value) => acc + parseFloat(value), 0);
+      const average = sum / validColumnValues.length;
 
       // Almacenar el promedio en la variable averages
       averages.value[columnName] = parseFloat(average.toFixed(2));
@@ -205,20 +175,14 @@ const calculateColumnAverage = (columnName) => {
   }
 };
 
-
-
-console.log(historial, averages);
+console.log(averages);
 
 const confirmDeleteProduct = (rowData) => {
-  const index = historial.value.indexOf(rowData);
+  const index = csvData.value.indexOf(rowData);
   if (index !== -1) {
     historial.value[index].disabled = true;
-    historial.value[index].editing = false;
   }
 };
-
-
-
 </script>
 
 <template>
@@ -273,42 +237,29 @@ const confirmDeleteProduct = (rowData) => {
                     </svg>
                     <span class="browse-button">Subir archivo</span>
                   </div>
-                  <input id="file" type="file" @change="handleFileChange" />
+                  <input id="file" type="file" @change="handleFileUpload" />
                 </label>
               </div>
               <span class="label-error" v-if="showError"
                 >*Ingrese documento</span
               >
-              <div class="view-excel" v-if="historial.length">
+              <div class="view-excel" v-if="csvData.length">
                 <h4 class="text-excel">
                   Datos procesados del <strong>archivo Excel</strong>
                 </h4>
                 <DataTable
-                  :value="historial"
+                  :value="csvData"
                   v-model:editingRows="editingRows"
+                  v-model:selection="selectedProducts"
                   editMode="row"
                   @row-edit-save="onRowEditSave"
                   :class="dataTableClass"
-                  :rowClassName="(rowData) => rowData.disabled ? 'disabled-row' : ''"
-                  :pt="{
-                    table: { style: 'min-width: 5rem' },
-                    column: {
-                      bodycell: ({ state }) => ({
-                        style:
-                          state['d_editing'] &&
-                          'padding-top: 0.6rem; padding-bottom: 0.6rem',
-                      }),
-                    },
-                  }"
+                  :row-class="
+                    (rowData) => (rowData.disabled ? 'disabled-row' : '')
+                  "
                 >
-                  <Column
-                    v-for="(col, index) in headers"
-                    :key="index"
-                    :field="col"
-                    :header="col"
-                    :editable="col.disabled"
-                    
-                  >
+                <Column selectionMode="multiple" headerStyle="width: 2.5rem" :exportable="false" ></Column>
+                <Column v-for="(value, key) in csvData[0]" :key="key" :field="key" :header="key">
                     <template #body="{ data, field }">
                       {{ data[field] }}
                     </template>
@@ -325,66 +276,25 @@ const confirmDeleteProduct = (rowData) => {
                       />
                     </template>
                     <template #footer="{ footerData }">
-                      {{ calculateColumnAverage(col) }}
-                    </template>
-                  </Column>
-                 
-                  <Column
-                    :rowEditor="true"
-                    style="width: 10%; min-width: 2rem"
-                    bodyStyle="text-align:center"
-                  >
-                    <template #rowEditor="{ data, index }">
-                      <Button
-                      v-if="!data.editing"
-                        icon="pi pi-pencil"
-                        outlined
-                        rounded
-                        severity="primary"
-                        @click="editRow(index)"
-                      ></Button>
-                      <Button
-                      v-if="data.editing"
-                        icon="pi pi-check"
-                        outlined
-                        rounded
-                        severity="success"
-                        @click="saveRow(index)"
-                      ></Button>
-                      <Button
-                      v-if="data.editing"
-                        icon="pi pi-times"
-                        outlined
-                        rounded
-                        severity="danger"
-                        @click="cancelEditRow(index)"
-                      ></Button>
+                      {{ calculateColumnAverage(data, key) }}
                     </template>
                   </Column>
                   <Column
                     :rowEditor="true"
-                    style="width: 10%; min-width: 2rem"
-                    bodyStyle="text-align:center"
+                    style="width: 30px; min-width: 30px"
                   >
-                    <template #body="slotProps">
-                      <Button
-                      v-if="!data.editing"
-                        icon="pi pi-trash"
-                        outlined
-                        rounded
-                        severity="danger"
-                        @click="confirmDeleteProduct(slotProps.data)"
-                        class="btn-excel-delet"
-                      >
-                        <Delete/>
-                      </Button>
-                    </template>
                   </Column>
+                  
                 </DataTable>
               </div>
             </div>
           </div>
+          <div>           
+            
+          </div>
         </div>
+
+
         <div class="mC-c-footer">
           <template v-if="buttonClicked">
             <div class="loader"></div>
@@ -412,12 +322,17 @@ const confirmDeleteProduct = (rowData) => {
 
 <style lang="scss">
 .CCModal {
-  max-width: 700px !important;
+  max-width: 1200px !important;
 }
-.disabled-row {
-  /* Estilos para las filas desactivadas */
-  opacity: 0.5; /* Ejemplo: Opacidad reducida */
+
+.disabled-row,
+.disabled-row * {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  opacity: 0.8;
 }
+
 .table-exel {
   .p-datatable-table {
     td {
@@ -480,18 +395,18 @@ const confirmDeleteProduct = (rowData) => {
   }
   .btn-excel-delet {
     padding: 0;
-   svg{
-    cursor: pointer;
-    width: 1.3rem;
-    height: 1.3rem;
-    color: var(--grey-2);
-    fill: transparent;
-    stroke-width: 1.6;
-    transition: all 0.25s ease-out;
-  }
+    svg {
+      cursor: pointer;
+      width: 1.25rem;
+      height: 1.25rem;
+      color: var(--red);
+      fill: transparent;
+      stroke-width: 1.6;
+      transition: all 0.25s ease-out;
+    }
   }
   .p-datatable-wrapper {
-    overflow: unset !important;
+    
   }
 }
 .table-excel {

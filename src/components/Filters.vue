@@ -65,8 +65,7 @@ const deselectItem = (index) => {
   selectedCategories.value.splice(index, 1);
 };
 
-const sendFilter = async () => {
-  
+const sendFilter = async () => {  
     try {
       buttonClicked.value = true;
       const response = await fetch(`${url}/listgeology`, {
