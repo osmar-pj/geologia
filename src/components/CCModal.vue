@@ -42,7 +42,7 @@ const handleFileUpload = (event) => {
               newRow[key] = isNaN(row[key]) ? row[key] : parseFloat(row[key]);
             }
           }
-          newRow['promedio'] = key === 'Ag (ozt)' || key === 'Fe (pct)' || key === 'Mn (pct)' || key === 'Pb (pct)' || key === 'Zn (pct)';
+          // newRow['promedio'] = key === 'Ag (ozt)' || key === 'Fe (pct)' || key === 'Mn (pct)' || key === 'Pb (pct)' || key === 'Zn (pct)';
 
           return newRow;
         });
@@ -62,7 +62,6 @@ const handleFileUpload = (event) => {
     });
   }
 };
-
 
 const updateTravel = async () => {
   console.log(csvData, averages);

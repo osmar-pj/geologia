@@ -72,6 +72,7 @@ const sendFilter = async () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": true,
         },
         body: JSON.stringify({ arr: selectedCategories.value }),
       });
@@ -89,8 +90,7 @@ const sendFilter = async () => {
       }
     } catch (error) {
       console.error("Error al actualizar:", error);
-    }
-  
+    }  
 };
 </script>
 <template>
@@ -207,7 +207,7 @@ const sendFilter = async () => {
 .btn-filters {
   background-color: var(--white);  
   border: 1px solid var(--grey-light-2);
-  border-radius: 10px;
+  border-radius: 8px;
   min-width: 100px;
   height: 40px;
   display: flex;

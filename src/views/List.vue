@@ -21,7 +21,6 @@ watch(data, () => {
   console.log(selectedColumns.value); // Mueve el console.log aquí dentro
 });
 
-console.log(selectedColumns)
 </script>
 
 <template>
@@ -65,7 +64,7 @@ console.log(selectedColumns)
         </template>
       </Column>
       <Column
-        v-for="(column, index) in data.columns"
+        v-for="(column, index) in data.header"
         :key="index"
         :field="column.field"
         :header="column.title"
@@ -81,7 +80,7 @@ console.log(selectedColumns)
                     : slotProps.data[column.field]
                 }}
               </h4>
-              <h5>unidad</h5>
+              
             </div>
           </div>
         </template>
