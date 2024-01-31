@@ -25,3 +25,11 @@ export const formatDate = (value) => {
         return result
       }
   };
+
+  export const createArray = (nro, word) => {
+    const arr = []
+    for (let i = 0; i < nro; i++) {
+        arr.push(word)
+    }
+    return arr
+}

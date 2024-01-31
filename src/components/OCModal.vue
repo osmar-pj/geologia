@@ -9,6 +9,7 @@ import {
   inject,
   reactive,
 } from "vue";
+import { createArray } from "../libs/utils";
 import { useStore } from "vuex";
 import CreateRuma from "../components/CreateRuma.vue";
 import Success from "../components/Success.vue";
@@ -21,12 +22,52 @@ const url = import.meta.env.VITE_API_URL;
 const props = defineProps(["data"]);
 const emit = defineEmits();
 const cerrarModal = () => {
-  emit("cerrarModal");
+  emit("cerrarModal")
 };
-const store = useStore();
+const store = useStore()
+const data = ref(props.data)
+const isCamion = computed(() => data.value.carriage === "Camion")
+const isVagones = computed(() => data.value.carriage === "Vagones")
+const isSplitRequired = computed(() => data.value.splitRequired)
+const numberOfSplits = isSplitRequired.value ? data.value.destiny.length : 1
+const numberOfMaterials = isSplitRequired.value ? data.value.materials.length : 1
+const totalVagones = isVagones.value ? data.value.vagones : 0
+const isOdd = (number) => number % 2 !== 0
+
+const dataToUpdate = ref([])
+
+dataToUpdate.value = isCamion.value ? [
+  {
+    type: data.value.type,
+    tajo: data.value.tajo,
+    pila: "",
+    material: data.value.material
+  },
+] : isSplitRequired.value ? data.value.destiny.map((item, index) => {
+  return {
+    type: "TAJO",
+    tajo: null,
+    pila: item,
+    material: numberOfMaterials == 1 ? data.value.materials : data.value.materials[index],
+    vagones: totalVagones/numberOfSplits,
+    pilaSelected: null,
+    materialSelected: null,
+    vagonesDistribution: totalVagones,
+  }
+}) : [
+  {
+    type: "TAJO",
+    tajo: null,
+    pila: data.value.ubication,
+    material: data.value.dominio,
+  },
+]
+
+console.log(dataToUpdate.value)
+
 const dataTajo = ref([]);
 const selectedTipo = ref(props.data.type ? props.data.type : "TAJO");
-const selectedTajo = ref(props.data.tajo ? { name: props.data.tajo } : "");
+const selectedTajo = ref(props.data.tajo ? props.data.tajo : "");
 const selectedRuma = ref("");
 const showError = ref(false);
 const buttonClicked = ref(false);
@@ -55,55 +96,37 @@ const dataPila = computed(() => {
 
 const hideError = () => {
   showError.value = false;
-};
+}
 
-const totalWagons = ref(props.data.vagones ?? "");
-const dataMaterial = ref(props.data.materials || []);
+const changeGiba = (i) => {
+  console.log("Cambiando giba", i);
+  dataToUpdate.value[i].pila = "G4"
+  dataToUpdate.value[i + 1].pila = "G2"
+}
 
-const counts = reactive(
-  dataMaterial.value.length > 0
-    ? dataMaterial.value.map((_, index) => {
-        const baseCount = Math.floor(
-          totalWagons.value / dataMaterial.value.length
-        );
-        const additionalCount =
-          index < totalWagons.value % dataMaterial.value.length ? 1 : 0;
-        return baseCount + additionalCount;
-      })
-    : []
-);
-
-const itemData = reactive(
-  props.data.materials.map(() => {
-    return {
-      count: 0,
-      selectedTipo: "TAJO",
-      selectedTajo: null,
-      data: { type: null, tajo: null },
-      giba: null,
-    };
-  })
-);
-
-const decrease = (index) => {
-  if (itemData[index]?.count > 0) {
-    itemData[index].count--;
+const decrease = (i) => {
+  if (dataToUpdate.value[i].vagones < 1) {
+    console.log("No puede bajar mas");
+    dataToUpdate.value[i].vagones = 0
+    // enviar mensaje de que no puede bajar mas
+  } else {
+    dataToUpdate.value[i].vagones--
   }
 };
 
-const increase = (index) => {
-  const otherIndex = index === 0 ? 1 : 0;
-  const remainingSpace =
-    totalWagons.value - itemData[index].count - itemData[otherIndex].count;
-
-  if (remainingSpace > 0) {
-    itemData[index].count++;
+const increase = (i) => {
+  if (dataToUpdate.value[i].vagones > totalVagones - 1) {
+    dataToUpdate.value[i].vagones = totalVagones
+    console.log("No puede subir mas");
+    // enviar mensaje de que no puede subir mas
+  } else {
+    dataToUpdate.value[i].vagones++
   }
 };
 
 const updateCount = (index, event) => {
   const value = parseInt(event.target.value, 10);
-  const remainingSpace = totalWagons.value - value;
+  const remainingSpace = totalVagones - value;
 
   if (value >= 0 && remainingSpace >= 0) {
     itemData[index].count = value;
@@ -123,17 +146,15 @@ const getImagePath = (imageName) => {
 };
 
 const updateTravel = async () => {
-  console.log(itemData);
   try {
     buttonClicked.value = true;
-    const updatedTravel = {
-      type: selectedTipo.value,
-      tajo: selectedTajo.value.name,
-      pila: selectedRuma.value.pila_Id,
-      statusGeology: "QualityControl",
-      tajos: selectedTajos.value,
-    };
-    console.log(updatedTravel);
+    dataToUpdate.value.map(i => {
+      return {
+        ...i,
+        statusGeology: "QualityControl"
+      }
+    });
+    console.log(dataToUpdate.value);
     const response = await fetch(`${url}/trip/${props.data._id}`, {
       method: "PUT",
       headers: {
@@ -184,8 +205,13 @@ const updateTravel = async () => {
           <img src="../assets/img/i-close.svg" alt="" />
         </span>
       </div>
+      
       <div class="mC-c-body">
         <div className="mC-b-info">
+          <div class="item-descrip" v-if="isVagones && isSplitRequired">
+            <!-- AGREGAR ESTILO DE WARNING O AVISO -->
+            <div> Warning! Este viaje se debe dividir </div>
+          </div>
           <h3 class="item-text">{{ data.operator }}</h3>
           <div class="item-descrip">
             <h5>{{ data.carriage }}</h5>
@@ -193,54 +219,37 @@ const updateTravel = async () => {
           </div>
           <div class="item-descrip">
             <h5>Toneladas</h5>
-            <h4>{{ data.tonh }} <small>TMH</small></h4>
+            <h4>{{ data.tonh.toFixed(2) }} <small>TMH</small></h4>
           </div>
-          <div class="item-descrip">
+          <div class="item-descrip" v-if="!isSplitRequired">
             <h5>Tajo</h5>
-            <h4 v-if="data && data.tajo">
+            <h4 v-if="data.tajo">
               {{ data.tajo }}
             </h4>
             <div v-else class="t-nulo"><IHelp /> Por completar...</div>
           </div>
         </div>
-        <div class="mC-b-imputs" v-if="data.splitRequired">
+
+        
+        <div class="mC-b-imputs">
           <div
-            v-for="(giba, i) in props.data.destiny"
-            :key="i"
-            class="container-count"
+          v-for="(item, index) in dataToUpdate"
+          :key="index"
+          class="container-count"
           >
             <div class="count-item">
-              <label>Seleccione Giba</label>
-              <Dropdown
-                placeholder="Seleccionar"
-                class="p-dropdown-search"
-                v-model="itemData[index]?.selectedTajo"
-                :options="
-                  props.data.destiny.map((value) => ({
-                    label: value,
-                    value: value,
-                  }))
-                "
-                optionLabel="label"
-                optionValue="value"
-              />
+              <label v-if="!isCamion">Giba</label>
+              {{ item.pila }}
             </div>
-            {{ props.data.destiny }}
-          </div>
-        </div>
-
-        <div class="mC-b-imputs" v-if="data.splitRequired">
-          <div
-            v-for="(item, index) in props.data.materials"
-            :key="index"
-            class="container-count"
-          >
+            <div>
+              <button class="btn-cancel" @click.prevent="changeGiba(index)">Cambiar</button>
+            </div>
             <div class="count-item">
               <div class="count-info">
-                <img :src="getImagePath(item)" alt="" />
-                <span>{{ item }}</span>
+                <img :src="getImagePath(item.material)" alt="" />
+                <span>{{ item.material }}</span>
               </div>
-              <div class="count-input">
+              <div class="count-input" v-if="isSplitRequired">
                 <button
                   class="button-number"
                   type="button"
@@ -251,19 +260,19 @@ const updateTravel = async () => {
                 <input
                   class="input-number no-spinners"
                   type="number"
-                  :value="itemData[index]?.count || 0"
+                  :value="item.vagones"
                   @input="updateCount(index, $event)"
-                />
-                <button
+                  />
+                  <button
                   class="button-number"
                   type="button"
                   @click="increase(index)"
-                >
+                  >
                   <IMore />
                 </button>
               </div>
             </div>
-            <div class="count-item">
+            <div class="count-item" v-if="!isCamion">
               <div className="mC-b-imputs">
                 <div class="mC-imputs-item">
                   <label>Seleccione Tipo</label>
@@ -273,7 +282,7 @@ const updateTravel = async () => {
                         class="radio-input"
                         type="radio"
                         :name="'radio_' + index"
-                        :v-model="itemData[index]?.selectedTipo"
+                        v-model="item.type"
                         value="TAJO"
                         id="tajo-radio"
                         checked
@@ -288,9 +297,10 @@ const updateTravel = async () => {
                         class="radio-input"
                         type="radio"
                         :name="'radio_' + index"
-                        :v-model="itemData[index]?.selectedTipo"
+                        v-model="item.type"
                         value="AVANCE"
                         id="avance-radio"
+                        @change="item.tajo = 'AVANCE'"
                       />
                       <span class="radio-tile">
                         <span class="radio-label">Avance</span>
@@ -302,7 +312,7 @@ const updateTravel = async () => {
                 <Transition name="fade" mode="out-in">
                   <div
                     class="mC-imputs-item"
-                    v-if="itemData[index]?.selectedTipo === 'TAJO'"
+                    v-if="item.type === 'TAJO'"
                   >
                     <label>Seleccione Tajo</label>
                     <div class="imputs-i-input">
@@ -310,9 +320,10 @@ const updateTravel = async () => {
                         placeholder="Seleccionar"
                         class="p-dropdown-search"
                         filter
-                        :v-model="itemData[index]?.selectedTajo"
+                        v-model="item.tajo"
                         :options="dataTajo"
                         optionLabel="name"
+                        optionValue="name"
                       />
                     </div>
                     <span class="label-error" v-if="showError"
@@ -324,67 +335,7 @@ const updateTravel = async () => {
             </div>
           </div>
         </div>
-        <div
-          className="mC-b-imputs"
-          v-if="data.carriage === 'Vagones' && !data.splitRequired"
-        >
-          <div class="mC-imputs-item">
-            <label>Seleccione Tipo</label>
-            <div class="radio-inputs">
-              <label>
-                <input
-                  class="radio-input"
-                  type="radio"
-                  name="radio"
-                  v-model="selectedTipo"
-                  value="TAJO"
-                  id="tajo-radio"
-                  checked
-                />
-                <span class="radio-tile">
-                  <span class="radio-label">Tajo</span>
-                  <p class="radio-info">Mina a Tajo Abierto</p>
-                </span>
-              </label>
-              <label>
-                <input
-                  class="radio-input"
-                  type="radio"
-                  name="radio"
-                  v-model="selectedTipo"
-                  value="AVANCE"
-                  id="avance-radio"
-                />
-                <span class="radio-tile">
-                  <span class="radio-label">Avance</span>
-                  <p class="radio-info">Mina Subterránea</p>
-                </span>
-              </label>
-            </div>
-          </div>
-          <Transition name="fade" mode="out-in">
-            <div
-              class="mC-imputs-item"
-              v-if="selectedTipo === 'TAJO' && (!data.type || !data.tajo)"
-            >
-              <label>Seleccione Tajo</label>
-              <div class="imputs-i-input">
-                <Dropdown
-                  placeholder="Seleccionar"
-                  class="p-dropdown-search"
-                  filter
-                  v-model="selectedTajo"
-                  :options="dataTajo"
-                  optionLabel="name"
-                />
-              </div>
-              <span class="label-error" v-if="showError"
-                >*Seleccionar campo requerido</span
-              >
-            </div>
-          </Transition>
-        </div>
-        <div className="mC-b-imputs" v-if="data.carriage === 'Camion'">
+        <div className="mC-b-imputs" v-if="isCamion">
           <div class="mC-imputs-item input-pila">
             <label>Seleccione Pila</label>
             <div class="imputs-i-input">
