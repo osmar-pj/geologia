@@ -62,29 +62,53 @@ const dataMaterial = ref(props.data.materials || []);
 
 const counts = reactive(
   dataMaterial.value.length > 0
-    ? dataMaterial.value.map(
-        () => totalWagons.value / dataMaterial.value.length
-      )
+    ? dataMaterial.value.map((_, index) => {
+        const baseCount = Math.floor(
+          totalWagons.value / dataMaterial.value.length
+        );
+        const additionalCount =
+          index < totalWagons.value % dataMaterial.value.length ? 1 : 0;
+        return baseCount + additionalCount;
+      })
     : []
 );
 
-const increase = (index) => {
-  if (counts.reduce((acc, val) => acc + val, 0) < totalWagons.value) {
-    counts[index]++;
+const itemData = reactive(
+  props.data.materials.map(() => {
+    return {
+      count: 0,
+      selectedTipo: "TAJO",
+      selectedTajo: null,
+      data: { type: null, tajo: null },
+      giba: null,
+    };
+  })
+);
+
+const decrease = (index) => {
+  if (itemData[index]?.count > 0) {
+    itemData[index].count--;
   }
 };
 
-const decrease = (index) => {
-  if (counts[index] > 0) {
-    counts[index]--;
+const increase = (index) => {
+  const otherIndex = index === 0 ? 1 : 0;
+  const remainingSpace =
+    totalWagons.value - itemData[index].count - itemData[otherIndex].count;
+
+  if (remainingSpace > 0) {
+    itemData[index].count++;
   }
 };
 
 const updateCount = (index, event) => {
   const value = parseInt(event.target.value, 10);
-  counts[index] = isNaN(value) ? 0 : Math.min(value, totalWagons.value);
-};
+  const remainingSpace = totalWagons.value - value;
 
+  if (value >= 0 && remainingSpace >= 0) {
+    itemData[index].count = value;
+  }
+};
 const getImagePath = (imageName) => {
   switch (imageName) {
     case "POLIMETALICO":
@@ -99,17 +123,18 @@ const getImagePath = (imageName) => {
 };
 
 const updateTravel = async () => {
+  console.log(itemData);
   try {
     buttonClicked.value = true;
     const updatedTravel = {
-      ...props.data,
       type: selectedTipo.value,
       tajo: selectedTajo.value.name,
       pila: selectedRuma.value.pila_Id,
       statusGeology: "QualityControl",
+      tajos: selectedTajos.value,
     };
     console.log(updatedTravel);
-    const response = await fetch(`${url}/OreControl/${props.data._id}`, {
+    const response = await fetch(`${url}/trip/${props.data._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -180,6 +205,32 @@ const updateTravel = async () => {
         </div>
         <div class="mC-b-imputs" v-if="data.splitRequired">
           <div
+            v-for="(giba, i) in props.data.destiny"
+            :key="i"
+            class="container-count"
+          >
+            <div class="count-item">
+              <label>Seleccione Giba</label>
+              <Dropdown
+                placeholder="Seleccionar"
+                class="p-dropdown-search"
+                v-model="itemData[index]?.selectedTajo"
+                :options="
+                  props.data.destiny.map((value) => ({
+                    label: value,
+                    value: value,
+                  }))
+                "
+                optionLabel="label"
+                optionValue="value"
+              />
+            </div>
+            {{ props.data.destiny }}
+          </div>
+        </div>
+
+        <div class="mC-b-imputs" v-if="data.splitRequired">
+          <div
             v-for="(item, index) in props.data.materials"
             :key="index"
             class="container-count"
@@ -200,7 +251,7 @@ const updateTravel = async () => {
                 <input
                   class="input-number no-spinners"
                   type="number"
-                  :value="counts[index]"
+                  :value="itemData[index]?.count || 0"
                   @input="updateCount(index, $event)"
                 />
                 <button
@@ -213,14 +264,63 @@ const updateTravel = async () => {
               </div>
             </div>
             <div class="count-item">
-              <Dropdown
-                class="p-dropdown-search"
-                filter
-                v-model="selectedTajo"
-                :options="dataTajo"
-                optionLabel="name"
-                placeholder="Seleccionar"
-              />
+              <div className="mC-b-imputs">
+                <div class="mC-imputs-item">
+                  <label>Seleccione Tipo</label>
+                  <div class="radio-inputs">
+                    <label>
+                      <input
+                        class="radio-input"
+                        type="radio"
+                        :name="'radio_' + index"
+                        :v-model="itemData[index]?.selectedTipo"
+                        value="TAJO"
+                        id="tajo-radio"
+                        checked
+                      />
+                      <span class="radio-tile">
+                        <span class="radio-label">Tajo</span>
+                        <p class="radio-info">Mina a Tajo Abierto</p>
+                      </span>
+                    </label>
+                    <label>
+                      <input
+                        class="radio-input"
+                        type="radio"
+                        :name="'radio_' + index"
+                        :v-model="itemData[index]?.selectedTipo"
+                        value="AVANCE"
+                        id="avance-radio"
+                      />
+                      <span class="radio-tile">
+                        <span class="radio-label">Avance</span>
+                        <p class="radio-info">Mina Subterránea</p>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                <Transition name="fade" mode="out-in">
+                  <div
+                    class="mC-imputs-item"
+                    v-if="itemData[index]?.selectedTipo === 'TAJO'"
+                  >
+                    <label>Seleccione Tajo</label>
+                    <div class="imputs-i-input">
+                      <Dropdown
+                        placeholder="Seleccionar"
+                        class="p-dropdown-search"
+                        filter
+                        :v-model="itemData[index]?.selectedTajo"
+                        :options="dataTajo"
+                        optionLabel="name"
+                      />
+                    </div>
+                    <span class="label-error" v-if="showError"
+                      >*Seleccionar campo requerido</span
+                    >
+                  </div>
+                </Transition>
+              </div>
             </div>
           </div>
         </div>
@@ -325,8 +425,7 @@ const updateTravel = async () => {
 </template>
 
 <style lang="scss">
-
-.input-pila{
+.input-pila {
   flex: 1 1 130px !important;
 }
 .t-nulo {
@@ -449,7 +548,7 @@ const updateTravel = async () => {
 }
 
 .mCreate-3 {
-  max-width: 500px !important;
+  max-width: 650px !important;
 }
 
 .no-spinners::-webkit-inner-spin-button,

@@ -127,13 +127,13 @@ const openModal = (data) => {
       :data="modalData"
     />
   </Transition>
-  <Transition :duration="550" name="nested">
+  <!-- <Transition :duration="550" name="nested">
     <DeleteModal
       v-if="showModalDelete"
       @cerrarModal="showModalDelete = false"
       :data="modalData"
     />
-  </Transition>
+  </Transition> -->
 </template>
 
 <style lang="scss">
