@@ -41,7 +41,8 @@ dataToUpdate.value = isCamion.value ? [
     type: data.value.type,
     tajo: data.value.tajo,
     pila: "",
-    material: data.value.material
+    material: data.value.material,
+    isSplitRequired: data.value.splitRequired
   },
 ] : isSplitRequired.value ? data.value.destiny.map((item, index) => {
   return {
@@ -53,6 +54,7 @@ dataToUpdate.value = isCamion.value ? [
     pilaSelected: null,
     materialSelected: null,
     vagonesDistribution: totalVagones,
+    isSplitRequired: data.value.splitRequired
   }
 }) : [
   {
@@ -60,6 +62,7 @@ dataToUpdate.value = isCamion.value ? [
     tajo: null,
     pila: data.value.ubication,
     material: data.value.dominio,
+    isSplitRequired: data.value.splitRequired
   },
 ]
 
@@ -160,7 +163,7 @@ const updateTravel = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedTravel),
+      body: JSON.stringify(dataToUpdate.value),
     });
 
     const result = await response.json();
@@ -333,25 +336,26 @@ const updateTravel = async () => {
                 </Transition>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="mC-b-imputs" v-if="isCamion">
-          <div class="mC-imputs-item input-pila">
-            <label>Seleccione Pila</label>
-            <div class="imputs-i-input">
-              <Dropdown
-                class="p-dropdown"
-                v-model="selectedRuma"
-                :options="dataPila"
-                optionLabel="pila_Id"
-                placeholder="Seleccionar"
-              />
+            <div className="mC-b-imputs" v-if="isCamion">
+              <div class="mC-imputs-item input-pila">
+                <label>Seleccione Pila</label>
+                <div class="imputs-i-input">
+                  <Dropdown
+                    class="p-dropdown"
+                    v-model="item.pila"
+                    :options="dataPila"
+                    optionLabel="pila_Id"
+                    optionValue="pila_Id"
+                    placeholder="Seleccionar"
+                  />
+                </div>
+              </div>
+              <CreateRuma />
+              <span class="label-error" v-if="showError"
+                >*Seleccionar campo requerido</span
+              >
             </div>
           </div>
-          <CreateRuma />
-          <span class="label-error" v-if="showError"
-            >*Seleccionar campo requerido</span
-          >
         </div>
       </div>
       <div class="mC-c-footer">
