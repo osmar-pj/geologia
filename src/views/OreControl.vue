@@ -3,10 +3,12 @@ import { ref, onMounted, computed, inject } from "vue";
 import { useStore } from "vuex";
 import Edit from "../icons/Edit.vue";
 import OCModal from "../components/OCModal.vue";
+import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
 
 const store = useStore();
 const socket = inject("socket");
 socket.on("OreControl", (data) => {
+  console.log(data);
   store.commit("addDataListOreControl", data);
 });
 
@@ -19,10 +21,28 @@ const data = computed(() => {
 });
 
 const modalData = ref(null);
-const showOCModal = ref(true);
+const showOCModal = ref(false);
 const openModal = (data) => {
   modalData.value = data;
   showOCModal.value = true;
+};
+
+const formatColumnValue = (value, fn, field, row) => {
+  switch (fn) {
+    case "date":
+      return formatDate(value);
+    case "fixed":
+      return formatFixed(value);
+    case "arr":
+      if (field === "ubication") {
+        return formatArrayField(value, "destiny", row);
+      } else if (field === "dominio") {
+        return formatArrayField(value, "materials", row);
+      }
+      break;
+    default:
+      return value || "";
+  }
 };
 </script>
 
@@ -64,10 +84,10 @@ const openModal = (data) => {
     >
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>     
       <Column
-        v-for="(column, index) in data.header"
+        v-for="(header, index) in data.header"
         :key="index"
-        :field="column.field"
-        :header="column.title"
+        :field="header.field"
+        :header="header.title"
         sortable
       >
         <template #body="slotProps">
@@ -75,9 +95,12 @@ const openModal = (data) => {
             <div class="t-name">
               <h4>
                 {{
-                  column && column.fn === "fixed"
-                    ? slotProps.data[column.field].toFixed(2)
-                    : slotProps.data[column.field]
+                  formatColumnValue(
+                    slotProps.data[header.field],
+                    header.fn,
+                    header.field,
+                    slotProps.data
+                  )
                 }}
               </h4>
             </div>

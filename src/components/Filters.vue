@@ -68,7 +68,7 @@ const deselectItem = (index) => {
 const sendFilter = async () => {  
     try {
       buttonClicked.value = true;
-      const response = await fetch(`${url}/listgeology`, {
+      const response = await fetch(`${url}/listGeneral`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,6 +90,7 @@ const sendFilter = async () => {
       }
     } catch (error) {
       console.error("Error al actualizar:", error);
+      buttonClicked.value = false;
     }  
 };
 </script>
@@ -229,8 +230,10 @@ const sendFilter = async () => {
     padding: 0;
     min-width: 22px;
     height: 22px;
-    font-weight: 500;
+    font-weight: 450;
     font-size: clamp(6.5px, 8vw, 13px);
+    display: grid;
+    place-items: center;
   }
 }
 .modalFilters-backg {

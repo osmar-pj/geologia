@@ -15,6 +15,7 @@ import Success from "../components/Success.vue";
 import Edit from "../icons/Edit.vue";
 import IMore from "../icons/IMore.vue";
 import IMinus from "../icons/IMinus.vue";
+import IHelp from "../icons/IHelp.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const props = defineProps(["data"]);
@@ -24,44 +25,51 @@ const cerrarModal = () => {
 };
 const store = useStore();
 const dataTajo = ref([]);
-// const selectedTipo = ref(props.data.type ? props.data.type : "TAJO");
-// const selectedTajo = ref(props.data.tajo ? { name: props.data.tajo } : "");
+const selectedTipo = ref(props.data.type ? props.data.type : "TAJO");
+const selectedTajo = ref(props.data.tajo ? { name: props.data.tajo } : "");
 const selectedRuma = ref("");
 const showError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
 const showForm = ref(true);
 
-// const handleTipoChange = () => {
-//   if (selectedTipo.value === "AVANCE") {
-//     selectedTajo.value = "AVANCE";
-//   } else if (selectedTipo.value === "TAJO") {
-//     selectedTajo.value = "";
-//   }
-// };
+const handleTipoChange = () => {
+  if (selectedTipo.value === "AVANCE") {
+    selectedTajo.value = "AVANCE";
+  } else if (selectedTipo.value === "TAJO") {
+    selectedTajo.value = "";
+  }
+};
 
-// watch(selectedTipo, handleTipoChange);
+watch(selectedTipo, handleTipoChange);
 
 onMounted(async () => {
-  await store.dispatch("ruma_list");
   await store.dispatch("tajo_list");
+  await store.dispatch("pila_list");
   dataTajo.value = store.state.tajoList;
 });
 
-const dataRuma = computed(() => {
-  return store.state.rumaList;
+const dataPila = computed(() => {
+  return store.state.pilaList;
 });
 
 const hideError = () => {
   showError.value = false;
 };
 
-const totalWagons = 10;
-const data = ["Polimetalico", "Alabandita"];
-const counts = reactive(data.map(() => totalWagons / data.length));
+const totalWagons = ref(props.data.vagones ?? "");
+const dataMaterial = ref(props.data.materials || []);
+
+const counts = reactive(
+  dataMaterial.value.length > 0
+    ? dataMaterial.value.map(
+        () => totalWagons.value / dataMaterial.value.length
+      )
+    : []
+);
 
 const increase = (index) => {
-  if (counts.reduce((acc, val) => acc + val, 0) < totalWagons) {
+  if (counts.reduce((acc, val) => acc + val, 0) < totalWagons.value) {
     counts[index]++;
   }
 };
@@ -74,52 +82,56 @@ const decrease = (index) => {
 
 const updateCount = (index, event) => {
   const value = parseInt(event.target.value, 10);
-  counts[index] = isNaN(value) ? 0 : Math.min(value, totalWagons);
+  counts[index] = isNaN(value) ? 0 : Math.min(value, totalWagons.value);
 };
+
+const getImagePath = (imageName) => {
+  switch (imageName) {
+    case "POLIMETALICO":
+      return "/src/assets/img/i-polimetalico.svg";
+    case "ALABANDITA":
+      return "/src/assets/img/i-alabandita.svg";
+    case "DESMONTE":
+      return "/src/assets/img/i-desmonte.svg";
+    default:
+      return "/src/assets/img/i-carbonato.svg";
+  }
+};
+
 const updateTravel = async () => {
-  if (
-    (!selectedTipo.value && selectedTipo.value !== 0) ||
-    !selectedTajo.value ||
-    !selectedTajo.value.name ||
-    !selectedRuma.value ||
-    !selectedRuma.value.ruma_Id
-  ) {
-    showError.value = true;
-    setTimeout(hideError, 5000);
-  } else {
-    try {
-      buttonClicked.value = true;
-      const updatedTravel = {
-        ...props.data,
-        type: selectedTipo.value,
-        tajo: selectedTajo.value.name,
-        ruma: selectedRuma.value.ruma_Id,
-        statusGeology: "QualityControl",
-      };
+  try {
+    buttonClicked.value = true;
+    const updatedTravel = {
+      ...props.data,
+      type: selectedTipo.value,
+      tajo: selectedTajo.value.name,
+      pila: selectedRuma.value.pila_Id,
+      statusGeology: "QualityControl",
+    };
+    console.log(updatedTravel);
+    const response = await fetch(`${url}/OreControl/${props.data._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedTravel),
+    });
 
-      const response = await fetch(`${url}/triplist/${props.data._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedTravel),
-      });
+    const result = await response.json();
 
-      const result = await response.json();
-
-      if (result.status === true) {
-        console.log("Correcto");
-        await store.dispatch("get_list");
-        console.log("UPDATED", result.data);
-        await store.commit("addDataListControlCalidad", result.data);
-        cerrarModal();
-      } else {
-        console.log("error");
-        buttonClicked.value = false;
-      }
-    } catch (error) {
-      console.error("Error al actualizar:", error);
+    if (result.status === true) {
+      console.log("Correcto");
+      await store.dispatch("get_list");
+      console.log("UPDATED", result.data);
+      await store.commit("addDataListControlCalidad", result.data);
+      cerrarModal();
+    } else {
+      console.log("error");
+      buttonClicked.value = false;
     }
+  } catch (error) {
+    console.error("Error al actualizar:", error);
+    buttonClicked.value = false;
   }
 };
 </script>
@@ -140,7 +152,7 @@ const updateTravel = async () => {
           </div>
           <div class="mC-c-title-text">
             <h2>Completar campos</h2>
-            <h4>Rellenar la información restante del viaje</h4>
+            <h4>Rellenar información restante para terminar el viaje</h4>
           </div>
         </div>
         <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -148,10 +160,10 @@ const updateTravel = async () => {
         </span>
       </div>
       <div class="mC-c-body">
-        <!-- <div className="mC-b-info">
+        <div className="mC-b-info">
           <h3 class="item-text">{{ data.operator }}</h3>
           <div class="item-descrip">
-            <h5>Camión</h5>
+            <h5>{{ data.carriage }}</h5>
             <h4>{{ data.tag }}</h4>
           </div>
           <div class="item-descrip">
@@ -160,85 +172,95 @@ const updateTravel = async () => {
           </div>
           <div class="item-descrip">
             <h5>Tajo</h5>
-            <h4>{{ data.tajo }}</h4>
+            <h4 v-if="data && data.tajo">
+              {{ data.tajo }}
+            </h4>
+            <div v-else class="t-nulo"><IHelp /> Por completar...</div>
           </div>
-          <div class="item-descrip">
-            <h5>Dominio</h5>
-            <h4>{{ data.dominio }}</h4>
-          </div>
-        </div> -->
-        <div class="mC-b-imputs">
+        </div>
+        <div class="mC-b-imputs" v-if="data.splitRequired">
           <div
-            v-for="(item, index) in data"
+            v-for="(item, index) in props.data.materials"
             :key="index"
             class="container-count"
           >
             <div class="count-item">
               <div class="count-info">
-                <img
-                  :src="'../assets/img/i-' + item.toLowerCase() + '.svg'"
-                  alt=""
-                />
+                <img :src="getImagePath(item)" alt="" />
                 <span>{{ item }}</span>
               </div>
               <div class="count-input">
-                <button class="button-number" @click="decrease(index)">
+                <button
+                  class="button-number"
+                  type="button"
+                  @click="decrease(index)"
+                >
                   <IMinus />
                 </button>
                 <input
-                class="input-number no-spinners"
+                  class="input-number no-spinners"
                   type="number"
                   :value="counts[index]"
                   @input="updateCount(index, $event)"
-                  />
-                  <button class="button-number" @click="increase(index)">
-                    <IMore />
-                  </button>
+                />
+                <button
+                  class="button-number"
+                  type="button"
+                  @click="increase(index)"
+                >
+                  <IMore />
+                </button>
               </div>
             </div>
             <div class="count-item">
               <Dropdown
-                  class="p-dropdown-search"
-                  filter
-                  v-model="selectedTajo"
-                  :options="dataTajo"
-                  optionLabel="name"
-                  placeholder="Seleccionar"
-                />
+                class="p-dropdown-search"
+                filter
+                v-model="selectedTajo"
+                :options="dataTajo"
+                optionLabel="name"
+                placeholder="Seleccionar"
+              />
             </div>
           </div>
         </div>
-        <!-- <div className="mC-b-imputs" v-if="!data.type || !data.tajo">
-          <div class="radio-inputs">
-            <label>
-              <input
-                class="radio-input"
-                type="radio"
-                name="radio"
-                v-model="selectedTipo"
-                value="TAJO"
-                id="tajo-radio"
-                checked
-              />
-              <span class="radio-tile">
-                <span class="radio-label">Tajo</span>
-                <p class="radio-info">Mina a Tajo Abierto</p>
-              </span>
-            </label>
-            <label>
-              <input
-                class="radio-input"
-                type="radio"
-                name="radio"
-                v-model="selectedTipo"
-                value="AVANCE"
-                id="avance-radio"
-              />
-              <span class="radio-tile">
-                <span class="radio-label">Avance</span>
-                <p class="radio-info">Mina Subterránea</p>
-              </span>
-            </label>
+        <div
+          className="mC-b-imputs"
+          v-if="data.carriage === 'Vagones' && !data.splitRequired"
+        >
+          <div class="mC-imputs-item">
+            <label>Seleccione Tipo</label>
+            <div class="radio-inputs">
+              <label>
+                <input
+                  class="radio-input"
+                  type="radio"
+                  name="radio"
+                  v-model="selectedTipo"
+                  value="TAJO"
+                  id="tajo-radio"
+                  checked
+                />
+                <span class="radio-tile">
+                  <span class="radio-label">Tajo</span>
+                  <p class="radio-info">Mina a Tajo Abierto</p>
+                </span>
+              </label>
+              <label>
+                <input
+                  class="radio-input"
+                  type="radio"
+                  name="radio"
+                  v-model="selectedTipo"
+                  value="AVANCE"
+                  id="avance-radio"
+                />
+                <span class="radio-tile">
+                  <span class="radio-label">Avance</span>
+                  <p class="radio-info">Mina Subterránea</p>
+                </span>
+              </label>
+            </div>
           </div>
           <Transition name="fade" mode="out-in">
             <div
@@ -248,12 +270,12 @@ const updateTravel = async () => {
               <label>Seleccione Tajo</label>
               <div class="imputs-i-input">
                 <Dropdown
+                  placeholder="Seleccionar"
                   class="p-dropdown-search"
                   filter
                   v-model="selectedTajo"
                   :options="dataTajo"
                   optionLabel="name"
-                  placeholder="Seleccionar"
                 />
               </div>
               <span class="label-error" v-if="showError"
@@ -261,16 +283,16 @@ const updateTravel = async () => {
               >
             </div>
           </Transition>
-        </div> -->
-        <div className="mC-b-imputs">
-          <div class="mC-imputs-item">
-            <label>Seleccione Ruma</label>
+        </div>
+        <div className="mC-b-imputs" v-if="data.carriage === 'Camion'">
+          <div class="mC-imputs-item input-pila">
+            <label>Seleccione Pila</label>
             <div class="imputs-i-input">
               <Dropdown
                 class="p-dropdown"
                 v-model="selectedRuma"
-                :options="dataRuma"
-                optionLabel="ruma_Id"
+                :options="dataPila"
+                optionLabel="pila_Id"
                 placeholder="Seleccionar"
               />
             </div>
@@ -303,6 +325,27 @@ const updateTravel = async () => {
 </template>
 
 <style lang="scss">
+
+.input-pila{
+  flex: 1 1 130px !important;
+}
+.t-nulo {
+  padding: 2px 6px;
+  background-color: #fee2e2b4;
+  border-radius: 5px;
+  display: flex;
+  place-items: center;
+  gap: 0.25rem;
+  font-size: clamp(6px, 8vw, 12px);
+  color: var(--red);
+  svg {
+    fill: transparent;
+    color: var(--red);
+    width: 15px;
+    height: 15px;
+    stroke-width: 1.5;
+  }
+}
 .container-count {
   flex: 1 1 150px;
   display: flex;
@@ -315,6 +358,7 @@ const updateTravel = async () => {
   .count-item {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
     .count-info {
       display: flex;
@@ -338,13 +382,18 @@ const updateTravel = async () => {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 0.25rem;
+
+      border: 1.5px solid var(--grey-light-2);
+      border-radius: 5px;
       .input-number {
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
         color: var(--black);
         padding: 0;
         text-align: center;
+        font-size: clamp(6px, 8vw, 14px);
+        border-radius: 0;
+        border: none;
       }
       .button-number {
         width: 35px;
@@ -354,6 +403,7 @@ const updateTravel = async () => {
         padding: 0;
         display: grid;
         place-items: center;
+
         svg {
           fill: transparent;
           color: var(--grey-2);
@@ -369,6 +419,12 @@ const updateTravel = async () => {
         }
         &:active {
           transform: scale(0.85);
+        }
+        &:nth-child(1) {
+          border-radius: 5px 0 0 5px;
+        }
+        &:nth-child(3) {
+          border-radius: 0 5px 5px 0;
         }
       }
     }

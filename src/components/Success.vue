@@ -10,22 +10,21 @@
         </div>
       </div>
       <h2 className="success">
-        Proceso <br />
-        Terminado!
+        Éxito!
       </h2>
     </div>
     <div className="modalBody">
-      <p>El viaje realizado ha sido completado con éxito.</p>
+      <p>Acción realizado satisfactoriamente.</p>
     </div>
     <div className="modalFooter">
-      <span>Ver lista de viajes</span>
+      <span>© 2023 Gunjop</span>
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .modalContent-Succes {
-  max-width: 250px;
+  max-width: 210px;
   width: 100%;
   background-color: var(--white);
   padding: 1.5rem;
@@ -39,9 +38,10 @@
       fill: #f1c100;
     }
     h2 {
+      font-size: clamp(9px, 8vw, 18px);
       color: var(--black);
       font-weight: 600;
-      padding-top: 1rem;
+      padding-top: .5rem;
       line-height: 1.3rem;
     }
     .success {
@@ -54,8 +54,8 @@
   .modalBody {
     width: 100%;
     text-align: center;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
   }
   .modalFooter {
     display: flex;
@@ -63,17 +63,9 @@
     gap: 1rem;
     span {
       position: relative;
-      color: var(--black);
+      color: var(--grey-2);
       font-size: clamp(6.5px, 8vw, 10px);
-      cursor: pointer;
-      &::before {
-        position: absolute;
-        content: "";
-        background-color: var(--black);
-        width: 100%;
-        height: 0.05px;
-        top: 100%;
-      }
+      cursor: pointer;      
     }
   }
 }
@@ -132,7 +124,7 @@
   transform-origin: left top;
   animation: check-icon 2s ease-in-out;
   top: 53%;
-  left: 44%;
+  left: 43%;
 }
 
 @keyframes check-icon {

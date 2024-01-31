@@ -145,10 +145,4 @@ const login = async () => {
   }
 }
 
-.btn-success {
-  background-color: var(--secondary);
-  &:hover {
-    background-color: var(--primary);
-  }
-}
 </style>

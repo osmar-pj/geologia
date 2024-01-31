@@ -14,9 +14,9 @@ const store = createStore({
     dataFilterTable: [],
     dataSelectedFilters: [],
     dataAnalysis: [],
-    rumaList: [],
-    rumaTotal: [],
     tajoList: [],
+    pilaList: [],
+    rumaTotal: [],
     userModal: null,
     errior: null,
     loading: false,
@@ -88,8 +88,8 @@ const store = createStore({
     getListGeneral(state, payload) {
       state.dataListGeneral = payload;
     },
-    getRuma(state, payload) {
-      state.rumaList = payload;
+    getPila(state, payload) {
+      state.pilaList = payload;
     },
     getTajo(state, payload) {
       state.tajoList = payload;
@@ -113,7 +113,7 @@ const store = createStore({
       state.loading = payload;
     },
     addDataListOreControl(state, payload) {
-      state.dataList.push(payload);
+      state.dataList.data.push(payload);
     },
     addDataListControlCalidad(state, payload) {
       state.dataListControl.push(payload);
@@ -155,7 +155,7 @@ const store = createStore({
     get_list: async ({ commit }) => {
       try {
         commit("loading", true);
-        const response = await fetch(`${url}/triplist`, {
+        const response = await fetch(`${url}/OreControl`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -216,23 +216,22 @@ const store = createStore({
         commit("loading", false);
       } catch (error) {}
     },
-    ruma_list: async ({ commit }) => {
+    pila_list: async ({ commit }) => {
       try {
-        const response = await fetch(`${url}/ruma`, {
+        const response = await fetch(`${url}/pila`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": true,
           },
         });
-        const data = await response.json();
-
-        commit("getRuma", data);
+        const data = await response.json();       
+        commit("getPila", data);
       } catch (error) {}
     },
-    ruma_total: async ({ commit }) => {
+    pila_total: async ({ commit }) => {
       try {
-        const response = await fetch(`${url}/rumaList`, {
+        const response = await fetch(`${url}/pilaList`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -258,7 +257,7 @@ const store = createStore({
     },
     tajo_list: async ({ commit }) => {
       try {
-        const response = await fetch(`${url}/tajoGeo`, {
+        const response = await fetch(`${url}/tajo`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

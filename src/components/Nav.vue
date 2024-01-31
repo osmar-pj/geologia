@@ -249,7 +249,7 @@ const logout = async () => {
         gap: 0.5rem;
         h1 {
           color: var(--white);
-          font-weight: 500;
+          font-weight: 450;
         }
         span {
           background-color: #fb5663;

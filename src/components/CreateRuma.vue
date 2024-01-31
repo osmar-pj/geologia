@@ -2,12 +2,15 @@
 import { ref } from "vue";
 import { useStore } from "vuex";
 import IPlus from "../icons/IPlus.vue";
+import Success from "../components/Success.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 
 const showOCModal = ref(false);
 const buttonClicked = ref(false);
+const showSuccessM = ref(false);
+const showForm = ref(true);
 
 const openModal = () => {
   showOCModal.value = true;
@@ -17,10 +20,10 @@ const cerrarModal = () => {
   showOCModal.value = false;
 };
 
-const createRuma = async () => {
+const createPila = async () => {
   try {
     buttonClicked.value = true;
-    const response = await fetch(`${url}/ruma`, {
+    const response = await fetch(`${url}/pila`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,8 +34,16 @@ const createRuma = async () => {
 
     if (data.status === true) {
       console.log("Correcto");
-      await store.dispatch("ruma_list");
-      showOCModal.value = false;
+      await store.dispatch("pila_list");
+      showForm.value = false;
+      setTimeout(() => {
+        showSuccessM.value = true;
+      }, 600);
+      setTimeout(() => {
+          cerrarModal();
+          showForm.value = true;
+          showSuccessM.value = false;
+        }, 2500);
       buttonClicked.value = false;
     } else {
       console.log("error");
@@ -47,7 +58,7 @@ const createRuma = async () => {
 <template>
   <div class="mC-imputs-more">
     <button class="btn-ruma" type="button" @click="openModal()">
-      <IPlus /> Crear Ruma
+      <IPlus /> Crear Pila
     </button>
   </div>
   <Transition :duration="550" name="nested">
@@ -56,54 +67,60 @@ const createRuma = async () => {
       v-if="showOCModal"
       @cerrarModal="showOCModal = false"
     >
-      <form
-        class="mCreate-content mCreate-2 inner"
-        :style="{
-          userSelect: buttonClicked ? 'none' : 'auto',
-          pointerEvents: buttonClicked ? 'none' : 'auto',
-        }"
-      >
-        <div class="mC-c-header">
-          <div class="mC-h-title">
-            <div class="mC-c-title-icon">
-              <IPlus />
+      <Transition name="nested">
+        <form
+          class="mCreate-content mCreate-2 inner"
+          :style="{
+            userSelect: buttonClicked ? 'none' : 'auto',
+            pointerEvents: buttonClicked ? 'none' : 'auto',
+          }"
+          v-if="showForm"
+        >
+          <div class="mC-c-header">
+            <div class="mC-h-title">
+              <div class="mC-c-title-icon">
+                <IPlus />
+              </div>
+              <div class="mC-c-title-text">
+                <h2>Crear nueva pila</h2>
+                <h4>Inicializar una nueva pila</h4>
+              </div>
             </div>
-            <div class="mC-c-title-text">
-              <h2>Crear nueva ruma</h2>
-              <h4>Inicializar una nueva ruma</h4>
+            <span @click="cerrarModal" class="mC-h-close" type="button">
+              <img src="../assets/img/i-close.svg" alt="" />
+            </span>
+          </div>
+          <div class="mC-c-body">
+            <div class="mC-b-info">
+              <p>
+                Crear una nueva ruma implica iniciar una nueva área o pila para
+                acumular los materiales extraídos.
+                <strong>¿Seguro que deseas crear una nueva pila?</strong>
+              </p>
             </div>
           </div>
-          <span @click="cerrarModal" class="mC-h-close" type="button">
-            <img src="../assets/img/i-close.svg" alt="" />
-          </span>
-        </div>
-        <div class="mC-c-body">
-          <div class="mC-b-info">
-            <p>
-              Crear una nueva ruma implica iniciar una nueva área o pila para
-              acumular los materiales extraídos.
-              <strong>¿Seguro que deseas crear una nueva ruma?</strong>?
-            </p>
+          <div class="mC-c-footer">
+            <template v-if="buttonClicked">
+              <div class="loader"></div>
+            </template>
+            <template v-else>
+              <button @click="cerrarModal" class="btn-cancel" type="button">
+                No
+              </button>
+              <button
+                class="btn-success"
+                type="submit"
+                @click.prevent="createPila()"
+              >
+                Si
+              </button>
+            </template>
           </div>
-        </div>
-        <div class="mC-c-footer">
-          <template v-if="buttonClicked">
-            <div class="loader"></div>
-          </template>
-          <template v-else>
-            <button @click="cerrarModal" class="btn-cancel" type="button">
-              No
-            </button>
-            <button
-              class="btn-success"
-              type="submit"
-              @click.prevent="createRuma()"
-            >
-              Si
-            </button>
-          </template>
-        </div>
-      </form>
+        </form>
+      </Transition>
+      <Transition name="bounce">
+        <Success v-if="showSuccessM" />
+      </Transition>
     </div>
   </Transition>
 </template>
@@ -118,7 +135,6 @@ const createRuma = async () => {
   gap: 0.25rem;
 }
 .btn-ruma {
-
   color: var(--primary);
   padding: 0.8rem 0.5rem;
   display: flex;
@@ -140,8 +156,8 @@ const createRuma = async () => {
     color: var(--white);
     border: 1px solid var(--primary);
     svg {
-    color: var(--white); 
-  }
+      color: var(--white);
+    }
   }
 }
 </style>
