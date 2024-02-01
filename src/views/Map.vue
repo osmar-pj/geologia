@@ -39,7 +39,7 @@ class CustomRect extends fabric.Rect {
 }
 
 const visible = ref(false)
-// const rumas = computed(() => {
+// const pilas = computed(() => {
 //   return  [
 //     { ley_ag: 2.66, cod_tableta: '12', ton: 15000, mining: 'Yumpag', x: 100, y: 50 },
 //     { ley_ag: 2.78, cod_tableta: '4', ton: 500, mining: 'Uchucchacua', x: 100, y: 50 },
@@ -48,7 +48,7 @@ const visible = ref(false)
 //     { ley_ag: 9.12, cod_tableta: 'E2', ton: 11500, mining: 'Uchucchacua', x: 100, y:50 }
 //   ]
 // })
-const rumas = ref([])
+const pilas = ref([])
 const canvas = ref()
 
 onMounted(() => {
@@ -71,12 +71,12 @@ const handleCreated = async(fabricCanvas) => {
     }
   }
   await store.dispatch("ruma_total");
-  rumas.value=store.state.rumaTotal
-  console.log(rumas.value)
+  pilas.value=store.state.rumaTotal
+  console.log(pilas.value)
   canvas.value = fabricCanvas
   const max = 30000
   const min = 100
-  rumas.value.forEach((r) => {
+  pilas.value.forEach((r) => {
     const d = (r.tonh - min) * 100/(max - min)
     const d2 = Math.floor((r.tonh - min) * 85/(max - min))
     const delta = Math.floor(10 + (r.tonh - min)*100/(max - min))
@@ -188,7 +188,7 @@ const editRuma = () => {
     x: 50,
     y: 300
   }
-  rumas.value.push(ruma)
+  pilas.value.push(ruma)
   // update canvas value text on 5 index
   console.log(canvas.value.getActiveObject())
   const text = canvas.value.getActiveObject().item(1)
@@ -231,7 +231,7 @@ const remove = () => {
   <div class="c-global-header">
     <div class="global-h-title">
       <div class="g-h-t-primary">
-        <h1>Mapa de Rumas</h1>
+        <h1>Mapa de pilas</h1>
         <span></span>
       </div>
       <span>| Dia terminado en Mina </span>

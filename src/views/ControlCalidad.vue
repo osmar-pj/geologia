@@ -1,21 +1,42 @@
 <script setup>
-import { ref, onMounted, computed, inject} from "vue";
-import { useStore } from "vuex";
-import Edit from "../icons/Edit.vue";
-import CCModal from "../components/CCModal.vue";
-import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
+import { ref, onMounted, computed, inject} from "vue"
+import { useStore } from "vuex"
+import { Subject } from "rxjs"
+import Edit from "../icons/Edit.vue"
+import CCModal from "../components/CCModal.vue"
+import {formatDate, formatFixed, formatArrayField} from "../libs/utils"
 
 const store = useStore()
 const socket = inject("socket")
+const pila$ = new Subject()
+
+const pilas = ref([])
+
 socket.on('pilas', (data) => {
-    console.log(data)
-})
-onMounted(async () => {
-    await store.dispatch('get_listControl')
-    console.log(data.value)
+  const pilasFound = data.map(i => {
+    const pila = pilas.value.data.find(p => p._id === i._id)
+    return pila
+  })
+  pilasFound.length > 0 ? updatePilas(pilasFound, data) : console.log('No se encontraron pilas')
 })
 
-const data = computed(() => {return store.state.dataListControl})
+onMounted(async () => {
+    await store.dispatch('get_listControl')
+    pilas.value = store.state.dataListControl
+})
+
+const updatePilas = (pilasFound, data) => {
+  pilasFound.forEach((pila, index) => {
+    pila.stock = data[index].stock
+    pila.tonh = data[index].tonh
+    pila.ton = data[index].tonh * 0.94
+    pila.travels = data[index].travels
+    pila.tajo = data[index].tajo
+    pila$.next(pila)
+  })
+}
+
+// const pilas = computed(() => {return store.state.dataListControl})
 const showCCModal = ref(false);
 const modalData = ref(null);
 
@@ -60,7 +81,7 @@ const formatColumnValue = (value, fn, field, row) => {
     <div class="global-h-title">
       <div class="g-h-t-primary">
         <h1>Viajes, Control de Calidad</h1>
-        <span>{{ data.data ? data.data.length : 0 }}</span>
+        <span>{{ pilas.data ? pilas.data.length : 0 }}</span>
       </div>
       <span>| Dia terminado en Mina </span>
     </div>
@@ -84,7 +105,7 @@ const formatColumnValue = (value, fn, field, row) => {
   </div>
   <div class="tableContainer">
     <DataTable
-      :value="data.data"
+      :value="pilas.data"
       tableStyle="width: 100%"
       paginator
       :rows="20"
@@ -98,7 +119,7 @@ const formatColumnValue = (value, fn, field, row) => {
         </template>
       </Column> -->
       <Column
-        v-for="(header, index) in data.header"
+        v-for="(header, index) in pilas.header"
         :key="index"
         :field="header.field"
         :header="header.title"
