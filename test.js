@@ -24,17 +24,15 @@ const wagonsConverted = wagons.reduce((acc, wagon) => {
 }, [])
 console.log(wagonsConverted)
 
-// replace names by another name
-const wagonsTransformed = wagons.map(wagon => {
-    if (wagon.material === 'POLIMETALICO') {
-        return {material: 'POLYMETALIC'}
-    }
-    if (wagon.material === 'ALABANDITA') {
-        return {material: 'ALABANDITE'}
-    }
-    if (wagon.material === 'Carbonato') {
-        return {material: 'Carbonate'}
-    }
-    return wagon
-})
-console.log(wagonsTransformed)
+const fnTransform = (wagons) => {
+    return wagons.reduce((acc, wagon) => {
+        const found = acc.find(w => w.material === wagon.material)
+        if (found) {
+            found.count++
+        } else {
+            acc.push({material: wagon.material, count: 1})
+        }
+        return acc
+    }, [])
+}
+console.log(fnTransform(wagons))

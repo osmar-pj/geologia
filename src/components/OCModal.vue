@@ -152,9 +152,8 @@ const updateTravel = async () => {
       return {
         ...i,
         statusGeology: "QualityControl",
-      };
-    });
-    console.log(dataToUpdate.value);
+      }
+    })
     const response = await fetch(`${url}/trip/${props.data._id}`, {
       method: "PUT",
       headers: {
@@ -256,7 +255,7 @@ const updateTravel = async () => {
           >
             <div class="count-item">
               <div class="count-info">
-                <img :src="getImagePath(item.material)" alt="" />
+                <img :src="getImagePath(item.dominio)" alt="" />
                 <span>{{ item.dominio }} {{ item.vagones }}</span>
               </div>
               <!-- <div class="count-input" v-if="isSplitRequired">
@@ -347,9 +346,9 @@ const updateTravel = async () => {
                   <Dropdown
                     class="p-dropdown"
                     v-model="item.pila"
-                    :options="dataPila"
-                    optionLabel="pila_Id"
-                    optionValue="pila_Id"
+                    :options="dataPila.pilasAvailable"
+                    optionLabel="pila"
+                    optionValue="pila"
                     placeholder="Seleccionar"
                   />
                 </div>

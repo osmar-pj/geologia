@@ -1,11 +1,18 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, inject } from "vue";
 import { useStore } from "vuex";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import Filters from "../components/filters.vue";
 import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
 
+
 const store = useStore();
+const socket = inject("socket")
+
+socket.on("OreControl", (data) => {
+  store.commit("addDataGeneralList", data)
+});
+
 
 const data = computed(() => store.state.dataFilterTable);
 const selectedColumns = ref([]);

@@ -3,17 +3,16 @@ import { ref, onMounted, computed, inject} from "vue";
 import { useStore } from "vuex";
 import Edit from "../icons/Edit.vue";
 import CCModal from "../components/CCModal.vue";
+import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
 
 const store = useStore()
 const socket = inject("socket")
-socket.on('ControlCalidad', (data) => {
-    store.commit('addDataListControlCalidad', data)
-    const lastIndex = store.state.dataListControl.length - 1;
-
-    store.commit('lesstDataListControlCalidad', lastIndex);
+socket.on('pilas', (data) => {
+    console.log(data)
 })
 onMounted(async () => {
     await store.dispatch('get_listControl')
+    console.log(data.value)
 })
 
 const data = computed(() => {return store.state.dataListControl})
@@ -27,6 +26,32 @@ const openDelete = (data) => {
 const openModal = (data) => {
   modalData.value = data;
     showCCModal.value = true;
+};
+
+const formatColumnValue = (value, fn, field, row) => {
+  switch (fn) {
+    case "date":
+      return formatDate(value);
+    case "fixed":
+      return formatFixed(value);
+    case "arr":
+      if (field === "ubication") {
+        return formatArrayField(value, "destiny", row);
+      } else if (field === "dominio") {       
+        if (row.materials && row.materials.length > 0) {
+          return row.materials.map(material => material.material).join(', ');
+        } else if (row.dominio) {
+          return row.dominio;
+        }
+        
+        return ""; 
+      }
+    case "count":
+      return value.length;
+      break;
+    default:
+      return value || "";
+  }
 };
 </script>
 
@@ -67,16 +92,16 @@ const openModal = (data) => {
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
     >
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>
-      <Column header="#" headerStyle="width:3rem">
+      <!-- <Column header="#" headerStyle="width:3rem">
         <template #body="slotProps">
           {{ slotProps.index + 1 }}
         </template>
-      </Column>
+      </Column> -->
       <Column
-        v-for="(column, index) in data.header"
+        v-for="(header, index) in data.header"
         :key="index"
-        :field="column.field"
-        :header="column.title"
+        :field="header.field"
+        :header="header.title"
         sortable
       >
         <template #body="slotProps">
@@ -84,9 +109,12 @@ const openModal = (data) => {
             <div class="t-name">
               <h4>
                 {{
-                  column && column.fn === "fixed"
-                    ? slotProps.data[column.field].toFixed(2)
-                    : slotProps.data[column.field]
+                  formatColumnValue(
+                    slotProps.data[header.field],
+                    header.fn,
+                    header.field,
+                    slotProps.data
+                  )
                 }}
               </h4>              
             </div>

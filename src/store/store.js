@@ -112,6 +112,9 @@ const store = createStore({
     loading(state, payload) {
       state.loading = payload;
     },
+    addDataGeneralList(state, payload) {
+      state.dataFilterTable.data.unshift(payload);
+    },
     addDataListOreControl(state, payload) {
       state.dataList.data.push(payload);
     },

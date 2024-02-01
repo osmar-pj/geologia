@@ -10,7 +10,10 @@ export const formatDate = (value) => {
   };
   
   export const formatFixed = (value) => {
-    return value ? parseFloat(value).toFixed(2) : "";
+    const valuesRedondo = Math.round(value * 100) / 100
+    const valueFixed = valuesRedondo.toFixed(2)
+    const valueFormatted = valueFixed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    return value ? valueFormatted : "";
   };
   
   export const formatArrayField = (value, field, row) => {

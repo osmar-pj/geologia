@@ -28,6 +28,7 @@ const createPila = async () => {
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({mining: 'YUMPAG'}),
     });
 
     const data = await response.json();
@@ -50,7 +51,7 @@ const createPila = async () => {
       buttonClicked.value = false;
     }
   } catch (error) {
-    console.error("Error al actualizar:", error);
+    console.error("Error al crear la Pila:", error);
   }
 };
 </script>
