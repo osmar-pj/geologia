@@ -17,75 +17,69 @@ import Edit from "../icons/Edit.vue";
 import IMore from "../icons/IMore.vue";
 import IMinus from "../icons/IMinus.vue";
 import IHelp from "../icons/IHelp.vue";
+import IChange from "../icons/IChange.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const props = defineProps(["data"]);
 const emit = defineEmits();
 const cerrarModal = () => {
-  emit("cerrarModal")
+  emit("cerrarModal");
 };
-const store = useStore()
-const data = ref(props.data)
-const isCamion = computed(() => data.value.carriage === "Camion")
-const isVagones = computed(() => data.value.carriage === "Vagones")
-const isSplitRequired = computed(() => data.value.splitRequired)
-const numberOfSplits = isSplitRequired.value ? data.value.destiny.length : 1
-const numberOfMaterials = isSplitRequired.value ? data.value.materials.length : 1
-const totalVagones = isVagones.value ? data.value.vagones : 0
-const isOdd = (number) => number % 2 !== 0
+const store = useStore();
+const data = ref(props.data);
+const isCamion = computed(() => data.value.carriage === "Camion");
+const isVagones = computed(() => data.value.carriage === "Vagones");
+const isSplitRequired = computed(() => data.value.splitRequired);
+const numberOfMaterials = isSplitRequired.value
+  ? data.value.materials.length
+  : 1;
+const isOdd = (number) => number % 2 !== 0;
 
-const dataToUpdate = ref([])
+const dataToUpdate = ref([]);
 
-dataToUpdate.value = isCamion.value ? [
-  {
-    type: data.value.type,
-    tajo: data.value.tajo,
-    pila: "",
-    material: data.value.material,
-    isSplitRequired: data.value.splitRequired
-  },
-] : isSplitRequired.value ? data.value.destiny.map((item, index) => {
-  return {
-    type: "TAJO",
-    tajo: null,
-    pila: item,
-    material: numberOfMaterials == 1 ? data.value.materials : data.value.materials[index],
-    vagones: totalVagones/numberOfSplits,
-    pilaSelected: null,
-    materialSelected: null,
-    vagonesDistribution: totalVagones,
-    isSplitRequired: data.value.splitRequired
-  }
-}) : [
-  {
-    type: "TAJO",
-    tajo: null,
-    pila: data.value.ubication,
-    material: data.value.dominio,
-    isSplitRequired: data.value.splitRequired
-  },
-]
+dataToUpdate.value = isCamion.value
+  ? [
+      {
+        type: data.value.type,
+        tajo: data.value.tajo,
+        pila: "",
+        material: data.value.material,
+      },
+    ]
+  : isSplitRequired.value
+  ? data.value.destiny.map((item, index) => {
+      return {
+        type: "TAJO",
+        tajo: null,
+        pila: item,
+        dominio:
+          numberOfMaterials == 1
+            ? data.value.materials
+            : data.value.materials[index].material,
+        vagones:
+          numberOfMaterials == 1
+            ? data.value.vagones
+            : data.value.materials[index].count,
+      };
+    })
+  : [
+      {
+        type: "TAJO",
+        tajo: null,
+        // pila: data.value.ubication,
+        dominio: data.value.dominio
+      },
+    ];
 
-console.log(dataToUpdate.value)
+console.log(dataToUpdate.value);
 
 const dataTajo = ref([]);
-const selectedTipo = ref(props.data.type ? props.data.type : "TAJO");
-const selectedTajo = ref(props.data.tajo ? props.data.tajo : "");
+
 const selectedRuma = ref("");
 const showError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
 const showForm = ref(true);
-
-const handleTipoChange = () => {
-  if (selectedTipo.value === "AVANCE") {
-    selectedTajo.value = "AVANCE";
-  } else if (selectedTipo.value === "TAJO") {
-    selectedTajo.value = "";
-  }
-};
-
-watch(selectedTipo, handleTipoChange);
 
 onMounted(async () => {
   await store.dispatch("tajo_list");
@@ -99,42 +93,45 @@ const dataPila = computed(() => {
 
 const hideError = () => {
   showError.value = false;
-}
+};
 
-const changeGiba = (i) => {
-  console.log("Cambiando giba", i);
-  dataToUpdate.value[i].pila = "G4"
-  dataToUpdate.value[i + 1].pila = "G2"
-}
-
-const decrease = (i) => {
-  if (dataToUpdate.value[i].vagones < 1) {
-    console.log("No puede bajar mas");
-    dataToUpdate.value[i].vagones = 0
-    // enviar mensaje de que no puede bajar mas
-  } else {
-    dataToUpdate.value[i].vagones--
+const changeGibaForAll = () => {
+  for (let i = 0; i < dataToUpdate.value.length - 1; i++) {
+    const currentPila = dataToUpdate.value[i].pila;
+    const nextPila = dataToUpdate.value[i + 1].pila;
+    dataToUpdate.value[i].pila = nextPila;
+    dataToUpdate.value[i + 1].pila = currentPila;
   }
 };
 
-const increase = (i) => {
-  if (dataToUpdate.value[i].vagones > totalVagones - 1) {
-    dataToUpdate.value[i].vagones = totalVagones
-    console.log("No puede subir mas");
-    // enviar mensaje de que no puede subir mas
-  } else {
-    dataToUpdate.value[i].vagones++
-  }
-};
+// const decrease = (i) => {
+//   if (dataToUpdate.value[i].vagones > 0) {
+//     // Solo decrementar si el valor actual es mayor que 0
+//     dataToUpdate.value[i].vagones--;
+//   }
+// };
 
-const updateCount = (index, event) => {
-  const value = parseInt(event.target.value, 10);
-  const remainingSpace = totalVagones - value;
+// const increase = (i) => {
+//   const currentTotal = dataToUpdate.value.reduce(
+//     (total, item) => total + item.vagones,
+//     0
+//   );
 
-  if (value >= 0 && remainingSpace >= 0) {
-    itemData[index].count = value;
-  }
-};
+//   if (currentTotal < totalVagones) {
+//     // Solo incrementar si la suma actual no supera totalVagones
+//     dataToUpdate.value[i].vagones++;
+//   }
+// };
+
+// const updateCount = (index, event) => {
+//   const value = parseInt(event.target.value, 10);
+//   const remainingSpace = totalVagones - value;
+
+//   if (value >= 0 && remainingSpace >= 0) {
+//     itemData[index].count = value;
+//   }
+// };
+
 const getImagePath = (imageName) => {
   switch (imageName) {
     case "POLIMETALICO":
@@ -151,11 +148,11 @@ const getImagePath = (imageName) => {
 const updateTravel = async () => {
   try {
     buttonClicked.value = true;
-    dataToUpdate.value.map(i => {
+    dataToUpdate.value.map((i) => {
       return {
         ...i,
-        statusGeology: "QualityControl"
-      }
+        statusGeology: "QualityControl",
+      };
     });
     console.log(dataToUpdate.value);
     const response = await fetch(`${url}/trip/${props.data._id}`, {
@@ -208,12 +205,12 @@ const updateTravel = async () => {
           <img src="../assets/img/i-close.svg" alt="" />
         </span>
       </div>
-      
+
       <div class="mC-c-body">
         <div className="mC-b-info">
           <div class="item-descrip" v-if="isVagones && isSplitRequired">
             <!-- AGREGAR ESTILO DE WARNING O AVISO -->
-            <div> Warning! Este viaje se debe dividir </div>
+            <div>Warning! Este viaje se debe dividir</div>
           </div>
           <h3 class="item-text">{{ data.operator }}</h3>
           <div class="item-descrip">
@@ -232,27 +229,37 @@ const updateTravel = async () => {
             <div v-else class="t-nulo"><IHelp /> Por completar...</div>
           </div>
         </div>
+        <div class="mC-b-imputs inputs-change">
+          <div
+            v-for="(item, index) in dataToUpdate"
+            :key="index"
+            class="container-count"
+          >
+            <span>
+              Giba: <strong>{{ item.pila }}</strong>
+            </span>
+          </div>
+          <button
+            class="btn-change"
+            @click.prevent="changeGibaForAll"
+            v-if="isSplitRequired"
+          >
+            <IChange />
+          </button>
+        </div>
 
-        
         <div class="mC-b-imputs">
           <div
-          v-for="(item, index) in dataToUpdate"
-          :key="index"
-          class="container-count"
+            v-for="(item, index) in dataToUpdate"
+            :key="index"
+            class="container-count"
           >
-            <div class="count-item">
-              <label v-if="!isCamion">Giba</label>
-              {{ item.pila }}
-            </div>
-            <div>
-              <button class="btn-cancel" @click.prevent="changeGiba(index)">Cambiar</button>
-            </div>
             <div class="count-item">
               <div class="count-info">
                 <img :src="getImagePath(item.material)" alt="" />
-                <span>{{ item.material }}</span>
+                <span>{{ item.dominio }} {{ item.vagones }}</span>
               </div>
-              <div class="count-input" v-if="isSplitRequired">
+              <!-- <div class="count-input" v-if="isSplitRequired">
                 <button
                   class="button-number"
                   type="button"
@@ -265,15 +272,15 @@ const updateTravel = async () => {
                   type="number"
                   :value="item.vagones"
                   @input="updateCount(index, $event)"
-                  />
-                  <button
+                />
+                <button
                   class="button-number"
                   type="button"
                   @click="increase(index)"
-                  >
+                >
                   <IMore />
                 </button>
-              </div>
+              </div> -->
             </div>
             <div class="count-item" v-if="!isCamion">
               <div className="mC-b-imputs">
@@ -292,7 +299,7 @@ const updateTravel = async () => {
                       />
                       <span class="radio-tile">
                         <span class="radio-label">Tajo</span>
-                        <p class="radio-info">Mina a Tajo Abierto</p>
+                        <p class="radio-info">Abierto</p>
                       </span>
                     </label>
                     <label>
@@ -307,16 +314,13 @@ const updateTravel = async () => {
                       />
                       <span class="radio-tile">
                         <span class="radio-label">Avance</span>
-                        <p class="radio-info">Mina Subterránea</p>
+                        <p class="radio-info">Subterránea</p>
                       </span>
                     </label>
                   </div>
                 </div>
                 <Transition name="fade" mode="out-in">
-                  <div
-                    class="mC-imputs-item"
-                    v-if="item.type === 'TAJO'"
-                  >
+                  <div class="mC-imputs-item" v-if="item.type === 'TAJO'">
                     <label>Seleccione Tajo</label>
                     <div class="imputs-i-input">
                       <Dropdown
@@ -380,6 +384,33 @@ const updateTravel = async () => {
 </template>
 
 <style lang="scss">
+.inputs-change {
+  position: relative;
+  .btn-change {
+    position: absolute;
+    color: var(--grey-2);
+    background-color: var(--grey-light-22);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    svg {
+      fill: transparent;
+      color: var(--grey-2);
+      width: 1.5rem;
+      height: 1.5rem;
+      stroke-width: 1.5;
+    }
+    &:active {
+      transform: translate(-50%, -50%) scale(0.85);
+    }
+  }
+}
+
 .input-pila {
   flex: 1 1 130px !important;
 }

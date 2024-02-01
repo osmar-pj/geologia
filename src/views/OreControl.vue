@@ -36,14 +36,22 @@ const formatColumnValue = (value, fn, field, row) => {
     case "arr":
       if (field === "ubication") {
         return formatArrayField(value, "destiny", row);
-      } else if (field === "dominio") {
-        return formatArrayField(value, "materials", row);
+      } else if (field === "dominio") {       
+        if (row.materials && row.materials.length > 0) {
+          return row.materials.map(material => material.material).join(', ');
+        } else if (row.dominio) {
+          return row.dominio;
+        }
+        
+        return ""; 
       }
       break;
     default:
       return value || "";
   }
 };
+
+
 </script>
 
 <template>
