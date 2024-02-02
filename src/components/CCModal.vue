@@ -1,7 +1,7 @@
 <script setup>
 import readXlsxFile from "read-excel-file";
 import Papa from "papaparse";
-import { ref, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
 import Edit from "../icons/Edit.vue";
@@ -19,69 +19,149 @@ const hideError = () => {
   showError.value = false;
 };
 
+const title = ref();
 const csvData = ref([]);
 const averages = ref([]);
-const headers = ref([]);
+const selectedProducts = ref();
 const showError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
 const showForm = ref(true);
-const selectedProducts = ref();
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
 
   if (file) {
+    const fileName = file.name;
+    const underscoreIndex = fileName.indexOf("_");
+    title.value =
+      underscoreIndex !== -1
+        ? fileName.substring(0, underscoreIndex)
+        : fileName;
+
     Papa.parse(file, {
       header: true,
       complete: (result) => {
-        // Filtrar las filas completamente vacías y convertir cadenas numéricas en números
-        const filteredData = result.data.map(row => {
-          const newRow = { disable: false,};
+        const filteredData = result.data.map((row) => {
+          const newRow = {};
           for (const key in row) {
-            if (row[key] !== '') {
-              newRow[key] = isNaN(row[key]) ? row[key] : parseFloat(row[key]);
+            if (row[key] !== "") {
+              const newKey =
+                key.toLowerCase() === "observaci�n" ? "Observacion" : key;
+              newRow[newKey] = [
+                "Ag (ozt)",
+                "Fe (pct)",
+                "Mn (pct)",
+                "Pb (pct)",
+                "Zn (pct)",
+              ].includes(newKey)
+                ? parseFloat(Number(row[key]).toFixed(2))
+                : row[key];
             }
           }
-          // newRow['promedio'] = key === 'Ag (ozt)' || key === 'Fe (pct)' || key === 'Mn (pct)' || key === 'Pb (pct)' || key === 'Zn (pct)';
 
           return newRow;
         });
 
-        // Filtrar las filas vacías después de la data ya filtrada
-        const finalData = filteredData.filter(row => Object.values(row).some(value => value !== ''));
+        const finalData = filteredData.filter((row) =>
+          Object.values(row).some((value) => value !== "")
+        );
 
-        // Limpiar el array existente y agregar los datos filtrados
-        csvData.value.length = 0;
+        finalData.forEach((row, index) => {
+          row["id"] = index + 1;
+          row["disabled"] = false;
+        });
+
         csvData.value.push(...finalData);
-
-        console.log('Final Data:', finalData);
       },
       error: (error) => {
-        console.error('Error parsing CSV:', error.message);
+        console.error("Error parsing CSV:", error.message);
       },
     });
   }
 };
 
+console.log("Final Data:", csvData);
+
+const dataTableClass = "table-exel";
+const editingRows = ref([]);
+const onRowEditSave = (event) => {
+  let { newData, index } = event;
+  csvData.value[index] = newData;
+};
+
+const calculateColumnAverage = (columnName) => {
+  const targetColumns = [
+    "Ag (ozt)",
+    "Fe (pct)",
+    "Mn (pct)",
+    "Pb (pct)",
+    "Zn (pct)",
+  ];
+
+  if (!targetColumns.includes(columnName)) {
+    averages.value[columnName] = "";
+    return "";
+  }
+
+  const enabledRows = csvData.value.filter((row) => !row.disabled);
+  const validColumnValues = enabledRows
+    .map((row) => row[columnName])
+    .filter((value) => !isNaN(value));
+
+  averages.value[columnName] =
+    validColumnValues.length > 0
+      ? parseFloat(
+          (
+            validColumnValues.reduce(
+              (acc, value) => acc + parseFloat(value),
+              0
+            ) / validColumnValues.length
+          ).toFixed(2)
+        )
+      : 0;
+
+  return validColumnValues.length > 0 ? averages.value[columnName] : "";
+};
+
+const findIndexById = (id) => {
+  return csvData.value.findIndex((row) => row.id === id);
+};
+
+const onSelectionChange = () => {
+  const selectedRowIds = selectedProducts.value.map((row) => row.id);
+
+  csvData.value.forEach((row) => {
+    const index = findIndexById(row.id);
+    if (index !== -1) {
+      const wasDisabled = csvData.value[index].disabled;
+      const isSelected = selectedRowIds.includes(row.id);
+
+      if (isSelected !== wasDisabled) {
+        csvData.value[index].disabled = isSelected;
+      }
+    }
+  });
+};
+
+watch(selectedProducts, () => {
+  onSelectionChange();
+});
+
 const updateTravel = async () => {
-  console.log(csvData, averages);
-  if (!averages.value || averages.value.length === 0) {
+  if (!title.value || !csvData.value || !averages.value) {
     showError.value = true;
-    setTimeout(hideError, 5000);
   } else {
+    showError.value = false;
     try {
       buttonClicked.value = true;
       const updatedTravel = {
-        ...props.data,
-        ley_ag: averages.value[0].AG,
-        ley_fe: averages.value[1].FE,
-        ley_mn: averages.value[2].MN,
-        ley_pb: averages.value[3].PB,
-        ley_zn: averages.value[4].ZN,
-        statusGeology: "General",
+        averages: averages.value,
+        cod_despacho: title.value,
+        samples: csvData.value,
       };
       console.log(updatedTravel);
-      const response = await fetch(`${url}/triplist/${props.data._id}`, {
+      const response = await fetch(`${url}/pila/${props.data._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +173,7 @@ const updateTravel = async () => {
 
       if (result.status === true) {
         console.log("correcto");
-        datosMuestra();
+
         await store.dispatch("get_listControl");
         showForm.value = false;
         setTimeout(() => {
@@ -101,7 +181,7 @@ const updateTravel = async () => {
         }, 600);
         setTimeout(() => {
           cerrarModal();
-        }, 5000);
+        }, 2000);
       } else {
         console.log("error");
         buttonClicked.value = false;
@@ -109,77 +189,6 @@ const updateTravel = async () => {
     } catch (error) {
       console.error("Error al actualizar:", error);
     }
-  }
-};
-
-const datosMuestra = async () => {
-  if (!averages.value || averages.value.length === 0) {
-    showError.value = true;
-    setTimeout(hideError, 5000);
-  } else {
-    try {
-      const response = await fetch(`${url}/ruma/${props.data.ruma}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: csvData.value }),
-      });
-
-      const result = await response.json();
-
-      if (result.status === true) {
-        console.log("correcto csvData");
-      } else {
-        console.log("error");
-      }
-    } catch (error) {
-      console.error("Error al actualizar:", error);
-    }
-  }
-};
-
-const dataTableClass = "table-exel";
-const editingRows = ref([]);
-const onRowEditSave = (event) => {
-  let { newData, index } = event;
-  csvData.value[index] = newData;
-};
-
-const calculateColumnAverage = (columnName) => {
-  const enabledRows = csvData.value.filter((row) => !row.disabled);
-
-  if (enabledRows.length > 0) {
-    const validColumnValues = enabledRows
-      .map((row) => row[columnName])
-      .filter((value) => !isNaN(value));
-
-    if (validColumnValues.length > 0) {
-      const sum = validColumnValues.reduce((acc, value) => acc + parseFloat(value), 0);
-      const average = sum / validColumnValues.length;
-
-      // Almacenar el promedio en la variable averages
-      averages.value[columnName] = parseFloat(average.toFixed(2));
-
-      return parseFloat(average.toFixed(2));
-    } else {
-      // Si no hay valores válidos, establecer el promedio en 0
-      averages.value[columnName] = 0;
-      return "";
-    }
-  } else {
-    // Si no hay filas habilitadas, establecer el promedio en 0
-    averages.value[columnName] = 0;
-    return "";
-  }
-};
-
-console.log(averages);
-
-const confirmDeleteProduct = (rowData) => {
-  const index = csvData.value.indexOf(rowData);
-  if (index !== -1) {
-    historial.value[index].disabled = true;
   }
 };
 </script>
@@ -210,7 +219,7 @@ const confirmDeleteProduct = (rowData) => {
           </span>
         </div>
         <div class="mC-c-body">
-          <div className="mC-b-info">
+          <!-- <div className="mC-b-info">
             <p>
               El viaje programado el <strong>'{{ data.date }} '</strong>,
               conducido por <strong> {{ data.operador }} </strong> asociado al
@@ -223,7 +232,7 @@ const confirmDeleteProduct = (rowData) => {
               especificada, y el estado final del viaje fue
               <strong>'{{ data.status }}'</strong>.
             </p>
-          </div>
+          </div> -->
           <div className="mC-b-imputs">
             <div class="table-excel">
               <div class="file-upload-form">
@@ -244,7 +253,7 @@ const confirmDeleteProduct = (rowData) => {
               >
               <div class="view-excel" v-if="csvData.length">
                 <h4 class="text-excel">
-                  Datos procesados del <strong>archivo Excel</strong>
+                  Nombre del Archivo <strong>archivo Excel:{{ title }}</strong>
                 </h4>
                 <DataTable
                   :value="csvData"
@@ -252,47 +261,54 @@ const confirmDeleteProduct = (rowData) => {
                   v-model:selection="selectedProducts"
                   editMode="row"
                   @row-edit-save="onRowEditSave"
+                  @selection-change="onSelectionChange"
                   :class="dataTableClass"
-                  :row-class="
-                    (rowData) => (rowData.disabled ? 'disabled-row' : '')
-                  "
                 >
-                <Column selectionMode="multiple" headerStyle="width: 2.5rem" :exportable="false" ></Column>
-                <Column v-for="(value, key) in csvData[0]" :key="key" :field="key" :header="key">
-                    <template #body="{ data, field }">
-                      {{ data[field] }}
-                    </template>
-                    <template #editor="{ data, field }">
-                      <component
-                        :is="
-                          typeof data[field] === 'number'
-                            ? 'InputNumber'
-                            : 'InputText'
-                        "
-                        v-model="data[field]"
-                        :mode="typeof data[field] === 'number' ? 'decimal' : ''"
-                        autofocus
-                      />
-                    </template>
-                    <template #footer="{ footerData }">
-                      {{ calculateColumnAverage(data, key) }}
-                    </template>
-                  </Column>
+                  <Column
+                    selectionMode="multiple"
+                    headerStyle="width: 2.5rem"
+                    :exportable="false"
+                  ></Column>
+                  <template v-for="(value, key) in csvData[0]">
+                    <Column
+                      v-if="key !== 'id' && key !== 'disabled'"
+                      :key="key"
+                      :field="key"
+                      :header="key"
+                    >
+                      <template #body="{ data, field }">
+                        {{ data[field] }}
+                      </template>
+                      <template #editor="{ data, field }">
+                        <component
+                          :is="
+                            typeof data[field] === 'number'
+                              ? 'InputNumber'
+                              : 'InputText'
+                          "
+                          v-model="data[field]"
+                          :mode="
+                            typeof data[field] === 'number' ? 'decimal' : ''
+                          "
+                          autofocus
+                        />
+                      </template>
+                      <template #footer="{ footerData }">
+                        {{ calculateColumnAverage(key) }}
+                      </template>
+                    </Column>
+                  </template>
                   <Column
                     :rowEditor="true"
                     style="width: 30px; min-width: 30px"
                   >
                   </Column>
-                  
                 </DataTable>
               </div>
             </div>
           </div>
-          <div>           
-            
-          </div>
+          <div></div>
         </div>
-
 
         <div class="mC-c-footer">
           <template v-if="buttonClicked">
@@ -334,12 +350,25 @@ const confirmDeleteProduct = (rowData) => {
 
 .table-exel {
   .p-datatable-table {
+    tr td:first-child {
+      text-align: center;
+    }
     td {
       padding: 4px 0;
       border-top: 1px solid var(--grey-light-11);
     }
     .p-column-header-content {
       justify-content: center;
+    }
+    .p-datatable-tbody {
+      .p-highlight {
+        box-shadow: none;
+        .p-editable-column {
+          opacity: 0.4;
+          user-select: none;
+          pointer-events: none;
+        }
+      }
     }
   }
 
@@ -388,7 +417,7 @@ const confirmDeleteProduct = (rowData) => {
   .p-datatable-tfoot {
     td {
       text-align: center;
-      font-weight: 600;
+      font-weight: 500;
       font-size: clamp(6px, 8vw, 14px);
     }
   }
@@ -405,7 +434,6 @@ const confirmDeleteProduct = (rowData) => {
     }
   }
   .p-datatable-wrapper {
-    
   }
 }
 .table-excel {
@@ -413,7 +441,7 @@ const confirmDeleteProduct = (rowData) => {
   color: var(--black);
   font-size: clamp(6px, 8vw, 14px);
   line-height: 0.7rem;
-  font-weight: 500;
+
   border-collapse: collapse;
   white-space: nowrap;
   overflow: hidden;
@@ -432,5 +460,4 @@ const confirmDeleteProduct = (rowData) => {
     }
   }
 }
-
 </style>
