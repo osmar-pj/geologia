@@ -5,15 +5,14 @@ import Edit from "../icons/Edit.vue";
 import OCModal from "../components/OCModal.vue";
 import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
 
-const store = useStore();
-const socket = inject("socket");
+const store = useStore()
+const socket = inject("socket")
 socket.on("OreControl", (data) => {
-  console.log(data);
-  store.commit("addDataListOreControl", data);
+  store.commit("addDataListOreControl", data)
 });
 
 onMounted(async () => {
-  await store.dispatch("get_list");
+  await store.dispatch("get_list")
 });
 
 const data = computed(() => {

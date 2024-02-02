@@ -8,34 +8,33 @@ import {
   computed,
   inject,
   reactive,
-} from "vue";
-import { createArray } from "../libs/utils";
-import { useStore } from "vuex";
-import CreateRuma from "../components/CreateRuma.vue";
-import Success from "../components/Success.vue";
-import Edit from "../icons/Edit.vue";
-import IMore from "../icons/IMore.vue";
-import IMinus from "../icons/IMinus.vue";
-import IHelp from "../icons/IHelp.vue";
-import IChange from "../icons/IChange.vue";
+} from "vue"
+import { useStore } from "vuex"
+import CreateRuma from "../components/CreateRuma.vue"
+import Success from "../components/Success.vue"
+import Edit from "../icons/Edit.vue"
+import IMore from "../icons/IMore.vue"
+import IMinus from "../icons/IMinus.vue"
+import IHelp from "../icons/IHelp.vue"
+import IChange from "../icons/IChange.vue"
 
-const url = import.meta.env.VITE_API_URL;
-const props = defineProps(["data"]);
-const emit = defineEmits();
+const url = import.meta.env.VITE_API_URL
+const props = defineProps(["data"])
+const emit = defineEmits()
 const cerrarModal = () => {
-  emit("cerrarModal");
-};
-const store = useStore();
-const data = ref(props.data);
-const isCamion = computed(() => data.value.carriage === "Camion");
-const isVagones = computed(() => data.value.carriage === "Vagones");
-const isSplitRequired = computed(() => data.value.splitRequired);
+  emit("cerrarModal")
+}
+const store = useStore()
+const data = ref(props.data)
+const isCamion = computed(() => data.value.carriage === "Camion")
+const isVagones = computed(() => data.value.carriage === "Vagones")
+const isSplitRequired = computed(() => data.value.splitRequired)
 const numberOfMaterials = isSplitRequired.value
   ? data.value.materials.length
-  : 1;
-const isOdd = (number) => number % 2 !== 0;
+  : 1
+const isOdd = (number) => number % 2 !== 0
 
-const dataToUpdate = ref([]);
+const dataToUpdate = ref([])
 
 dataToUpdate.value = isCamion.value
   ? [
@@ -60,7 +59,7 @@ dataToUpdate.value = isCamion.value
           numberOfMaterials == 1
             ? data.value.vagones
             : data.value.materials[index].count,
-      };
+      }
     })
   : [
       {
@@ -69,21 +68,19 @@ dataToUpdate.value = isCamion.value
         // pila: data.value.ubication,
         dominio: data.value.dominio
       },
-    ];
+    ]
 
-console.log(dataToUpdate.value);
+const dataTajo = ref([])
 
-const dataTajo = ref([]);
-
-const selectedRuma = ref("");
-const showError = ref(false);
-const buttonClicked = ref(false);
-const showSuccessM = ref(false);
-const showForm = ref(true);
+const selectedRuma = ref("")
+const showError = ref(false)
+const buttonClicked = ref(false)
+const showSuccessM = ref(false)
+const showForm = ref(true)
 
 onMounted(async () => {
-  await store.dispatch("tajo_list");
-  await store.dispatch("pila_list");
+  await store.dispatch("tajo_list")
+  await store.dispatch("pila_list")
   dataTajo.value = store.state.tajoList;
 });
 
@@ -102,52 +99,24 @@ const changeGibaForAll = () => {
     dataToUpdate.value[i].pila = nextPila;
     dataToUpdate.value[i + 1].pila = currentPila;
   }
-};
-
-// const decrease = (i) => {
-//   if (dataToUpdate.value[i].vagones > 0) {
-//     // Solo decrementar si el valor actual es mayor que 0
-//     dataToUpdate.value[i].vagones--;
-//   }
-// };
-
-// const increase = (i) => {
-//   const currentTotal = dataToUpdate.value.reduce(
-//     (total, item) => total + item.vagones,
-//     0
-//   );
-
-//   if (currentTotal < totalVagones) {
-//     // Solo incrementar si la suma actual no supera totalVagones
-//     dataToUpdate.value[i].vagones++;
-//   }
-// };
-
-// const updateCount = (index, event) => {
-//   const value = parseInt(event.target.value, 10);
-//   const remainingSpace = totalVagones - value;
-
-//   if (value >= 0 && remainingSpace >= 0) {
-//     itemData[index].count = value;
-//   }
-// };
+}
 
 const getImagePath = (imageName) => {
   switch (imageName) {
     case "POLIMETALICO":
-      return "/src/assets/img/i-polimetalico.svg";
+      return "/src/assets/img/i-polimetalico.svg"
     case "ALABANDITA":
-      return "/src/assets/img/i-alabandita.svg";
+      return "/src/assets/img/i-alabandita.svg"
     case "DESMONTE":
-      return "/src/assets/img/i-desmonte.svg";
+      return "/src/assets/img/i-desmonte.svg"
     default:
-      return "/src/assets/img/i-carbonato.svg";
+      return "/src/assets/img/i-carbonato.svg"
   }
-};
+}
 
 const updateTravel = async () => {
   try {
-    buttonClicked.value = true;
+    buttonClicked.value = true
     dataToUpdate.value.map((i) => {
       return {
         ...i,
@@ -160,23 +129,22 @@ const updateTravel = async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(dataToUpdate.value),
-    });
+    })
 
-    const result = await response.json();
+    const result = await response.json()
 
     if (result.status === true) {
-      console.log("Correcto");
-      await store.dispatch("get_list");
-      console.log("UPDATED", result.data);
-      await store.commit("addDataListControlCalidad", result.data);
-      cerrarModal();
+      console.log("Correcto")
+      await store.dispatch("get_list")
+      // await store.commit("addDataListControlCalidad", result.data)
+      cerrarModal()
     } else {
-      console.log("error");
-      buttonClicked.value = false;
+      console.log("error")
+      buttonClicked.value = false
     }
   } catch (error) {
-    console.error("Error al actualizar:", error);
-    buttonClicked.value = false;
+    console.error("Error al actualizar:", error)
+    buttonClicked.value = false
   }
 };
 </script>

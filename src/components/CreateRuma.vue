@@ -1,59 +1,59 @@
 <script setup>
-import { ref } from "vue";
-import { useStore } from "vuex";
-import IPlus from "../icons/IPlus.vue";
-import Success from "../components/Success.vue";
+import { ref } from "vue"
+import { useStore } from "vuex"
+import IPlus from "../icons/IPlus.vue"
+import Success from "../components/Success.vue"
 
-const url = import.meta.env.VITE_API_URL;
-const store = useStore();
+const url = import.meta.env.VITE_API_URL
+const store = useStore()
 
-const showOCModal = ref(false);
-const buttonClicked = ref(false);
-const showSuccessM = ref(false);
-const showForm = ref(true);
+const showOCModal = ref(false)
+const buttonClicked = ref(false)
+const showSuccessM = ref(false)
+const showForm = ref(true)
 
 const openModal = () => {
-  showOCModal.value = true;
-};
+  showOCModal.value = true
+}
 
 const cerrarModal = () => {
-  showOCModal.value = false;
-};
+  showOCModal.value = false
+}
 
 const createPila = async () => {
   try {
-    buttonClicked.value = true;
+    buttonClicked.value = true
     const response = await fetch(`${url}/pila`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({mining: 'YUMPAG'}),
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (data.status === true) {
-      console.log("Correcto");
-      await store.dispatch("pila_list");
-      showForm.value = false;
+      console.log("Correcto")
+      await store.dispatch("pila_list")
+      showForm.value = false
       setTimeout(() => {
-        showSuccessM.value = true;
-      }, 600);
+        showSuccessM.value = true
+      }, 600)
       setTimeout(() => {
-          cerrarModal();
-          showForm.value = true;
-          showSuccessM.value = false;
-        }, 2500);
-      buttonClicked.value = false;
+          cerrarModal()
+          showForm.value = true
+          showSuccessM.value = false
+        }, 2500)
+      buttonClicked.value = false
     } else {
-      console.log("error");
-      buttonClicked.value = false;
+      console.log("error")
+      buttonClicked.value = false
     }
   } catch (error) {
-    console.error("Error al crear la Pila:", error);
+    console.error("Error al crear la Pila:", error)
   }
-};
+}
 </script>
 
 <template>

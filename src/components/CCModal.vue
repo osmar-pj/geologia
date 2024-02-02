@@ -59,45 +59,43 @@ const handleFileUpload = (event) => {
                 : row[key];
             }
           }
-
-          return newRow;
-        });
-
+          return newRow
+        })
+        
         const finalData = filteredData.filter((row) =>
-          Object.values(row).some((value) => value !== "")
-        );
-
+        Object.values(row).some((value) => value !== "")
+        )
+        
         finalData.forEach((row, index) => {
-          row["id"] = index + 1;
-          row["disabled"] = false;
-        });
-
-        csvData.value.push(...finalData);
+          row["id"] = index + 1
+          row["disabled"] = false
+        })
+        
+        csvData.value.push(...finalData)
       },
       error: (error) => {
         console.error("Error parsing CSV:", error.message);
       },
-    });
+    })
   }
-};
-
-console.log("Final Data:", csvData);
+}
 
 const dataTableClass = "table-exel";
 const editingRows = ref([]);
 const onRowEditSave = (event) => {
   let { newData, index } = event;
   csvData.value[index] = newData;
-};
+}
+
+const targetColumns = [
+  "Ag (ozt)",
+  "Fe (pct)",
+  "Mn (pct)",
+  "Pb (pct)",
+  "Zn (pct)",
+]
 
 const calculateColumnAverage = (columnName) => {
-  const targetColumns = [
-    "Ag (ozt)",
-    "Fe (pct)",
-    "Mn (pct)",
-    "Pb (pct)",
-    "Zn (pct)",
-  ];
 
   if (!targetColumns.includes(columnName)) {
     averages.value[columnName] = "";
@@ -153,21 +151,29 @@ const updateTravel = async () => {
     showError.value = true;
   } else {
     showError.value = false;
+    const promedios = targetColumns.reduce((acc, column) => {
+      acc[column] = calculateColumnAverage(column);
+      return acc;
+    }, {})
     try {
       buttonClicked.value = true;
       const updatedTravel = {
-        averages: averages.value,
+        ley_ag: promedios['Ag (ozt)'],
+        ley_fe: promedios['Fe (pct)'],
+        ley_mn: promedios['Mn (pct)'],
+        ley_pb: promedios['Pb (pct)'],
+        ley_zn: promedios['Zn (pct)'],
         cod_despacho: title.value,
         samples: csvData.value,
-      };
-      console.log(updatedTravel);
+        statusCumm: false
+      }
       const response = await fetch(`${url}/pila/${props.data._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedTravel),
-      });
+      })
 
       const result = await response.json();
 
@@ -178,10 +184,10 @@ const updateTravel = async () => {
         showForm.value = false;
         setTimeout(() => {
           showSuccessM.value = true;
-        }, 600);
+        }, 600)
         setTimeout(() => {
           cerrarModal();
-        }, 2000);
+        }, 2000)
       } else {
         console.log("error");
         buttonClicked.value = false;

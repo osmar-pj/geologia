@@ -19,7 +19,7 @@ const store = createStore({
     rumaTotal: [],
     userModal: null,
     errior: null,
-    loading: false,
+    loading: false
   },
   getters: {
     get_data_analysis: (state) => {
@@ -164,14 +164,11 @@ const store = createStore({
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": true,
           },
-        });
-        const data = await response.json();
-        console.log(data);
-        commit("getList", data);
-        commit("loading", false);
-      } catch (error) {
-        // quitar el loadinng false
-      }
+        })
+        const data = await response.json()
+        commit("getList", data)
+        commit("loading", false)
+      } catch (error) {commit("loading", false)}
     },
     get_listControl: async ({ commit }) => {
       try {
@@ -186,7 +183,7 @@ const store = createStore({
         const data = await response.json();
         commit("getListControl", data);
         commit("loading", false);
-      } catch (error) {}
+      } catch (error) {commit("loading", false)}
     },
     get_listGeneral: async ({ commit }) => {
       try {
@@ -202,7 +199,7 @@ const store = createStore({
         
         commit("getListGeneral", data);
         commit("loading", false);
-      } catch (error) {}
+      } catch (error) {commit("loading", false)}
     },
     get_listFilters: async ({ commit }) => {
       try {
@@ -217,7 +214,7 @@ const store = createStore({
         const data = await response.json();
         commit("getListFilters", data);
         commit("loading", false);
-      } catch (error) {}
+      } catch (error) {commit("loading", false)}
     },
     pila_list: async ({ commit }) => {
       try {
@@ -243,7 +240,7 @@ const store = createStore({
         });
         const data = await response.json();
         commit("getRumaTotal", data.rumas);
-      } catch (error) {}
+      } catch (error) {commit("loading", false)}
     },
     ruma_update: async ({ commit }, data) => {
       try {
@@ -256,7 +253,7 @@ const store = createStore({
         });
         const dataResponse = await response.json();
         commit("getRumaTotal", data.rumas);
-      } catch (error) {}
+      } catch (error) {commit("loading", false)}
     },
     tajo_list: async ({ commit }) => {
       try {
@@ -269,7 +266,7 @@ const store = createStore({
         });
         const data = await response.json();
         commit("getTajo", data);
-      } catch (error) {}
+      } catch (error) {commit("loading", false)}
     },
     filter_list: async ({ commit }, data) => {
       commit("getFilterTable", data);
@@ -280,9 +277,7 @@ const store = createStore({
     data_analysis: async ({ commit }, data) => {
       try {
         commit("getDataAnalysis", data);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {commit("loading", false)}
     },
   },
   modules: {},
