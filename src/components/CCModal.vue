@@ -416,9 +416,7 @@ const updateTravel = async () => {
       width: 30px;
       padding: 0;
     }
-    .p-row-editor-cancel {
-      padding-left: 0.5rem;
-    }
+    
   }
   .p-datatable-tfoot {
     td {
