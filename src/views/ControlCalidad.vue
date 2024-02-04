@@ -1,16 +1,19 @@
 <script setup>
-import { ref, onMounted, computed, inject } from "vue";
+import { ref, onMounted, computed, inject, watch } from "vue";
 import { useStore } from "vuex";
 import { Subject } from "rxjs";
 import Edit from "../icons/Edit.vue";
 import CCModal from "../components/CCModal.vue";
+import MuestraModal from "../components/MuestraModal.vue";
+import CanchaModal from "../components/CanchaModal.vue";
 import { formatDate, formatFixed, formatArrayField } from "../libs/utils";
 
 const store = useStore();
 const socket = inject("socket");
 const pila$ = new Subject();
-
 const pilas = ref([]);
+const selectedStatus = ref("Cancha");
+const filteredData = ref([]);
 
 socket.on("pilas", (data) => {
   const pilasFound = data.map((i) => {
@@ -25,8 +28,27 @@ socket.on("pilas", (data) => {
 onMounted(async () => {
   await store.dispatch("get_listControl");
   pilas.value = store.state.dataListControl;
+  filtrarDatos();
 });
 
+watch(selectedStatus, () => {
+  filtrarDatos();
+});
+const filtrarDatos = () => {
+  if (pilas.value.data) {
+    filteredData.value = pilas.value.data.filter((item) => {
+      return item && item.statusTransition === selectedStatus.value;
+    });
+  }
+};
+
+const contarElementosPorEstado = (estado) => {
+  if (filteredData.value) {
+    return filteredData.value.filter((item) => item.statusTransition === estado)
+      .length;
+  }
+  return 0;
+};
 const updatePilas = (pilasFound, data) => {
   pilasFound.forEach((pila, index) => {
     pila.stock = data[index].stock;
@@ -40,11 +62,17 @@ const updatePilas = (pilasFound, data) => {
 
 // const pilas = computed(() => {return store.state.dataListControl})
 const showCCModal = ref(false);
+const showMuestraModal = ref(false);
+const showCanchaModal = ref(false);
 const modalData = ref(null);
 
-const openDelete = (data) => {
+const openMuestraModal = (data) => {
   modalData.value = data;
-  showModalDelete.value = true;
+  showMuestraModal.value = true;
+};
+const openCanchaModal = (data) => {
+  modalData.value = data;
+  showCanchaModal.value = true;
 };
 const openModal = (data) => {
   modalData.value = data;
@@ -66,7 +94,6 @@ const formatColumnValue = (value, fn, field, row) => {
         } else if (row.dominio) {
           return row.dominio;
         }
-
         return "";
       }
     case "count":
@@ -89,26 +116,20 @@ const formatColumnValue = (value, fn, field, row) => {
     </div>
     <div class="global-h-button">
       <div class="radio-inputs">
-        <label class="radio">
-          <input type="radio" name="radio" checked="" />
+        <label
+          class="radio"
+          v-for="status in ['Transition', 'Muestreo', 'Cancha']"
+          :key="status"
+        >
+          <input
+            type="radio"
+            name="radio"
+            v-model="selectedStatus"
+            :value="status"
+          />
           <div class="name">
-            <span>24</span>
-            <h5>Laboratorio</h5>
-          </div>
-        </label>
-        <label class="radio">
-          <input type="radio" name="radio" />
-          <div class="name">
-            <span>15</span>
-            <h5>Muestreo</h5>
-          </div>
-        </label>
-
-        <label class="radio">
-          <input type="radio" name="radio" />
-          <div class="name">
-            <span>8</span>
-            <h5>Planta</h5>
+            <span>{{ contarElementosPorEstado(status) }}</span>
+            <h5>{{ status }}</h5>
           </div>
         </label>
       </div>
@@ -116,7 +137,7 @@ const formatColumnValue = (value, fn, field, row) => {
   </div>
   <div class="tableContainer">
     <DataTable
-      :value="pilas.data"
+      :value="filteredData"
       tableStyle="width: 100%; border-collapse: collapse;"
       paginator
       :rows="20"
@@ -138,14 +159,16 @@ const formatColumnValue = (value, fn, field, row) => {
                   )
                 }}
               </h4>
-              <h5>{{
+              <h5>
+                {{
                   formatColumnValue(
-                    slotProps.data.ubication,
+                    slotProps.data.statusTransition,
                     "text",
                     "ubication",
                     slotProps.data
                   )
-                }}</h5>
+                }}
+              </h5>
             </div>
           </div>
         </template>
@@ -154,7 +177,7 @@ const formatColumnValue = (value, fn, field, row) => {
         v-for="(header, index) in pilas.header"
         :key="index"
         :field="header.field"
-        :header="false"
+        :header="header.title"
       >
         <template #body="slotProps">
           <div class="td-user">
@@ -179,9 +202,10 @@ const formatColumnValue = (value, fn, field, row) => {
         <template #body="slotProps">
           <div className="btns">
             <Button
+            v-if="slotProps.data.statusTransition === 'Transition'"
               outlined
               class="item-btn table-btn-edit"
-              @click.prevent="openModal(slotProps.data)"
+              @click.prevent="openMuestraModal(slotProps.data)"
               :userModal="store.state.userModal"
               v-tooltip.bottom="{
                 value: 'Laboratorio',
@@ -198,12 +222,13 @@ const formatColumnValue = (value, fn, field, row) => {
               <Edit />
             </Button>
             <Button
+            v-if="slotProps.data.statusTransition === 'Cancha'"
               outlined
               class="item-btn table-btn-edit"
-              @click.prevent="openModal(slotProps.data)"
+              @click.prevent="openCanchaModal(slotProps.data)"
               :userModal="store.state.userModal"
               v-tooltip.bottom="{
-                value: 'Muestra',
+                value: 'Fech Abast.',
                 pt: {
                   arrow: {
                     style: {
@@ -217,12 +242,13 @@ const formatColumnValue = (value, fn, field, row) => {
               <Edit />
             </Button>
             <Button
+              v-if="slotProps.data.statusTransition === 'Muestreo'"
               outlined
               class="item-btn table-btn-edit"
               @click.prevent="openModal(slotProps.data)"
               :userModal="store.state.userModal"
               v-tooltip.bottom="{
-                value: 'Fech Abast.',
+                value: 'Muestreo',
                 pt: {
                   arrow: {
                     style: {
@@ -247,13 +273,20 @@ const formatColumnValue = (value, fn, field, row) => {
       :data="modalData"
     />
   </Transition>
-  <!-- <Transition :duration="550" name="nested">
-    <DeleteModal
-      v-if="showModalDelete"
-      @cerrarModal="showModalDelete = false"
+  <Transition :duration="550" name="nested">
+    <MuestraModal
+      v-if="showMuestraModal"
+      @cerrarModal="showMuestraModal = false"
       :data="modalData"
     />
-  </Transition> -->
+  </Transition>
+  <Transition :duration="550" name="nested">
+    <CanchaModal
+      v-if="showCanchaModal"
+      @cerrarModal="showCanchaModal = false"
+      :data="modalData"
+    />
+  </Transition>
 </template>
 
 <style lang="scss"></style>

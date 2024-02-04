@@ -17,16 +17,12 @@ const cerrarModal = () => {
 const deleteTravel = async () => {
   try {
     buttonClicked.value = true;
-    const updatedTravel = {
-        ...props.data,
-        validGeology: 0,
-      };
     const response = await fetch(`${url}/triplist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedTravel),
+      body: JSON.stringify({statusTransition: "Muestreo"}),
     });
 
     const result = await response.json();
@@ -55,12 +51,7 @@ const deleteTravel = async () => {
           </div>
           <div class="mC-c-title-text">
             <h2>
-              Eliminar a
-              {{
-                data.operador
-                  ? data.operador.split(" ").slice(0, 1).join(" ")
-                  : ""
-              }}
+              Enviar Pila a Muestreo
             </h2>
             <h4>Borrar un viaje de la lista</h4>
           </div>
@@ -72,15 +63,11 @@ const deleteTravel = async () => {
       <div class="mC-c-body">
         <div class="mC-b-info">
           <p>
-            ¿Está seguro que desea eliminar a
+            ¿Está seguro que desea enviar la pila
             <strong
-              >"{{
-                data.operador
-                  ? data.operador.split(" ").slice(0, 2).join(" ")
-                  : ""
-              }}"</strong
+              >"{{data.pila}}"</strong
             >
-            de la lista de viajes?
+            a muestreo?
           </p>
         </div>
       </div>

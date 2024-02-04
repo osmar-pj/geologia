@@ -94,8 +94,7 @@ const formatColumnValue = (value, fn, field, row) => {
         v-for="(header, index) in data.header"
         :key="index"
         :field="header.field"
-        :header="header.title"
-        sortable
+        :header="header.title"       
       >
         <template #body="slotProps">
           <div class="td-user">

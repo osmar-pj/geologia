@@ -343,7 +343,7 @@ const updateTravel = async () => {
 
 <style lang="scss">
 .CCModal {
-  max-width: 1200px !important;
+  max-width: 950px !important;
 }
 
 .disabled-row,
@@ -356,12 +356,17 @@ const updateTravel = async () => {
 
 .table-exel {
   .p-datatable-table {
+    thead {
+    }
     tr td:first-child {
       text-align: center;
     }
     td {
       padding: 4px 0;
       border-top: 1px solid var(--grey-light-11);
+    }
+    th{
+      padding: 12px 12px;    
     }
     .p-column-header-content {
       justify-content: center;
@@ -382,7 +387,7 @@ const updateTravel = async () => {
     text-align: center;
   }
   .p-editable-column {
-    width: 60px;
+   
     height: 20px !important;
     text-align: center;
     padding: 0 12px !important;
