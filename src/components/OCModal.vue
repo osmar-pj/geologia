@@ -36,6 +36,13 @@ const isOdd = (number) => number % 2 !== 0
 
 const dataToUpdate = ref([])
 
+const selectedDominio = ref();
+const dominios = ref([
+    { name: 'Ag/Alabandita'},
+    { name: 'Ag/Carbonatos' },
+    { name: 'Polimetálico' },
+]);
+
 dataToUpdate.value = isCamion.value
   ? [
       {
@@ -43,6 +50,7 @@ dataToUpdate.value = isCamion.value
         tajo: data.value.tajo,
         pila: "",
         material: data.value.material,
+        dominio:selectedDominio.value,
       },
     ]
   : isSplitRequired.value
@@ -115,20 +123,22 @@ const getImagePath = (imageName) => {
 }
 
 const updateTravel = async () => {
-  try {
-    buttonClicked.value = true
-    dataToUpdate.value.map((i) => {
+   try {
+     buttonClicked.value = true
+  console.log()
+    const data = dataToUpdate.value.map((i) => {
       return {
         ...i,
-        statusGeology: "QualityControl",
+        userId:store.state.user.userId,
       }
     })
+   
     const response = await fetch(`${url}/trip/${props.data._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(dataToUpdate.value),
+      body: JSON.stringify(data),
     })
 
     const result = await response.json()
@@ -137,15 +147,15 @@ const updateTravel = async () => {
       console.log("Correcto")
       await store.dispatch("get_list")
       // await store.commit("addDataListControlCalidad", result.data)
-      cerrarModal()
-    } else {
-      console.log("error")
-      buttonClicked.value = false
-    }
-  } catch (error) {
-    console.error("Error al actualizar:", error)
-    buttonClicked.value = false
-  }
+       cerrarModal()
+     } else {
+       console.log("error")
+       buttonClicked.value = false
+     }
+   } catch (error) {
+     console.error("Error al actualizar:", error)
+     buttonClicked.value = false
+   }
 };
 </script>
 
@@ -196,7 +206,7 @@ const updateTravel = async () => {
             <div v-else class="t-nulo"><IHelp /> Por completar...</div>
           </div>
         </div>
-        <div class="mC-b-imputs inputs-change">
+        <div class="mC-b-imputs inputs-change" v-if="!isCamion">
           <div
             v-for="(item, index) in dataToUpdate"
             :key="index"
@@ -308,6 +318,19 @@ const updateTravel = async () => {
               </div>
             </div>
             <div className="mC-b-imputs" v-if="isCamion">
+              <div class="mC-imputs-item input-pila">
+                <label>Seleccione Dominio</label>
+                <div class="imputs-i-input">
+                  <Dropdown
+                    class="p-dropdown"
+                    v-model="item.dominio"
+                    :options="dominios"
+                    optionLabel="name"
+                    optionValue="name"
+                    placeholder="Seleccionar"
+                  />
+                </div>
+              </div>
               <div class="mC-imputs-item input-pila">
                 <label>Seleccione Pila</label>
                 <div class="imputs-i-input">

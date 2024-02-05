@@ -12,7 +12,7 @@ const store = useStore();
 const socket = inject("socket");
 const pila$ = new Subject();
 const pilas = ref([]);
-const selectedStatus = ref("Cancha");
+const selectedStatus = ref("Acumulando");
 const filteredData = ref([]);
 
 socket.on("pilas", (data) => {
@@ -37,14 +37,14 @@ watch(selectedStatus, () => {
 const filtrarDatos = () => {
   if (pilas.value.data) {
     filteredData.value = pilas.value.data.filter((item) => {
-      return item && item.statusTransition === selectedStatus.value;
+      return item && item.statusPila === selectedStatus.value;
     });
   }
 };
 
 const contarElementosPorEstado = (estado) => {
   if (filteredData.value) {
-    return filteredData.value.filter((item) => item.statusTransition === estado)
+    return filteredData.value.filter((item) => item.statusPila === estado)
       .length;
   }
   return 0;
@@ -118,7 +118,7 @@ const formatColumnValue = (value, fn, field, row) => {
       <div class="radio-inputs">
         <label
           class="radio"
-          v-for="status in ['Transition', 'Muestreo', 'Cancha']"
+          v-for="status in ['Acumulando', 'Analizando', 'waitDateAbastecimiento']"
           :key="status"
         >
           <input
@@ -145,7 +145,7 @@ const formatColumnValue = (value, fn, field, row) => {
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :header="false"
     >
-      <Column field="mining" headerStyle="text-align: center;">
+      <!-- <Column field="mining" headerStyle="text-align: center;">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -162,7 +162,7 @@ const formatColumnValue = (value, fn, field, row) => {
               <h5>
                 {{
                   formatColumnValue(
-                    slotProps.data.statusTransition,
+                    slotProps.data.statusPila,
                     "text",
                     "ubication",
                     slotProps.data
@@ -172,7 +172,7 @@ const formatColumnValue = (value, fn, field, row) => {
             </div>
           </div>
         </template>
-      </Column>
+      </Column> -->
       <Column
         v-for="(header, index) in pilas.header"
         :key="index"
@@ -192,7 +192,7 @@ const formatColumnValue = (value, fn, field, row) => {
                   )
                 }}
               </h4>
-              <h5>{{ header.title }}</h5>
+             
             </div>
           </div>
         </template>
@@ -202,7 +202,7 @@ const formatColumnValue = (value, fn, field, row) => {
         <template #body="slotProps">
           <div className="btns">
             <Button
-            v-if="slotProps.data.statusTransition === 'Transition'"
+            v-if="slotProps.data.statusPila === 'Acumulando'"
               outlined
               class="item-btn table-btn-edit"
               @click.prevent="openMuestraModal(slotProps.data)"
@@ -222,7 +222,7 @@ const formatColumnValue = (value, fn, field, row) => {
               <Edit />
             </Button>
             <Button
-            v-if="slotProps.data.statusTransition === 'Cancha'"
+            v-if="slotProps.data.statusPila === 'waitDateAbastecimiento'"
               outlined
               class="item-btn table-btn-edit"
               @click.prevent="openCanchaModal(slotProps.data)"
@@ -242,13 +242,13 @@ const formatColumnValue = (value, fn, field, row) => {
               <Edit />
             </Button>
             <Button
-              v-if="slotProps.data.statusTransition === 'Muestreo'"
+              v-if="slotProps.data.statusPila === 'Analizando'"
               outlined
               class="item-btn table-btn-edit"
               @click.prevent="openModal(slotProps.data)"
               :userModal="store.state.userModal"
               v-tooltip.bottom="{
-                value: 'Muestreo',
+                value: 'Analizando',
                 pt: {
                   arrow: {
                     style: {

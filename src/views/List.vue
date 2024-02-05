@@ -4,33 +4,36 @@ import { useStore } from "vuex";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import Filters from "../components/filters.vue";
 import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
-
+import { Subject } from "rxjs";
 
 const store = useStore();
 const socket = inject("socket")
+const trip$ = new Subject();
 
 socket.on("OreControl", (data) => {
   store.commit("addDataGeneralList", data)
 });
 
 
-const data = computed(() => store.state.dataFilterTable);
-const selectedColumns = ref([]);
-
-const onToggle = (val) => {
-  if (data.value.columns && data.value.columns.length > 0) {
-    selectedColumns.value = data.value.columns.filter((col) =>
-      val.includes(col)
-    );
-  } else {
-    console.error("data.columns no tiene elementos");
-  }
-};
-
-watch(data, () => {
-  selectedColumns.value = data.value.columns || [];
-  console.log(selectedColumns.value); // Mueve el console.log aquí dentro
+socket.on("trips", (data) => {
+  const tripsFound = data.map((i) => {
+    const trip = trips.value.data.find((p) => p._id === i._id);
+    return trip;
+  });
+  tripsFound.length > 0
+    ? updateTrips(tripsFound, data)
+    : console.log("No se encontraron pilas");
 });
+
+const trips = computed(() => store.state.dataFilterTable);
+
+const updateTrips = (tripsFound, data) => {
+  tripsFound.forEach((trip, index) => {
+    trip.statusTrip = data[index].statusTrip;
+    trip.history = data[index].history;   
+    trip$.next(trip);
+  });
+};
 
 const formatColumnValue = (value, fn, field, row) => {
   switch (fn) {
@@ -42,7 +45,13 @@ const formatColumnValue = (value, fn, field, row) => {
       if (field === "ubication") {
         return formatArrayField(value, "destiny", row);
       } else if (field === "dominio") {
-        return formatArrayField(value, "materials", row);
+       if (row.materials && row.materials.length > 0) {
+          return row.materials.map(i => i.material).join(', ');
+        } else if (row.dominio) {
+          return row.dominio;
+        }
+        
+        return ""; 
       }
       break;
     default:
@@ -56,7 +65,7 @@ const formatColumnValue = (value, fn, field, row) => {
     <div class="global-h-title">
       <div class="g-h-t-primary">
         <h1>Análisis por filtros, tiempo real</h1>
-        <span>{{ data.data ? data.data.length : 0 }}</span>
+        <span>{{ trips.data ? trips.data.length : 0 }}</span>
       </div>
       <span>| Dia terminado en Mina </span>
     </div>
@@ -66,7 +75,7 @@ const formatColumnValue = (value, fn, field, row) => {
   </div>
   <div class="c-global-c-content">
     <DataTable
-      :value="data.data"
+      :value="trips.data"
       tableStyle="width: 100%"
       paginator
       :rows="20"
@@ -92,7 +101,7 @@ const formatColumnValue = (value, fn, field, row) => {
       </template>
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>
       <Column
-        v-for="(header, index) in data.header"
+        v-for="(header, index) in trips.header"
         :key="index"
         :field="header.field"
         :header="header.title"

@@ -33,11 +33,13 @@ const formatColumnValue = (value, fn, field, row) => {
     case "fixed":
       return formatFixed(value);
     case "arr":
-      if (field === "ubication") {
-        return formatArrayField(value, "destiny", row);
+      if (field === "destiny") {        
+        const result = row.destiny.join(',');
+        return result;
+
       } else if (field === "dominio") {       
         if (row.materials && row.materials.length > 0) {
-          return row.materials.map(material => material.material).join(', ');
+          return row.materials.map(i => i.material).join(', ');
         } else if (row.dominio) {
           return row.dominio;
         }
