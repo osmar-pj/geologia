@@ -7,15 +7,16 @@ import CCModal from "../components/CCModal.vue";
 import MuestraModal from "../components/MuestraModal.vue";
 import CanchaModal from "../components/CanchaModal.vue";
 import { formatDate, formatFixed, formatArrayField } from "../libs/utils";
+import SkeletonLoader from "../components/SkeletonLoader.vue";
 
 const store = useStore();
 const socket = inject("socket");
 const pila$ = new Subject();
 const pilas = ref([]);
 const selectedStatus = ref("Acumulando");
-const filteredData = ref([]);
 
 socket.on("pilas", (data) => {
+  console.log("socket Data", data);
   const pilasFound = data.map((i) => {
     const pila = pilas.value.data.find((p) => p._id === i._id);
     return pila;
@@ -28,24 +29,20 @@ socket.on("pilas", (data) => {
 onMounted(async () => {
   await store.dispatch("get_listControl");
   pilas.value = store.state.dataListControl;
-  filtrarDatos();
 });
 
-watch(selectedStatus, () => {
-  filtrarDatos();
-});
-const filtrarDatos = () => {
+const filteredData = computed(() => {
   if (pilas.value.data) {
-    filteredData.value = pilas.value.data.filter((item) => {
-      return item && item.statusPila === selectedStatus.value;
-    });
+    return pilas.value.data.filter(
+      (item) => item.statusPila === selectedStatus.value
+    );
   }
-};
+  return [];
+});
 
-const contarElementosPorEstado = (estado) => {
-  if (filteredData.value) {
-    return filteredData.value.filter((item) => item.statusPila === estado)
-      .length;
+const calcularCantidadPorEstado = (estado) => {
+  if (pilas.value.data) {
+    return pilas.value.data.filter((item) => item.statusPila === estado).length;
   }
   return 0;
 };
@@ -118,7 +115,11 @@ const formatColumnValue = (value, fn, field, row) => {
       <div class="radio-inputs">
         <label
           class="radio"
-          v-for="status in ['Acumulando', 'Analizando', 'waitDateAbastecimiento']"
+          v-for="status in [
+            'Acumulando',
+            'Analizando',
+            'waitDateAbastecimiento',
+          ]"
           :key="status"
         >
           <input
@@ -128,13 +129,14 @@ const formatColumnValue = (value, fn, field, row) => {
             :value="status"
           />
           <div class="name">
-            <span>{{ contarElementosPorEstado(status) }}</span>
+            <span>{{ calcularCantidadPorEstado(status) }}</span>
             <h5>{{ status }}</h5>
           </div>
         </label>
       </div>
     </div>
   </div>
+
   <div class="tableContainer">
     <DataTable
       :value="filteredData"
@@ -144,6 +146,8 @@ const formatColumnValue = (value, fn, field, row) => {
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :header="false"
+      :loading="store.state.loading"
+   
     >
       <!-- <Column field="mining" headerStyle="text-align: center;">
         <template #body="slotProps">
@@ -173,6 +177,7 @@ const formatColumnValue = (value, fn, field, row) => {
           </div>
         </template>
       </Column> -->
+      <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
       <Column
         v-for="(header, index) in pilas.header"
         :key="index"
@@ -180,21 +185,23 @@ const formatColumnValue = (value, fn, field, row) => {
         :header="header.title"
       >
         <template #body="slotProps">
-          <div class="td-user">
+          <div class="td-user"   >
             <div class="t-name">
               <h4>
-                {{
-                  formatColumnValue(
-                    slotProps.data[header.field],
-                    header.fn,
-                    header.field,
-                    slotProps.data
-                  )
-                }}
+                
+                  {{
+                    formatColumnValue(
+                      slotProps.data[header.field],
+                      header.fn,
+                      header.field,
+                      slotProps.data
+                    )
+                  }}
+              
               </h4>
-             
             </div>
-          </div>
+          </div >
+          <!-- <Skeleton></Skeleton> -->
         </template>
       </Column>
 
@@ -202,7 +209,7 @@ const formatColumnValue = (value, fn, field, row) => {
         <template #body="slotProps">
           <div className="btns">
             <Button
-            v-if="slotProps.data.statusPila === 'Acumulando'"
+              v-if="slotProps.data.statusPila === 'Acumulando'"
               outlined
               class="item-btn table-btn-edit"
               @click.prevent="openMuestraModal(slotProps.data)"
@@ -222,7 +229,7 @@ const formatColumnValue = (value, fn, field, row) => {
               <Edit />
             </Button>
             <Button
-            v-if="slotProps.data.statusPila === 'waitDateAbastecimiento'"
+              v-if="slotProps.data.statusPila === 'waitDateAbastecimiento'"
               outlined
               class="item-btn table-btn-edit"
               @click.prevent="openCanchaModal(slotProps.data)"
@@ -266,6 +273,7 @@ const formatColumnValue = (value, fn, field, row) => {
       </Column>
     </DataTable>
   </div>
+
   <Transition :duration="550" name="nested">
     <CCModal
       v-if="showCCModal"

@@ -6,7 +6,7 @@ const products = ref(new Array(12));
 </script>
 
 <template>
-  <div class="c-global-c-content" v-if="loading">
+  <div class="tableContainer" v-if="loading">
     <DataTable
     :value="products"
       paginator

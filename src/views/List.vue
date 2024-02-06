@@ -3,19 +3,19 @@ import { computed, ref, watch, inject } from "vue";
 import { useStore } from "vuex";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import Filters from "../components/filters.vue";
-import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
+import { formatDate, formatFixed, formatArrayField } from "../libs/utils";
 import { Subject } from "rxjs";
 
 const store = useStore();
-const socket = inject("socket")
+const socket = inject("socket");
 const trip$ = new Subject();
 
 socket.on("OreControl", (data) => {
-  store.commit("addDataGeneralList", data)
+  store.commit("addDataGeneralList", data);
 });
 
-
 socket.on("trips", (data) => {
+  console.log("socket Data", data);
   const tripsFound = data.map((i) => {
     const trip = trips.value.data.find((p) => p._id === i._id);
     return trip;
@@ -30,7 +30,7 @@ const trips = computed(() => store.state.dataFilterTable);
 const updateTrips = (tripsFound, data) => {
   tripsFound.forEach((trip, index) => {
     trip.statusTrip = data[index].statusTrip;
-    trip.history = data[index].history;   
+    trip.history = data[index].history;
     trip$.next(trip);
   });
 };
@@ -41,23 +41,33 @@ const formatColumnValue = (value, fn, field, row) => {
       return formatDate(value);
     case "fixed":
       return formatFixed(value);
+
     case "arr":
-      if (field === "ubication") {
+      if (value === "ubication") {
         return formatArrayField(value, "destiny", row);
       } else if (field === "dominio") {
-       if (row.materials && row.materials.length > 0) {
-          return row.materials.map(i => i.material).join(', ');
+        if (row.materials && row.materials.length > 0) {
+          return row.materials.map((i) => i.material).join(", ");
         } else if (row.dominio) {
           return row.dominio;
         }
-        
-        return ""; 
+
+        return "";
       }
       break;
     default:
       return value || "";
   }
 };
+
+const statusClassMapping = {
+  Analizando: "analizando",
+  waitBeginAnalysis: "waitBeginAnalysis",
+  waitComplete: "waitComplete",
+  waitSplit: "waitSplit",
+};
+const getStatusClass = (status) => statusClassMapping[status] || "";
+
 </script>
 
 <template>
@@ -85,10 +95,12 @@ const formatColumnValue = (value, fn, field, row) => {
       sortMode="single"
       sortField="year"
       :sortOrder="1"
+      :loading="store.state.loading"
+      
     >
-      <template #header>
+      <!-- <template #header>
         <div style="text-align: left">
-          <!-- <MultiSelect
+           <MultiSelect
             :modelValue="selectedColumns"
             :options="data.columns"
             optionLabel="title"
@@ -96,9 +108,9 @@ const formatColumnValue = (value, fn, field, row) => {
             display="chip"
             placeholder="Select Columns"
             :groupRowsBy="['year', 'month', 'date', 'status','ubication','turn','mining','level','type','veta','tajo','dominio','rango','date_abas']"
-          /> -->
+          /> 
         </div>
-      </template>
+      </template> -->
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>
       <Column
         v-for="(header, index) in trips.header"
@@ -109,7 +121,8 @@ const formatColumnValue = (value, fn, field, row) => {
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>
+              <Skeleton v-if="store.state.loading" height="100px"></Skeleton>
+              <h4 v-else :class="getStatusClass(slotProps.data[header.field])">
                 {{
                   formatColumnValue(
                     slotProps.data[header.field],
@@ -159,5 +172,96 @@ const formatColumnValue = (value, fn, field, row) => {
   border-radius: var(--br-xxl);
   border: 1px solid var(--grey-light-22);
   padding: 2rem;
+}
+
+.analizando {
+  padding: 8px 10px;
+  border-radius: 15px;
+  background-color: #ffeeeb;
+  font-size: clamp(6px, 8vw, 13px) !important;
+  color: #fb4f31;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: #fb4f31;
+    border-radius: 50%;
+    box-shadow: #ffd1c6 0px 1px 4px, #ffd1c6 0px 0px 0px 3px;
+  }
+}
+.waitBeginAnalysis {
+  padding: 8px 10px;
+  border-radius: 15px;
+  background-color: #eaf2fe;
+  font-size: clamp(6px, 8vw, 13px) !important;
+  color: #528ffe;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: #528ffe;
+    border-radius: 50%;
+    box-shadow: #c6dafe 0px 1px 4px, #c6dafe 0px 0px 0px 3px;
+  }
+}
+.waitComplete {
+  padding: 8px 10px;
+  border-radius: 15px;
+  background-color: #fff6e7;
+  font-size: clamp(6px, 8vw, 13px) !important;
+  color: #e69416;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: #e69416;
+    border-radius: 50%;
+    box-shadow: #fce1ad 0px 1px 4px, #fce1ad 0px 0px 0px 3px;
+  }
+}
+.waitSplit {
+  padding: 8px 10px;
+  border-radius: 15px;
+  background-color: #f7eaff;
+  font-size: clamp(6px, 8vw, 13px) !important;
+  color: #a93ffe;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: #a93ffe;
+    border-radius: 50%;
+    box-shadow: #e5c6fe 0px 1px 4px, #e5c6fe 0px 0px 0px 3px;
+  }
+}
+.analizando {
+  padding: 8px 10px;
+  border-radius: 15px;
+  background-color: #ebf7e9;
+  font-size: clamp(6px, 8vw, 13px) !important;
+  color: #06a705;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: #06a705;
+    border-radius: 50%;
+    box-shadow: #c4e8bf 0px 1px 4px, #c4e8bf 0px 0px 0px 3px;
+  }
 }
 </style>

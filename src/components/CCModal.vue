@@ -27,7 +27,7 @@ const showError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
 const showForm = ref(true);
-
+const selectedCodTableta = ref(false);
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
 
@@ -165,7 +165,8 @@ const updateTravel = async () => {
         ley_zn: promedios['Zn (pct)'],
         cod_despacho: title.value,
         samples: csvData.value,
-        statusCumm: false
+        isCoding: selectedCodTableta.value,        
+        userId: store.state.user.userId,
       }
       const response = await fetch(`${url}/pila/${props.data._id}`, {
         method: "PUT",
@@ -224,21 +225,37 @@ const updateTravel = async () => {
             <img src="../assets/img/i-close.svg" alt="" />
           </span>
         </div>
-        <div class="mC-c-body">
-          <!-- <div className="mC-b-info">
-            <p>
-              El viaje programado el <strong>'{{ data.date }} '</strong>,
-              conducido por <strong> {{ data.operador }} </strong> asociado al
-              vehículo <strong>'{{ data.vehiculo }} '</strong>, transportó
-              <strong>{{ data.ton }} toneladas</strong> de
-              <strong>{{ data.material }} </strong> en
-              <strong>{{ data.vagones }} vagones</strong>. El vehículo, con el
-              tipo <strong>'{{ data.tipo }} '</strong>, se dirigió al tajo
-              denominado <strong>'{{ data.tajo }} '</strong>. La tableta no fue
-              especificada, y el estado final del viaje fue
-              <strong>'{{ data.status }}'</strong>.
-            </p>
-          </div> -->
+        <div class="mC-c-body">         
+          <div class="mC-b-text" v-if="props.data.typePila === 'Giba' && props.data.samples.length > 1">          
+          <div class="radio-inputs">
+            <label>
+              <input
+                class="radio-input"
+                type="radio"
+                name="codigo"
+                v-model="selectedCodTableta"
+                :value="false"
+                id=true
+              />
+              <span class="radio-tile">
+                <span class="radio-label">Seguir Acumulando</span>
+              </span>
+            </label>
+            <label>
+              <input
+                class="radio-input"
+                type="radio"
+                name="codigo"
+                v-model="selectedCodTableta"
+                :value="true"
+                id=false
+              />
+              <span class="radio-tile">
+                <span class="radio-label">Código de tableta</span>
+              </span>
+            </label>
+          </div>
+        </div>         
           <div className="mC-b-imputs">
             <div class="table-excel">
               <div class="file-upload-form">

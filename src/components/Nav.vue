@@ -87,20 +87,13 @@ const logout = async () => {
         >
           <div class="nav-select"><CQuality/></div>
           <span>Control de Calidad</span>
-        </li>       
-        <li
-          @click.prevent="goToPage('ruma')"
-          :class="active == 'ruma' ? 'active' : ''"
-        >
-          <div class="nav-select"><CRuma/></div>
-          <span>Control de Rumas</span>
-        </li>
+        </li>               
         <li
           @click.prevent="goToPage('map')"
           :class="active == 'map' ? 'active' : ''"
         >
           <div class="nav-select"><CRuma/></div>
-          <span>Mapa de Rumas</span>
+          <span>Mapa de Pilas</span>
         </li>
         <li
           @click.prevent="goToPage('planta')"

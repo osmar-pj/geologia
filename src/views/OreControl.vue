@@ -90,6 +90,8 @@ const formatColumnValue = (value, fn, field, row) => {
       :rows="20"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
+      :loading="store.state.loading"
+
     >
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>     
       <Column
@@ -102,6 +104,8 @@ const formatColumnValue = (value, fn, field, row) => {
           <div class="td-user">
             <div class="t-name">
               <h4>
+                <Skeleton v-if="store.state.loading" height="100px"></Skeleton>
+                <span v-else>
                 {{
                   formatColumnValue(
                     slotProps.data[header.field],
@@ -110,6 +114,7 @@ const formatColumnValue = (value, fn, field, row) => {
                     slotProps.data
                   )
                 }}
+                </span>
               </h4>
             </div>
           </div>

@@ -182,7 +182,7 @@ const store = createStore({
           },
         });
         const data = await response.json();
-        console.log(data)
+        
         commit("getListControl", data);
         commit("loading", false);
       } catch (error) {commit("loading", false)}
