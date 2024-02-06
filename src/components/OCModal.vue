@@ -337,7 +337,7 @@ const updateTravel = async () => {
                   <Dropdown
                     class="p-dropdown"
                     v-model="item.pila"
-                    :options="dataPila.pilasAvailable"
+                    :options="dataPila.pilasToOreControl"
                     optionLabel="pila"
                     optionValue="pila"
                     placeholder="Seleccionar"

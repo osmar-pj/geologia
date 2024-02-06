@@ -234,20 +234,21 @@ const store = createStore({
     },
     pila_total: async ({ commit }) => {
       try {
-        const response = await fetch(`${url}/pilaList`, {
+        const response = await fetch(`${url}/pila`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": true,
           },
-        });
-        const data = await response.json();
-        commit("getRumaTotal", data.rumas);
+        })
+        const data = await response.json()
+        commit("getRumaTotal", data.pilasToMap)
       } catch (error) {commit("loading", false)}
     },
     ruma_update: async ({ commit }, data) => {
+      console.log(data);
       try {
-        const response = await fetch(`${url}/ruma/${data.id}`, {
+        const response = await fetch(`${url}/pilamap/${data.pila._id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -255,7 +256,7 @@ const store = createStore({
           body: JSON.stringify(data.data),
         });
         const dataResponse = await response.json();
-        commit("getRumaTotal", data.rumas);
+        commit("getRumaTotal", dataResponse.rumas);
       } catch (error) {commit("loading", false)}
     },
     tajo_list: async ({ commit }) => {
