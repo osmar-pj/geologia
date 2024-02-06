@@ -65,6 +65,7 @@ const statusClassMapping = {
   waitBeginAnalysis: "waitBeginAnalysis",
   waitComplete: "waitComplete",
   waitSplit: "waitSplit",
+  Muestreado: "Muestreado",
 };
 const getStatusClass = (status) => statusClassMapping[status] || "";
 
@@ -246,7 +247,7 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
     box-shadow: #e5c6fe 0px 1px 4px, #e5c6fe 0px 0px 0px 3px;
   }
 }
-.analizando {
+.Muestreado {
   padding: 8px 10px;
   border-radius: 15px;
   background-color: #ebf7e9;

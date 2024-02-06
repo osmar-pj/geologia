@@ -227,7 +227,8 @@ const store = createStore({
             "ngrok-skip-browser-warning": true,
           },
         });
-        const data = await response.json();       
+        const data = await response.json();
+        console.log(data);       
         commit("getPila", data);
       } catch (error) {}
     },

@@ -72,7 +72,7 @@ const logout = async () => {
           :class="active == 'list' ? 'active' : ''"
         >
           <div class="nav-select"><IList/></div>
-          <span>Lista</span>
+          <span>Lista de viajes</span>
         </li>
         <li
           @click.prevent="goToPage('oreControl')"
@@ -87,6 +87,13 @@ const logout = async () => {
         >
           <div class="nav-select"><CQuality/></div>
           <span>Control de Calidad</span>
+        </li>
+        <li
+          @click.prevent="goToPage('pila')"
+          :class="active == 'pila' ? 'active' : ''"
+        >
+          <div class="nav-select"><IList/></div>
+          <span>Lista de Pilas</span>
         </li>               
         <li
           @click.prevent="goToPage('map')"
