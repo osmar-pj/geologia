@@ -1,11 +1,9 @@
 <script setup>
-import readXlsxFile from "read-excel-file";
 import Papa from "papaparse";
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
 import Edit from "../icons/Edit.vue";
-import Delete from "../icons/Delete.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -15,77 +13,82 @@ const cerrarModal = () => {
   emit("cerrarModal");
 };
 
-const hideError = () => {
-  showError.value = false;
-};
-
-const title = ref();
 const csvData = ref([]);
 const averages = ref([]);
 const selectedProducts = ref();
 const showError = ref(false);
+const showDocError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
 const showForm = ref(true);
 const selectedCodTableta = ref(false);
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
 
   if (file) {
     const fileName = file.name;
     const underscoreIndex = fileName.indexOf("_");
-    title.value =
+    const titleValue  =
       underscoreIndex !== -1
         ? fileName.substring(0, underscoreIndex)
         : fileName;
-
-    Papa.parse(file, {
-      header: true,
-      complete: (result) => {
-        const filteredData = result.data.map((row) => {
-          const newRow = {};
-          for (const key in row) {
-            if (row[key] !== "") {
-              const newKey =
-                key.toLowerCase() === "observaci�n" ? "Observacion" : key;
-              newRow[newKey] = [
-                "Ag (ozt)",
-                "Fe (pct)",
-                "Mn (pct)",
-                "Pb (pct)",
-                "Zn (pct)",
-              ].includes(newKey)
-                ? parseFloat(Number(row[key]).toFixed(2))
-                : row[key];
+    if (props.data.cod_despacho === titleValue ) {
+      Papa.parse(file, {
+        header: true,
+        complete: (result) => {
+          const filteredData = result.data.map((row) => {
+            const newRow = {};
+            for (const key in row) {
+              if (row[key] !== "") {
+                const newKey =
+                  key.toLowerCase() === "observaci�n" ? "Observacion" : key;
+                newRow[newKey] = [
+                  "Ag (ozt)",
+                  "Fe (pct)",
+                  "Mn (pct)",
+                  "Pb (pct)",
+                  "Zn (pct)",
+                ].includes(newKey)
+                  ? parseFloat(Number(row[key]).toFixed(2))
+                  : row[key];
+              }
             }
-          }
-          return newRow
-        })
-        
-        const finalData = filteredData.filter((row) =>
-        Object.values(row).some((value) => value !== "")
-        )
-        
-        finalData.forEach((row, index) => {
-          row["id"] = index + 1
-          row["disabled"] = false
-        })
-        
-        csvData.value.push(...finalData)
-      },
-      error: (error) => {
-        console.error("Error parsing CSV:", error.message);
-      },
-    })
+            return newRow;
+          });
+
+          const finalData = filteredData.filter((row) =>
+            Object.values(row).some((value) => value !== "")
+          );
+
+          finalData.forEach((row, index) => {
+            row["id"] = index + 1;
+            row["disabled"] = false;
+          });
+
+          csvData.value.push(...finalData);
+        },
+        error: (error) => {
+          console.error("Error parsing CSV:", error.message);
+        },
+      });
+    } else {
+      console.log("codigo incorrecto");
+      showDocError.value = true;   
+      setTimeout(() => {
+        showDocError.value = false;
+    }, 10000);
+      return;
+    }
   }
-}
+};
 
 const dataTableClass = "table-exel";
 const editingRows = ref([]);
 const onRowEditSave = (event) => {
   let { newData, index } = event;
   csvData.value[index] = newData;
-}
+};
 
 const targetColumns = [
   "Ag (ozt)",
@@ -93,10 +96,9 @@ const targetColumns = [
   "Mn (pct)",
   "Pb (pct)",
   "Zn (pct)",
-]
+];
 
 const calculateColumnAverage = (columnName) => {
-
   if (!targetColumns.includes(columnName)) {
     averages.value[columnName] = "";
     return "";
@@ -118,7 +120,6 @@ const calculateColumnAverage = (columnName) => {
           ).toFixed(2)
         )
       : 0;
-
   return validColumnValues.length > 0 ? averages.value[columnName] : "";
 };
 
@@ -147,34 +148,42 @@ watch(selectedProducts, () => {
 });
 
 const updateTravel = async () => {
-  if (!title.value || !csvData.value || !averages.value) {
+  if (
+    csvData.value.length === 0
+  ) {
     showError.value = true;
+    setTimeout(() => {
+      showError.value = false;
+    }, 5000);
+
+    console.log("promedios",averages.value);
   } else {
+   
     showError.value = false;
     const promedios = targetColumns.reduce((acc, column) => {
       acc[column] = calculateColumnAverage(column);
       return acc;
-    }, {})
+    }, {});
     try {
       buttonClicked.value = true;
       const updatedTravel = {
-        ley_ag: promedios['Ag (ozt)'],
-        ley_fe: promedios['Fe (pct)'],
-        ley_mn: promedios['Mn (pct)'],
-        ley_pb: promedios['Pb (pct)'],
-        ley_zn: promedios['Zn (pct)'],
-        cod_despacho: title.value,
+        ley_ag: promedios["Ag (ozt)"],
+        ley_fe: promedios["Fe (pct)"],
+        ley_mn: promedios["Mn (pct)"],
+        ley_pb: promedios["Pb (pct)"],
+        ley_zn: promedios["Zn (pct)"],
         samples: csvData.value,
-        isCoding: selectedCodTableta.value,        
+        isCoding: selectedCodTableta.value,
         userId: store.state.user.userId,
-      }
+      };
+      console.log(updatedTravel);
       const response = await fetch(`${url}/pila/${props.data._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedTravel),
-      })
+      });
 
       const result = await response.json();
 
@@ -185,10 +194,10 @@ const updateTravel = async () => {
         showForm.value = false;
         setTimeout(() => {
           showSuccessM.value = true;
-        }, 600)
+        }, 600);
         setTimeout(() => {
           cerrarModal();
-        }, 2000)
+        }, 2000);
       } else {
         console.log("error");
         buttonClicked.value = false;
@@ -218,44 +227,49 @@ const updateTravel = async () => {
             </div>
             <div class="mC-c-title-text">
               <h2>Completar leyes</h2>
-              <h4>Rellenar la información restante del viaje</h4>
+              <h4>Subir muestreo de pila</h4>
             </div>
           </div>
           <span @click="cerrarModal" class="mC-h-close" type="button">
             <img src="../assets/img/i-close.svg" alt="" />
           </span>
         </div>
-        <div class="mC-c-body">         
-          <div class="mC-b-text" v-if="props.data.typePila === 'Giba' && props.data.samples.length > 1">          
-          <div class="radio-inputs">
-            <label>
-              <input
-                class="radio-input"
-                type="radio"
-                name="codigo"
-                v-model="selectedCodTableta"
-                :value="false"
-                id=true
-              />
-              <span class="radio-tile">
-                <span class="radio-label">Seguir Acumulando</span>
-              </span>
-            </label>
-            <label>
-              <input
-                class="radio-input"
-                type="radio"
-                name="codigo"
-                v-model="selectedCodTableta"
-                :value="true"
-                id=false
-              />
-              <span class="radio-tile">
-                <span class="radio-label">Código de tableta</span>
-              </span>
-            </label>
+        <div class="mC-c-body">
+          <div
+            class="mC-b-text"
+            v-if="
+              props.data.typePila === 'Giba' && props.data.samples.length > 1
+            "
+          >
+            <div class="radio-inputs">
+              <label>
+                <input
+                  class="radio-input"
+                  type="radio"
+                  name="codigo"
+                  v-model="selectedCodTableta"
+                  :value="false"
+                  id="true"
+                />
+                <span class="radio-tile">
+                  <span class="radio-label">Seguir Acumulando</span>
+                </span>
+              </label>
+              <label>
+                <input
+                  class="radio-input"
+                  type="radio"
+                  name="codigo"
+                  v-model="selectedCodTableta"
+                  :value="true"
+                  id="false"
+                />
+                <span class="radio-tile">
+                  <span class="radio-label">Código de tableta</span>
+                </span>
+              </label>
+            </div>
           </div>
-        </div>         
           <div className="mC-b-imputs">
             <div class="table-excel">
               <div class="file-upload-form">
@@ -272,11 +286,14 @@ const updateTravel = async () => {
                 </label>
               </div>
               <span class="label-error" v-if="showError"
-                >*Ingrese documento</span
+                >*No debe existir cambos vacíos</span
+              >
+              <span class="label-error" v-if="showDocError"
+                >*El nombre del archivo ingresado no coincide con el código de despacho</span
               >
               <div class="view-excel" v-if="csvData.length">
                 <h4 class="text-excel">
-                  Nombre del Archivo <strong>archivo Excel:{{ title }}</strong>
+                  Codigo de Despacho <strong>{{ props.data.cod_despacho }}</strong>
                 </h4>
                 <DataTable
                   :value="csvData"
@@ -382,8 +399,8 @@ const updateTravel = async () => {
       padding: 4px 0;
       border-top: 1px solid var(--grey-light-11);
     }
-    th{
-      padding: 12px 12px;    
+    th {
+      padding: 12px 12px;
     }
     .p-column-header-content {
       justify-content: center;
@@ -404,7 +421,6 @@ const updateTravel = async () => {
     text-align: center;
   }
   .p-editable-column {
-   
     height: 20px !important;
     text-align: center;
     padding: 0 12px !important;
@@ -438,7 +454,6 @@ const updateTravel = async () => {
       width: 30px;
       padding: 0;
     }
-    
   }
   .p-datatable-tfoot {
     td {

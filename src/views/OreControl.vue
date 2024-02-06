@@ -63,24 +63,7 @@ const formatColumnValue = (value, fn, field, row) => {
         <span>{{ data.data ? data.data.length : 0 }}</span>
       </div>
       <span>| Dia terminado en Mina </span>
-    </div>
-    <div class="global-h-button">
-      <div class="radio-inputs">
-        <label class="radio">
-          <input type="radio" name="radio" checked="" />
-          <span class="name">Semana</span>
-        </label>
-        <label class="radio">
-          <input type="radio" name="radio" />
-          <span class="name">Mes</span>
-        </label>
-
-        <label class="radio">
-          <input type="radio" name="radio" />
-          <span class="name">Año</span>
-        </label>
-      </div>
-    </div>
+    </div>    
   </div>
   <div class="tableContainer">
     <DataTable
@@ -91,7 +74,6 @@ const formatColumnValue = (value, fn, field, row) => {
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :loading="store.state.loading"
-
     >
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>     
       <Column

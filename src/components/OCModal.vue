@@ -311,7 +311,7 @@ const updateTravel = async () => {
                       />
                     </div>
                     <span class="label-error" v-if="showError"
-                      >*Seleccionar campo requerido</span
+                      >*Campo requerido</span
                     >
                   </div>
                 </Transition>

@@ -9,11 +9,13 @@ import Bind from "../icons/Bind.vue";
 import CEdit from "../icons/CEdit.vue";
 import Delete from "../icons/Delete.vue";
 import ISave from "../icons/ISave.vue";
+import { useToast } from 'primevue/usetoast';
 
 const socket = inject("socket");
 const pila$ = new Subject();
 const store = useStore();
 const url = import.meta.env.VITE_API_URL;
+
 
 class CustomCircle extends fabric.Circle {
   constructor(options) {
@@ -179,6 +181,8 @@ const handleCreated = async(fabricCanvas) => {
 //   canvas.value.renderAll()
 // }
 
+const toast = useToast();
+
 const handleSelect = (e) => {
   const objectsSelected = canvas.value.getActiveObjects()
   console.log(objectsSelected)
@@ -193,9 +197,12 @@ const handleSelect = (e) => {
       visible.value = false
       // No se puede unir MESSAGE
       console.log("No se puede unir")
+      toast.add({ severity: 'error', summary: 'Error', detail: 'No se puede unir' });
+     
       return
     }
     console.log("Se puede unir")
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Se puede unir' });
     visible.value = true
   } else {
     visible.value = false
@@ -339,6 +346,8 @@ const remove = () => {
 </script>
 
 <template>
+  <Toast />
+<Button label="Show" @click="show()" />
   <div class="c-global-header">
     <div class="global-h-title">
       <div class="g-h-t-primary">

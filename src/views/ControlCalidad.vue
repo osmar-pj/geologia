@@ -1,13 +1,12 @@
 <script setup>
-import { ref, onMounted, computed, inject, watch } from "vue";
+import { ref, onMounted, computed, inject } from "vue";
 import { useStore } from "vuex";
 import { Subject } from "rxjs";
 import Edit from "../icons/Edit.vue";
 import CCModal from "../components/CCModal.vue";
 import MuestraModal from "../components/MuestraModal.vue";
 import CanchaModal from "../components/CanchaModal.vue";
-import { formatDate, formatFixed, formatArrayField } from "../libs/utils";
-import SkeletonLoader from "../components/SkeletonLoader.vue";
+import { formatDate, formatFixed } from "../libs/utils";
 
 const store = useStore();
 const socket = inject("socket");
@@ -57,7 +56,6 @@ const updatePilas = (pilasFound, data) => {
   });
 };
 
-// const pilas = computed(() => {return store.state.dataListControl})
 const showCCModal = ref(false);
 const showMuestraModal = ref(false);
 const showCanchaModal = ref(false);
@@ -76,23 +74,19 @@ const openModal = (data) => {
   showCCModal.value = true;
 };
 
-const formatColumnValue = (value, fn, field, row) => {
+const formatColumnValue = (value, fn) => {
   switch (fn) {
     case "date":
       return formatDate(value);
     case "fixed":
       return formatFixed(value);
-    case "arr":
-      if (field === "ubication") {
-        return formatArrayField(value, "destiny", row);
-      } else if (field === "dominio") {
-        if (row.materials && row.materials.length > 0) {
-          return row.materials.map((material) => material.material).join(", ");
-        } else if (row.dominio) {
-          return row.dominio;
-        }
-        return "";
+      case "arr":
+      if (Array.isArray(value)) {
+        return value.join(", ");
+      } else if (typeof value === "string") {
+        return value;
       }
+      return "";
     case "count":
       return value.length;
       break;
@@ -147,7 +141,6 @@ const formatColumnValue = (value, fn, field, row) => {
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :header="false"
       :loading="store.state.loading"
-   
     >
       <!-- <Column field="mining" headerStyle="text-align: center;">
         <template #body="slotProps">
@@ -275,16 +268,16 @@ const formatColumnValue = (value, fn, field, row) => {
   </div>
 
   <Transition :duration="550" name="nested">
-    <CCModal
-      v-if="showCCModal"
-      @cerrarModal="showCCModal = false"
+    <MuestraModal
+      v-if="showMuestraModal"
+      @cerrarModal="showMuestraModal = false"
       :data="modalData"
     />
   </Transition>
   <Transition :duration="550" name="nested">
-    <MuestraModal
-      v-if="showMuestraModal"
-      @cerrarModal="showMuestraModal = false"
+    <CCModal
+      v-if="showCCModal"
+      @cerrarModal="showCCModal = false"
       :data="modalData"
     />
   </Transition>

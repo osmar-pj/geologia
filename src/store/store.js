@@ -166,7 +166,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
-       
+        console.log(data);       
         commit("getList", data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
@@ -182,7 +182,7 @@ const store = createStore({
           },
         });
         const data = await response.json();
-        
+        console.log(data);       
         commit("getListControl", data);
         commit("loading", false);
       } catch (error) {commit("loading", false)}
@@ -220,6 +220,7 @@ const store = createStore({
     },
     pila_list: async ({ commit }) => {
       try {
+        commit("loading", true);
         const response = await fetch(`${url}/pila`, {
           method: "GET",
           headers: {
@@ -230,7 +231,8 @@ const store = createStore({
         const data = await response.json();
         console.log(data);       
         commit("getPila", data);
-      } catch (error) {}
+        commit("loading", false);
+      } catch (error) { commit("loading", false);}
     },
     pila_total: async ({ commit }) => {
       try {
