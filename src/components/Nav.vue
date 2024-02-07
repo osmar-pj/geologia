@@ -34,12 +34,12 @@ const logout = async () => {
     <div class="sidebar-header">
       <div className="s-header-avatar">
         {{
-          storedUser.user ? storedUser.user.trim().match(/\b\w/g).join("") : ""
+          storedUser.name ? storedUser.name.trim().match(/\b\w/g).join("") : ""
         }}
       </div>
       <div className="s-header-name">
         <h4>{{ storedUser.user }}</h4>
-        <span>Bienvenido, {{ storedUser.empresa }}</span>
+        <span>Bienvenido, {{ storedUser.name }}</span>
       </div>
     </div>
     <div class="sidebar-search">
@@ -61,11 +61,18 @@ const logout = async () => {
       </div>
       <ul class="s-content-menu">
         <li
+          @click.prevent="goToPage('map')"
+          :class="active == 'map' ? 'active' : ''"
+        >
+          <div class="nav-select"><CRuma/></div>
+          <span>Mapa de Pilas</span>
+        </li>
+        <li
           @click.prevent="goToPage('/')"
           :class="active == '/' ? 'active' : ''"
         >
           <div class="nav-select"> <IDash/> </div>
-          <span>Dashboard</span>
+          <span>Análisis</span>
         </li>
         <li
           @click.prevent="goToPage('list')"
@@ -95,13 +102,7 @@ const logout = async () => {
           <div class="nav-select"><IList/></div>
           <span>Lista de Pilas</span>
         </li>               
-        <li
-          @click.prevent="goToPage('map')"
-          :class="active == 'map' ? 'active' : ''"
-        >
-          <div class="nav-select"><CRuma/></div>
-          <span>Mapa de Pilas</span>
-        </li>
+        
         <li
           @click.prevent="goToPage('planta')"
           :class="active == 'planta' ? 'active' : ''"

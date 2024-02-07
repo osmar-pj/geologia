@@ -28,7 +28,7 @@ const updateTravel = async () => {
      try {
        buttonClicked.value = true;
        const dataUpdate = {
-         userId: store.state.user.userId,
+          name:store.state.user.name,
          isCoding: selectedCodTableta.value,
          cod_despacho: CodDespacho.value,
        };

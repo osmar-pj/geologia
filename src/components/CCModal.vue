@@ -34,6 +34,7 @@ const handleFileUpload = (event) => {
         ? fileName.substring(0, underscoreIndex)
         : fileName;
     if (props.data.cod_despacho === titleValue ) {
+      showDocError.value = false;
       Papa.parse(file, {
         header: true,
         complete: (result) => {
@@ -174,7 +175,7 @@ const updateTravel = async () => {
         ley_zn: promedios["Zn (pct)"],
         samples: csvData.value,
         isCoding: selectedCodTableta.value,
-        userId: store.state.user.userId,
+        name: store.state.user.name,
       };
       console.log(updatedTravel);
       const response = await fetch(`${url}/pila/${props.data._id}`, {

@@ -10,6 +10,7 @@ import CEdit from "../icons/CEdit.vue";
 import Delete from "../icons/Delete.vue";
 import ISave from "../icons/ISave.vue";
 import { useToast } from 'primevue/usetoast';
+import Totals from "../components/Totals.vue";
 
 const socket = inject("socket");
 const pila$ = new Subject();
@@ -347,8 +348,7 @@ const remove = () => {
 
 <template>
   <Toast />
-<Button label="Show" @click="show()" />
-  <div class="c-global-header">
+  <!-- <div class="c-global-header">
     <div class="global-h-title">
       <div class="g-h-t-primary">
         <h1>Mapa de pilas</h1>
@@ -356,8 +356,8 @@ const remove = () => {
       </div>
       <span>| Dia terminado en Mina </span>
     </div>
-  </div>
-  <div></div>
+  </div> -->
+  <Totals/>
   <div class="c-global-container-map">
     <div class="global-map-button">
       <!-- <Button

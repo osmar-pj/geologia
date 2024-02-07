@@ -129,7 +129,7 @@ const updateTravel = async () => {
     const data = dataToUpdate.value.map((i) => {
       return {
         ...i,
-        userId:store.state.user.userId,
+        name:store.state.user.name,
       }
     })
    

@@ -24,7 +24,7 @@ const updateTravel = async () => {
     buttonClicked.value = true;
     const updatedData={
       dateSupply: selectedEstado.value ,
-      userId: store.state.user.userId,
+      name:store.state.user.name,
     }
     const response = await fetch(`${url}/pila/${props.data._id}`, {
       method: "PUT",
