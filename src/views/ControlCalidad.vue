@@ -1,33 +1,48 @@
 <script setup>
-import { ref, onMounted, computed, inject } from "vue";
-import { useStore } from "vuex";
-import { Subject } from "rxjs";
-import Edit from "../icons/Edit.vue";
-import CCModal from "../components/CCModal.vue";
-import MuestraModal from "../components/MuestraModal.vue";
-import CanchaModal from "../components/CanchaModal.vue";
-import { formatDate, formatFixed } from "../libs/utils";
+import { ref, onMounted, computed, inject, watch } from "vue"
+import { useStore } from "vuex"
+import { Subject } from "rxjs"
+import Edit from "../icons/Edit.vue"
+import CCModal from "../components/CCModal.vue"
+import MuestraModal from "../components/MuestraModal.vue"
+import CanchaModal from "../components/CanchaModal.vue"
+import { formatDate, formatFixed } from "../libs/utils"
 
-const store = useStore();
-const socket = inject("socket");
-const pila$ = new Subject();
-const pilas = ref([]);
-const selectedStatus = ref("Acumulando");
+const store = useStore()
+const socket = inject("socket")
+const pila$ = new Subject()
+// const pilas = ref([])
+const selectedStatus = ref("Acumulando")
+const pilas = computed(() => store.state.dataListControl)
 
 socket.on("pilas", (data) => {
-  console.log("socket Data", data);
+  console.log("socket Data", data)
   const pilasFound = data.map((i) => {
-    const pila = pilas.value.data.find((p) => p._id === i._id);
-    return pila;
-  });
+    const pila = pilas.value.data.find((p) => p._id === i._id)
+    return pila
+  })
   pilasFound.length > 0
     ? updatePilas(pilasFound, data)
-    : console.log("No se encontraron pilas");
-});
+    : console.log("No se encontraron pilas")
+})
+
+const updatePilas = (pilasFound, data) => {
+  pilasFound.forEach((pila, index) => {
+    pila.stock = data[index].stock
+    pila.tonh = data[index].tonh
+    pila.ton = data[index].tonh * 0.94
+    pila.travels = data[index].travels
+    pila.tajo = data[index].tajo
+    pila.cod_despacho = data[index].cod_despacho
+    pila.statusPila = data[index].statusPila
+    pila.history = data[index].history
+    pila.date_abastecimiento = data[index].date_abastecimiento
+    pila$.next(pila)
+  })
+}
 
 onMounted(async () => {
-  await store.dispatch("get_listControl");
-  pilas.value = store.state.dataListControl;
+  await store.dispatch("get_listControl")
 });
 
 const filteredData = computed(() => {
@@ -37,23 +52,17 @@ const filteredData = computed(() => {
     );
   }
   return [];
-});
+})
+
+const calculateQtyByStatus = computed(() => (status) => {
+  return calcularCantidadPorEstado(status);
+})
 
 const calcularCantidadPorEstado = (estado) => {
   if (pilas.value.data) {
     return pilas.value.data.filter((item) => item.statusPila === estado).length;
   }
   return 0;
-};
-const updatePilas = (pilasFound, data) => {
-  pilasFound.forEach((pila, index) => {
-    pila.stock = data[index].stock;
-    pila.tonh = data[index].tonh;
-    pila.ton = data[index].tonh * 0.94;
-    pila.travels = data[index].travels;
-    pila.tajo = data[index].tajo;
-    pila$.next(pila);
-  });
 };
 
 const showCCModal = ref(false);
@@ -82,7 +91,8 @@ const formatColumnValue = (value, fn) => {
       return formatFixed(value);
       case "arr":
       if (Array.isArray(value)) {
-        return value.join(", ");
+        const uniqueArrValue = [...new Set(value)];
+        return uniqueArrValue.join(", ");
       } else if (typeof value === "string") {
         return value;
       }
@@ -113,6 +123,7 @@ const formatColumnValue = (value, fn) => {
             'Acumulando',
             'Analizando',
             'waitDateAbastecimiento',
+            'waitBeginDespacho'
           ]"
           :key="status"
         >
@@ -123,7 +134,7 @@ const formatColumnValue = (value, fn) => {
             :value="status"
           />
           <div class="name">
-            <span>{{ calcularCantidadPorEstado(status) }}</span>
+            <span>{{ calculateQtyByStatus(status) }}</span>
             <h5>{{ status }}</h5>
           </div>
         </label>

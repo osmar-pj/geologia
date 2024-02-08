@@ -33,7 +33,7 @@ class CustomText extends fabric.Textbox {
     this.cod_tableta = options.cod_tableta
     this.ton = options.ton
     this.mining = options.mining
-    this.fontFamily = options.fontFamily || "Saira";
+    this.fontFamily = options.fontFamily || "Rubik";
   }
 }
 

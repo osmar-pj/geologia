@@ -78,9 +78,7 @@ const sendFilter = async () => {
       });
 
       const data = await response.json();
-      console.log(data);
       if (data.status === true) {
-        console.log(data);
         store.dispatch("filter_list", data);
         cerrarModal();
         buttonClicked.value = false;

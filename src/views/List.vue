@@ -1,64 +1,75 @@
 <script setup>
-import { computed, ref, watch, inject } from "vue";
-import { useStore } from "vuex";
-import SkeletonLoader from "../components/SkeletonLoader.vue";
-import Filters from "../components/filters.vue";
-import { formatDate, formatFixed, formatArrayField } from "../libs/utils";
-import { Subject } from "rxjs";
+import { computed, ref, watch, inject } from "vue"
+import { useStore } from "vuex"
+import SkeletonLoader from "../components/SkeletonLoader.vue"
+import Filters from "../components/filters.vue"
+import { formatDate, formatFixed, formatArrayField } from "../libs/utils"
+import { Subject } from "rxjs"
 
-const store = useStore();
-const socket = inject("socket");
-const trip$ = new Subject();
+const store = useStore()
+const socket = inject("socket")
+const trip$ = new Subject()
 
 socket.on("OreControl", (data) => {
-  store.commit("addDataGeneralList", data);
-});
+  store.commit("addDataGeneralList", data)
+})
 
 socket.on("trips", (data) => {
-  console.log("socket Data", data);
+  console.log("socket Data", data)
   const tripsFound = data.map((i) => {
-    const trip = trips.value.data.find((p) => p._id === i._id);
-    return trip;
-  });
+    const trip = trips.value.data.find((p) => p._id === i._id)
+    return trip
+  })
   tripsFound.length > 0
     ? updateTrips(tripsFound, data)
-    : console.log("No se encontraron pilas");
-});
+    : console.log("No se encontraron pilas")
+})
 
-const trips = computed(() => store.state.dataFilterTable);
+socket.on('RemoveTrip', data => {
+  // trips.value = store.state.dataFilterTable
+  const trip = trips.value.data.find((p) => p._id === data._id)
+  trips.value.data.splice(trips.value.data.indexOf(trip), 1)
+})
+
+const trips = computed(() => store.state.dataFilterTable)
 
 const updateTrips = (tripsFound, data) => {
   tripsFound.forEach((trip, index) => {
-    trip.statusTrip = data[index].statusTrip;
-    trip.history = data[index].history;
-    trip$.next(trip);
-  });
-};
+    trip.statusTrip = data[index].statusTrip
+    trip.history = data[index].history
+    trip.level = data[index].level
+    trip.type = data[index].type
+    trip.veta = data[index].veta
+    trip.tajo = data[index].tajo
+    trip.cod_tableta = data[index].cod_tableta
+    trip.dominio = data[index].dominio
+    trip.pila = data[index].pila
+    trip$.next(trip)
+  })
+}
 
 const formatColumnValue = (value, fn, field, row) => {
   switch (fn) {
     case "date":
-      return formatDate(value);
+      return formatDate(value)
     case "fixed":
-      return formatFixed(value);
-
+      return formatFixed(value)
     case "arr":
       if (value === "ubication") {
-        return formatArrayField(value, "destiny", row);
+        return formatArrayField(value, "destiny", row)
       } else if (field === "dominio") {
         if (row.materials && row.materials.length > 0) {
-          return row.materials.map((i) => i.material).join(", ");
+          return row.materials.map((i) => i.material).join(", ")
         } else if (row.dominio) {
-          return row.dominio;
+          return row.dominio
         }
-
-        return "";
+        return ""
       }
-      break;
+      break
     default:
-      return value || "";
+      return value || ""
   }
-};
+}
 
 const statusClassMapping = {
   Analizando: "analizando",
@@ -66,8 +77,8 @@ const statusClassMapping = {
   waitComplete: "waitComplete",
   waitSplit: "waitSplit",
   Muestreado: "Muestreado",
-};
-const getStatusClass = (status) => statusClassMapping[status] || "";
+}
+const getStatusClass = (status) => statusClassMapping[status] || ""
 
 </script>
 
