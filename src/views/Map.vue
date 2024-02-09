@@ -548,6 +548,23 @@ const remove = () => {
   canvas.value.renderAll()
 }
 
+const storedUser = JSON.parse(localStorage.getItem("user"));
+const currentDate = ref(new Date());
+
+const formattedDate = ref(formatDate(currentDate.value));
+
+function formatDate(date) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}.${month}.${year}`;
+}
+
+// Actualizar la fecha cada segundo
+setInterval(() => {
+  currentDate.value = new Date();
+  formattedDate.value = formatDate(currentDate.value);
+}, 1000);
 </script>
 
 <template>
@@ -580,13 +597,21 @@ const remove = () => {
       :filename="`Geology report ${new Date().toLocaleDateString()}`"
       :pdf-quality="2"
       :manual-pagination="false"
-      pdf-orientation="landscape"
+      
       pdf-format="a4"
       :pdf-margins="{ top: 2.5 * 28.35, right: 2.5 * 28.35, bottom: 2.5 * 28.35, left: 2.5 * 28.35 }"
       pdf-content-width="calc(100% - (2.5 * 28.35 * 2))"
       ref="html2Pdf"
       >
       <template v-slot:pdf-content>
+        <div class="caratula">
+          <div class="contenido-caratula">
+            <h3>{{ formattedDate  }}</h3>
+            <h1>REPORTE</h1>
+            <h2>Área/ Geología</h2>
+            <h4>{{ storedUser.name }}</h4>
+          </div>
+        </div>
         <div class="pdf-content">
           <h1>Reporte de Geología</h1>
           <p>Este es un reporte de geología generado por el sistema de control de calidad de la mina.</p>
@@ -727,6 +752,7 @@ const remove = () => {
   
 </template>
 
+
 <style lang="scss">
 .global-map-button {
   display: flex;
@@ -735,7 +761,7 @@ const remove = () => {
   padding: 8px;
   border-radius: 10px;
   z-index: 1;
-  background-color: rgba(255,255,255,0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.02);
   top: 10px;
   left: 50%;
@@ -775,31 +801,52 @@ const remove = () => {
   // background-position: center;
 }
 .pdf-content {
-  padding: 2rem;
   h1 {
     font-size: 2rem;
-    margin-bottom: 1rem;
   }
   p {
     font-size: 1.5rem;
   }
 }
-.btn-GP{
+.btn-GP {
   width: 200px !important;
   margin-left: 2rem;
 }
 
-.pdf-content {
-  width: 90%;
-  margin: 2.5cm;
+.caratula {
+  background-image: url("../assets/img/backg-pdf.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 115vh;
+  position: relative;
 }
 
-.pdf-content h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.tableContainer {
-  margin-bottom: 20px;
+.contenido-caratula {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  h1 {
+    color: #ffca0c;
+    padding-bottom: 1rem;
+    font-size: clamp(13px, 8vw, 30px);
+    line-height: 1.7rem;
+  }
+  h2 {
+    color: #3ecef3;
+  }
+  h3 {
+    color: #ffca0c;
+  }
+  h4 {
+    color: var(--white);
+  }
 }
 </style>
