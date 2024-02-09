@@ -38,8 +38,8 @@ const logout = async () => {
         }}
       </div>
       <div className="s-header-name">
-        <h4>{{ storedUser.user }}</h4>
-        <span>Bienvenido, {{ storedUser.name }}</span>
+        <h4>{{ storedUser.name }}</h4>
+        <span>Bienvenido, a GUNJOP</span>
       </div>
     </div>
     <div class="sidebar-search">
@@ -165,8 +165,8 @@ const logout = async () => {
     position: relative;
     padding: 1rem 1.8rem;
     .s-header-avatar {
-      width: 33px;
-      height: 33px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       display: grid;
       place-items: center;
@@ -174,8 +174,9 @@ const logout = async () => {
       color: var(--white);
       font-size: clamp(5px, 8vw, 18px);
       font-weight: 500;
+      text-transform: uppercase;
        @include md {
-         font-size: clamp(7px, 8vw, 20px);
+         font-size: clamp(7px, 8vw, 16px);
          line-height: 1rem;
        }
     }
@@ -191,6 +192,7 @@ const logout = async () => {
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 160px;
+        text-transform: capitalize;
       }
       span {
         color: var(--grey-light-3);
