@@ -229,6 +229,7 @@
             <g>
               <g transform="matrix(1.00001 0 0 1 -1274.65 615.466)">
                 <text
+                  class="ic2"
                   x="1294.45"
                   y="-581.13"
                   fill="black"
@@ -236,7 +237,7 @@
                   font-size="5.73px"
                   font-family="Lilita One"
                 >
-                  923,123.4 T
+                   T
                 </text>
               </g>
             </g>

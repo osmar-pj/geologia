@@ -7,6 +7,7 @@ const url = import.meta.env.VITE_API_URL;
 const store = createStore({
   state: {
     user: user,
+    weights: [],
     // canvas: null,
     dataList: [],
     dataListControl: [],
@@ -124,6 +125,9 @@ const store = createStore({
     },
     lesstDataListControlCalidad(state, payload) {
       state.dataListControl.slice(payload, 1);
+    },
+    setWeights(state, payload) {
+      state.weights = payload;
     }
   },
   actions: {

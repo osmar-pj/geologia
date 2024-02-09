@@ -83,7 +83,7 @@ viewBox="0 0 84.4 62"
      </g>
      <g>
       <g transform="matrix(1.00001 0 0 1 -1386.68 605.123)">
-       <text x="1416.13" y="-560.9"  fill="black" font-weight="normal" font-size="5.73px" font-family="Lilita One">923,123.4 T</text>
+       <text class="icc" x="1416.13" y="-560.9"  fill="black" font-weight="normal" font-size="5.73px" font-family="Lilita One"></text>
       </g>
      </g>
     </g>

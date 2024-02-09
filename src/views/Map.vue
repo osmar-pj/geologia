@@ -3,7 +3,7 @@ import { ref, markRaw, onMounted, computed, inject } from "vue"
 import FabricCanvas from "../components/FabricCanvas.vue"
 import { fabric } from 'fabric'
 import { useStore } from "vuex"
-import { Subject } from "rxjs"
+import { Subject, merge } from "rxjs"
 import IPlus from "../icons/IPlus.vue"
 import Bind from "../icons/Bind.vue"
 import CEdit from "../icons/CEdit.vue"
@@ -11,14 +11,19 @@ import Delete from "../icons/Delete.vue"
 import ISave from "../icons/ISave.vue"
 import { useToast } from 'primevue/usetoast'
 import Totals from "../components/Totals.vue"
-import IPila from "../icons/IPila.vue"
-import IGiba from "../icons/IGiba.vue"
+import IPila from "../maps/IPila.vue"
+import IGiba from "../maps/IGiba.vue"
+import ICC from "../maps/ICC.vue"
+import IC1 from "../maps/IC1.vue"
+import IC2 from "../maps/IC2.vue"
 
 const socket = inject("socket")
 const pila$ = new Subject()
 const store = useStore();
 const url = import.meta.env.VITE_API_URL
-
+const route = 'map'
+const access = ref(false)
+const mergeAvailable = ref(false)
 
 class CustomCircle extends fabric.Circle {
   constructor(options) {
@@ -48,9 +53,18 @@ class CustomRect extends fabric.Rect {
   }
 }
 
+class CustomPolygon extends fabric.Polygon {
+  constructor(options) {
+    super(options)
+  }
+}
+
 // const canvas = computed(() => store.state.canvas)
 const canvas = ref()
 const pilas = computed(() => store.state.rumaTotal)
+const trips = computed(() => store.state.dataListGeneral)
+const weights = computed(() => store.state.weights)
+const ubication = ref('')
 
 socket.on("pilas", async (data) => {
   console.log("socket Data", data)
@@ -58,10 +72,19 @@ socket.on("pilas", async (data) => {
     const pila = pilas.value.find((p) => p._id === i._id)
     return pila
   })
-  console.log("pilas", pilasFound)
   pilasFound.length > 0
     ? updatePilas(pilasFound, data)
     : console.log("No se encontraron pilas")
+  await store.dispatch("pila_total")
+  weights.value.stock = {
+    total: pilas.value.reduce((a, b) => a + b.stock, 0),
+    colquicocha: pilas.value.filter(p => p.ubication == 'Cancha Colquicocha').reduce((a, b) => a + b.stock, 0),
+    cancha1: pilas.value.filter(p => p.ubication == 'Cancha 1').reduce((a, b) => a + b.stock, 0),
+    cancha2: pilas.value.filter(p => p.ubication == 'Cancha 2').reduce((a, b) => a + b.stock, 0)
+  }
+  weights.value.tonh = pilas.value.reduce((a, b) => a + b.tonh, 0)
+  weights.value.ton = pilas.value.reduce((a, b) => a + b.ton, 0)
+  await store.commit('setWeights', weights.value)
 })
 
 const updatePilas = async (pilasFound, data) => {
@@ -71,9 +94,10 @@ const updatePilas = async (pilasFound, data) => {
     pila.ton = data[index].tonh * 0.94
     pila$.next(pila)
   })
-  await store.dispatch("pila_total")
-  // createSVGData()
-  console.log('SI FUNKA')
+  if (!access.value) {
+    createSVGData()
+    access.value = false
+  }
 }
 
 const visible = ref(false)
@@ -90,7 +114,7 @@ const createSVGData = () => {
   const gibas = pilas.value.filter(i => i.typePila == 'Giba')
   const p = pillas.forEach(i => {
     const pilaSVG = document.getElementById('pila')
-    pilaSVG.querySelector('.tonh').textContent = i.stock ? (i.stock).toFixed(1) : '-'
+    pilaSVG.querySelector('.stock').textContent = i.stock ? (i.stock).toFixed(1) : '-'
     pilaSVG.querySelector('.tableta').textContent = i.pila
     pilaSVG.querySelector('.ley').textContent = i.ley_ag ? (i.ley_ag).toFixed(2) : '-'
     pilaSVG.querySelector('.mining').style.fill = i.mining == 'YUMPAG' ? '#33cc66' : '#ddee55'
@@ -99,8 +123,8 @@ const createSVGData = () => {
       obj.set({
         left: i.x,
         top: i.y,
-        scaleX: 0.2,
-        scaleY: 0.2,
+        scaleX: 0.3,
+        scaleY: 0.3,
         selectable: false
       })
       obj.pila = i
@@ -110,7 +134,7 @@ const createSVGData = () => {
 
   const g = gibas.forEach(i => {
     const gibaSVG = document.getElementById('giba')
-    gibaSVG.querySelector('.tonh').textContent = i.tonh ? (i.tonh).toFixed(1) : '-'
+    gibaSVG.querySelector('.stock').textContent = i.tonh ? (i.tonh).toFixed(1) : '-'
     gibaSVG.querySelector('.tableta').textContent = i.pila
     gibaSVG.querySelector('.ley').textContent = i.ley_ag ? (i.ley_ag).toFixed(2) : '-'
     gibaSVG.querySelector('.mining').style.fill = i.mining == 'YUMPAG' ? '#33cc66' : '#ddee55'
@@ -119,8 +143,8 @@ const createSVGData = () => {
       obj.set({
         left: i.x,
         top: i.y,
-        scaleX: 0.2,
-        scaleY: 0.2,
+        scaleX: 0.3,
+        scaleY: 0.3,
         selectable: false
       })
       obj.pila = i
@@ -131,46 +155,106 @@ const createSVGData = () => {
   // return p, g
 }
 
+const createSVGRect = () => {
+  const colquicocha = new CustomRect({
+    left: 140,
+    top: 130,
+    width:950,
+    height:350,
+    fill: 'transparent',
+    // stroke: 'black',
+    strokeWidth: 2,
+    selectable: false,
+    angle: 25
+  })
+  colquicocha.type = 'colquicocha'
+  canvas.value.add(colquicocha)
+  const cancha2 = new CustomRect({
+    left: 1050,
+    top: 620,
+    width: 580,
+    height: 150,
+    fill: 'transparent',
+    // stroke: 'black',
+    strokeWidth: 2,
+    selectable: false,
+    angle: -15
+  })
+  cancha2.type = 'cancha2'
+  canvas.value.add(cancha2)
+  const cancha1 = new CustomRect({
+    left: 1740,
+    top: 250,
+    width: 120,
+    height: 200,
+    fill: 'transparent',
+    // stroke: 'black',
+    strokeWidth: 2,
+    selectable: false
+  })
+  cancha1.type = 'cancha1'
+  canvas.value.add(cancha1)
+  canvas.value.renderAll()
+}
+
 const handleCreated = async (fabricCanvas) => {
   await store.dispatch("pila_total")
+  weights.value.stock = {
+    total: pilas.value.reduce((a, b) => a + b.stock, 0),
+    colquicocha: pilas.value.filter(p => p.ubication == 'Cancha Colquicocha').reduce((a, b) => a + b.stock, 0),
+    cancha1: pilas.value.filter(p => p.ubication == 'Cancha 1').reduce((a, b) => a + b.stock, 0),
+    cancha2: pilas.value.filter(p => p.ubication == 'Cancha 2').reduce((a, b) => a + b.stock, 0)
+  }
+  weights.value.tonh = pilas.value.reduce((a, b) => a + b.tonh, 0)
+  weights.value.ton = pilas.value.reduce((a, b) => a + b.ton, 0)
+  await store.commit('setWeights', weights.value)
   // await store.dispatch("pila_total")
   // pilas.value = store.state.rumaTotal
   canvas.value = fabricCanvas
-  const colquicocha = new CustomRect({
-    width: 900,
-    height: 500,
-    fill: 'red',
-    left: 100,
-    top: 200,
-    opacity: 0.1,
-    selectable: false
+  const colquicocha = document.getElementById('icc')
+  const cancha2 = document.getElementById('ic2')
+  const cancha1 = document.getElementById('ic1')
+  colquicocha.querySelector('.icc').textContent = weights.value.stock.colquicocha.toFixed(2)
+  cancha2.querySelector('.ic2').textContent = weights.value.stock.cancha2.toFixed(2)
+  cancha1.querySelector('.ic1').textContent = weights.value.stock.cancha1.toFixed(2)
+  const svgElem = new fabric.loadSVGFromString(colquicocha.outerHTML, (objects, options) => {
+    const obj = fabric.util.groupSVGElements(objects, options)
+    obj.set({
+      left: 200,
+      top: 110,
+      scaleX: 1.5,
+      scaleY: 1.5,
+      selectable: false,
+      opacity: 1
+    })
+    obj.type = 'letrero1'
+    canvas.value.add(obj)
   })
-  colquicocha.set('type', 'colquicocha')
-  canvas.value.add(colquicocha)
-  
-  const cancha2 = new CustomRect({
-    width: 650,
-    height: 200,
-    fill: 'blue',
-    left: 1050,
-    top: 450,
-    opacity: 0.1,
-    selectable: false
+  const svgElem2 = new fabric.loadSVGFromString(cancha2.outerHTML, (objects, options) => {
+    const obj = fabric.util.groupSVGElements(objects, options)
+    obj.set({
+      left: 1100,
+      top: 500,
+      scaleX: 1.5,
+      scaleY: 1.5,
+      selectable: false
+    })
+    obj.type = 'letrero2'
+    canvas.value.add(obj)
   })
-  cancha2.set('type', 'cancha2')
-  canvas.value.add(cancha2)
-
-  const cancha1 = new CustomRect({
-    width: 200,
-    height: 200,
-    fill: 'green',
-    left: 1700,
-    top: 200,
-    opacity: 0.1,
-    selectable: false
+  const svgElem3 = new fabric.loadSVGFromString(cancha1.outerHTML, (objects, options) => {
+    const obj = fabric.util.groupSVGElements(objects, options)
+    obj.set({
+      left: 1700,
+      top:150,
+      scaleX: 1.5,
+      scaleY: 1.5,
+      selectable: false
+    })
+    obj.type = 'letrero3'
+    canvas.value.add(obj)
   })
-  cancha1.set('type', 'cancha1')
-  canvas.value.add(cancha1)
+  createSVGRect()
   createSVGData()
   // canvas.value.hasControls = false
   canvas.value.hasBorders = true
@@ -217,31 +301,27 @@ const empty = () => {
   canvas.value.renderAll()
 }
 
-const moving = (e) => {
+const moving = async (e) => {
+  if (!mergeAvailable.value) return
   const objectSelected = canvas.value.getActiveObject()
   if (objectSelected) {
     objectSelected.setCoords()
-    // check if intersect with other object colquicocha
-    // console.log(canvas.value.getObjects())
     const colquicocha = canvas.value.getObjects().find((o) => o.type === 'colquicocha')
     if (colquicocha && objectSelected.intersectsWithObject(colquicocha)) {
       console.log('Colquicocha')
-      objectSelected.set('fill', 'green')
-      canvas.value.renderAll()
+      ubication.value = 'Cancha Colquicocha'
       return
     }
     const cancha2 = canvas.value.getObjects().find((o) => o.type === 'cancha2')
     if (cancha2 && objectSelected.intersectsWithObject(cancha2)) {
       console.log('Cancha2')
-      objectSelected.set('fill', 'blue')
-      canvas.value.renderAll()
+      ubication.value = 'Cancha 2'
       return
     }
     const cancha1 = canvas.value.getObjects().find((o) => o.type === 'cancha1')
     if (cancha1 && objectSelected.intersectsWithObject(cancha1)) {
       console.log('Cancha1')
-      objectSelected.set('fill', 'red')
-      canvas.value.renderAll()
+      ubication.value = 'Cancha 1'
       return
     }
   }
@@ -250,6 +330,13 @@ const moving = (e) => {
 const handleSelect = (e) => {
   const objectsSelected = canvas.value.getActiveObjects()
   // console.log('ObjectsSelected', objectsSelected)
+  const existLeyes = objectsSelected.every((o) => o.pila.ley_ag)
+  if (!existLeyes) {
+    visible.value = false
+    mergeAvailable.value = false
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Una o mas leyes aun no fueron calculadas', life: 3000})
+    return
+  }
   if (objectsSelected.length > 1) {
     const tolerance = 0.5
     const leyes = objectsSelected.map((o) => o.pila.ley_ag)
@@ -258,24 +345,27 @@ const handleSelect = (e) => {
     const maxDifference = Math.max(...differences)
     if (maxDifference > tolerance) {
       visible.value = false
+      mergeAvailable.value = false
       toast.add({ severity: 'error', summary: 'Error', detail: 'No se puede unir', life: 3000})
       return
     }
     toast.add({ severity: 'success', summary: 'Union de pilas', detail: 'Las leyes de las pilas son similares', life: 3000})
     visible.value = true
+    mergeAvailable.value = true
   } else {
     visible.value = false
+    mergeAvailable.value = false
   }
 }
 const handleMoveUpdatePosition = async (e) => {
-  // const objectsSelected = canvas.value.getActiveObjects()
   const objectSelected = canvas.value.getActiveObject()
-  // console.log('ObjectSelected', objectSelected)
   if (objectSelected) {
     objectSelected.data = {
       x: objectSelected.left,
-      y: objectSelected.top
+      y: objectSelected.top,
+      ubication: ubication.value
     }
+    access.value = true
     await store.dispatch("ruma_update", objectSelected)
   }
 }
@@ -418,6 +508,9 @@ const remove = () => {
   <div v-show="false">
     <IPila id="pila"/>
     <IGiba id="giba"/>
+    <ICC id="icc"/>
+    <IC1 id="ic1"/>
+    <IC2 id="ic2"/>
   </div>
   <div>
     <vue3-html2pdf
@@ -437,62 +530,27 @@ const remove = () => {
       >
       <template v-slot:pdf-content>
         <div class="pdf-content">
-          <h1>MAP</h1>
-          <!-- DataTable pila -->
+          <h1>Reporte de Geología</h1>
+          <p>Este es un reporte de geología generado por el sistema de control de calidad de la mina.</p>
           <div class="tableContainer">
-            <DataTable
-              :value="pilas"
-              tableStyle="width: 100%; border-collapse: collapse;"
-              paginator
-              :rows="20"
-              paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Página {currentPage} de {totalPages}"
-              :header="false"
-              :loading="store.state.loading"
-            >
-              <Column field="pila" header="Tableta"></Column>
-              <Column field="stock" header="Stock"></Column>
-              <Column field="tonh" header="Tonh"></Column>
-              <Column field="ton" header="Ton"></Column>
-              <Column field="ley_ag" header="Ley"></Column>
-            </DataTable>
-          </div>
-          <div class="html2pdf__page-break"/>
-          <div class="tableContainer">
-            <DataTable
-              :value="pilas"
-              tableStyle="width: 100%; border-collapse: collapse;"
-              paginator
-              :rows="20"
-              paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Página {currentPage} de {totalPages}"
-              :header="false"
-              :loading="store.state.loading"
-            >
-              <Column field="pila" header="Tableta"></Column>
-              <Column field="stock" header="Stock"></Column>
-              <Column field="tonh" header="Tonh"></Column>
-              <Column field="ton" header="Ton"></Column>
-              <Column field="ley_ag" header="Ley"></Column>
-            </DataTable>
-          </div>
-          <div class="tableContainer">
-            <DataTable
-              :value="pilas"
-              tableStyle="width: 100%; border-collapse: collapse;"
-              paginator
-              :rows="20"
-              paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
-              currentPageReportTemplate="Página {currentPage} de {totalPages}"
-              :header="false"
-              :loading="store.state.loading"
-            >
-              <Column field="pila" header="Tableta"></Column>
-              <Column field="stock" header="Stock"></Column>
-              <Column field="tonh" header="Tonh"></Column>
-              <Column field="ton" header="Ton"></Column>
-              <Column field="ley_ag" header="Ley"></Column>
-            </DataTable>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Stock</th>
+                  <th>Toneladas</th>
+                  <th>Ubicación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="pila in pilas.data" :key="pila._id">
+                  <td>{{ pila.pila }}</td>
+                  <td>{{ pila.stock }}</td>
+                  <td>{{ pila.tonh }}</td>
+                  <td>{{ pila.ubication }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </template>

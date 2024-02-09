@@ -37,6 +37,7 @@ const updatePilas = (pilasFound, data) => {
     pila.statusPila = data[index].statusPila
     pila.history = data[index].history
     pila.date_abastecimiento = data[index].date_abastecimiento
+    pila.ubication = data[index].ubication
     pila$.next(pila)
   })
 }
