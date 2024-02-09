@@ -33,7 +33,9 @@ const handleFileUpload = (event) => {
       underscoreIndex !== -1
         ? fileName.substring(0, underscoreIndex)
         : fileName;
-    if (props.data.cod_despacho === titleValue ) {
+    const despachos = props.data.cod_despacho
+    const isTitleInDespachos = despachos.includes(titleValue);
+    if (isTitleInDespachos) {
       showDocError.value = false;
       Papa.parse(file, {
         header: true,

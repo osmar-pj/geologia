@@ -1,10 +1,25 @@
 const data = {
-    arr: [1,1,1,2,2,2,2,3,3,3]
+    arr: [1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5]
 }
 
-const unique = (arr) => {
-    return arr.filter((v, i, a) => a.indexOf(v) === i)
+const modaData = (data) => {
+    const dataCount = {}
+    let max = 0
+    let moda = 0
+    data.forEach((i) => {
+        if (dataCount[i]) {
+            dataCount[i]++
+        } else {
+            dataCount[i] = 1
+        }
+    })
+    for (const i in dataCount) {
+        if (dataCount[i] > max) {
+            moda = i
+            max = dataCount[i]
+        }
+    }
+    return moda
 }
 
-const result = unique(data.arr)
-console.log(data.arr.filter((v, i, a) => a.indexOf(v) === i))
+console.log(modaData(data.arr)) // 2

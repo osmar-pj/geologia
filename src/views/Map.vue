@@ -108,6 +108,60 @@ onMounted(async () => {
   //   o.selectable = false
   // })
 })
+const modaData = (data) => {
+  if (data.length === 0) return ''
+    const dataCount = {}
+    let max = 0
+    let moda = 0
+    data.forEach((i) => {
+        if (dataCount[i]) {
+            dataCount[i]++
+        } else {
+            dataCount[i] = 1
+        }
+    })
+    for (const i in dataCount) {
+        if (dataCount[i] > max) {
+            moda = i
+            max = dataCount[i]
+        }
+    }
+    return moda
+}
+const chooseMiningShadesColor = (mining) => {
+  // if (mining) return 'fff'
+  return mining == 'YUMPAG' ? '#215E08' : '#5C1E05'
+}
+const chooseMiningMainColor = (mining) => {
+  // if (mining) return 'fff'
+  return mining == 'YUMPAG' ? '#42B017' : '#E06500'
+}
+const chooseDominioShadeColor = (dominios) => {
+  const dominio = modaData(dominios)
+  switch (dominio) {
+    case 'Polimetálico':
+      return '#2B67FF'
+    case 'Ag/Alabandita':
+      return '#FF2B3D'
+    case 'Ag/Carbonatos':
+      return '#FFCC00'
+    default:
+      return '#224422'
+  }
+}
+const chooseDominioMainColor = (dominios) => {
+  const dominio = modaData(dominios)
+  switch (dominio) {
+    case 'Polimetálico':
+      return '#6DA0FF'
+    case 'Ag/Alabandita':
+      return '#FF6D7A'
+    case 'Ag/Carbonatos':
+      return '#FFE375'
+    default:
+      return '#334433'
+  }
+}
 
 const createSVGData = () => {
   const pillas = pilas.value.filter(i => i.typePila == 'Pila')
@@ -117,7 +171,10 @@ const createSVGData = () => {
     pilaSVG.querySelector('.stock').textContent = i.stock ? (i.stock).toFixed(1) : '-'
     pilaSVG.querySelector('.tableta').textContent = i.pila
     pilaSVG.querySelector('.ley').textContent = i.ley_ag ? (i.ley_ag).toFixed(2) : '-'
-    pilaSVG.querySelector('.mining').style.fill = i.mining == 'YUMPAG' ? '#33cc66' : '#ddee55'
+    pilaSVG.querySelector('.mining1').style.fill = chooseMiningMainColor(i.mining)
+    pilaSVG.querySelector('.mining2').style.fill = chooseMiningShadesColor(i.mining)
+    pilaSVG.querySelector('.dominio1').style.fill = chooseDominioMainColor(i.dominio)
+    pilaSVG.querySelector('.dominio2').style.fill = chooseDominioShadeColor(i.dominio)
     const svgElem = new fabric.loadSVGFromString(pilaSVG.outerHTML, (objects, options) => {
       const obj = fabric.util.groupSVGElements(objects, options)
       obj.set({
@@ -137,7 +194,8 @@ const createSVGData = () => {
     gibaSVG.querySelector('.stock').textContent = i.tonh ? (i.tonh).toFixed(1) : '-'
     gibaSVG.querySelector('.tableta').textContent = i.pila
     gibaSVG.querySelector('.ley').textContent = i.ley_ag ? (i.ley_ag).toFixed(2) : '-'
-    gibaSVG.querySelector('.mining').style.fill = i.mining == 'YUMPAG' ? '#33cc66' : '#ddee55'
+    gibaSVG.querySelector('.dominio1').style.fill = chooseDominioMainColor(i.dominio)
+    gibaSVG.querySelector('.dominio2').style.fill = chooseDominioShadeColor(i.dominio)
     const svgElem = new fabric.loadSVGFromString(gibaSVG.outerHTML, (objects, options) => {
       const obj = fabric.util.groupSVGElements(objects, options)
       obj.set({
