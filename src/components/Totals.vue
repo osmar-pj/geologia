@@ -8,7 +8,7 @@ import IPlus from "../icons/IPlus.vue";
       <div class="Item-w-total">
         <h5 class="w-w-title">Total de Stock</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"></div>
+          <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
               <h1>123,223.4</h1>
@@ -23,7 +23,7 @@ import IPlus from "../icons/IPlus.vue";
       <div class="Item-w-total">
         <h5 class="w-w-title">Total TMH</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"></div>
+          <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
               <h1>123,340</h1>
@@ -38,7 +38,7 @@ import IPlus from "../icons/IPlus.vue";
       <div class="Item-w-total">
         <h5 class="w-w-title">Total Salida</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"></div>
+          <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
               <h1>123,340</h1>
@@ -56,7 +56,7 @@ import IPlus from "../icons/IPlus.vue";
         <h5 class="w-w-title">Ore Control</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon">
-            <IPlus />
+            <img src="../assets/img/i-total3.svg" alt="">
           </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
@@ -78,7 +78,7 @@ import IPlus from "../icons/IPlus.vue";
       <div class="Item-w-total">
         <h5 class="w-w-title">Control de Calidad</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon">i</div>
+          <div class="w-w-cont-icon"> <img src="../assets/img/i-total2.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
               <h1>65</h1>
@@ -99,7 +99,7 @@ import IPlus from "../icons/IPlus.vue";
       <div class="Item-w-total">
         <h5 class="w-w-title">Control de Calidad</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon">i</div>
+          <div class="w-w-cont-icon"> <img src="../assets/img/i-total3.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
               <h1>65</h1>

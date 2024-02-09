@@ -29,6 +29,8 @@ import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import ColumnGroup from 'primevue/columngroup'   
 import Toast from 'primevue/toast'
+import Dock from 'primevue/dock';
+
 
 const app = createApp(App)
 const socket = io(import.meta.env.VITE_API_URL)
@@ -61,5 +63,6 @@ app.component('InputText', InputText)
 app.component('InputNumber', InputNumber)
 app.component('ColumnGroup', ColumnGroup)
 app.component('Toast', Toast)
-app.component('Row', Row)
+app.component('Toast', Toast)
+app.component('Dock', Dock)
 app.mount('#app')

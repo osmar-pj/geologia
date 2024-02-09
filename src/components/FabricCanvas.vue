@@ -47,11 +47,8 @@ onMounted(() => {
 
 <style lang="scss">
 canvas {
-  border: 1px solid var(--grey-light-22);
-  border-radius: 8px;
-  width: 100% !important; 
-  height: 100% !important;
-  font-family: "Saira", sans-serif ;
+    width: 100% !important; 
+  height: 100% !important;  
 }
 
 .canvas-container{

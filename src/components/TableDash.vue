@@ -11,6 +11,7 @@ const data = computed(() => {
 
 <template>
   <div class="table-dash">
+    tabla
     <div class="container-t-dash">
       <table>
         <thead>

@@ -72,7 +72,7 @@ const updatePilas = async (pilasFound, data) => {
     pila$.next(pila)
   })
   await store.dispatch("pila_total")
-  createSVGData()
+  // createSVGData()
   console.log('SI FUNKA')
 }
 
@@ -99,8 +99,8 @@ const createSVGData = () => {
       obj.set({
         left: i.x,
         top: i.y,
-        scaleX: 0.8,
-        scaleY: 0.8,
+        scaleX: 0.2,
+        scaleY: 0.2,
         selectable: false
       })
       obj.pila = i
@@ -119,8 +119,8 @@ const createSVGData = () => {
       obj.set({
         left: i.x,
         top: i.y,
-        scaleX: 0.7,
-        scaleY: 0.7,
+        scaleX: 0.2,
+        scaleY: 0.2,
         selectable: false
       })
       obj.pila = i
@@ -400,27 +400,6 @@ const remove = () => {
   canvas.value.renderAll()
 }
 
-const formatColumnValue = (value, fn) => {
-  switch (fn) {
-    case "date":
-      return formatDate(value)
-    case "fixed":
-      return formatFixed(value)
-      case "arr":
-      if (Array.isArray(value)) {
-        const uniqueArrValue = [...new Set(value)]
-        return uniqueArrValue.join(", ")
-      } else if (typeof value === "string") {
-        return value
-      }
-      return ""
-    case "count":
-      return value.length
-      break
-    default:
-      return value || ""
-  }
-};
 </script>
 
 <template>
@@ -435,7 +414,7 @@ const formatColumnValue = (value, fn) => {
     </div>
   </div> -->
   <Totals/>
-  <Button class="is-primary" @click="() => $refs.html2Pdf.generatePdf()">Generate PDF</Button>
+  <Button class="btn-success btn-GP" @click="() => $refs.html2Pdf.generatePdf()">Generate PDF</Button>
   <div v-show="false">
     <IPila id="pila"/>
     <IGiba id="giba"/>
@@ -452,11 +431,12 @@ const formatColumnValue = (value, fn) => {
       :manual-pagination="false"
       pdf-orientation="landscape"
       pdf-format="a4"
-      pdf-content-width="1200px"
+      :pdf-margins="{ top: 2.5 * 28.35, right: 2.5 * 28.35, bottom: 2.5 * 28.35, left: 2.5 * 28.35 }"
+      pdf-content-width="calc(100% - (2.5 * 28.35 * 2))"
       ref="html2Pdf"
       >
       <template v-slot:pdf-content>
-        <div class="pdf">
+        <div class="pdf-content">
           <h1>MAP</h1>
           <!-- DataTable pila -->
           <div class="tableContainer">
@@ -628,6 +608,7 @@ const formatColumnValue = (value, fn) => {
       @mouse:moving="moving"
     />
   </div>
+  
 </template>
 
 <style lang="scss">
@@ -677,7 +658,7 @@ const formatColumnValue = (value, fn) => {
   background-repeat: no-repeat;
   // background-position: center;
 }
-.pdf {
+.pdf-content {
   padding: 2rem;
   h1 {
     font-size: 2rem;
@@ -686,5 +667,23 @@ const formatColumnValue = (value, fn) => {
   p {
     font-size: 1.5rem;
   }
+}
+.btn-GP{
+  width: 200px !important;
+  margin-left: 2rem;
+}
+
+.pdf-content {
+  width: 90%;
+  margin: 2.5cm;
+}
+
+.pdf-content h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.tableContainer {
+  margin-bottom: 20px;
 }
 </style>

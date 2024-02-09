@@ -1,6 +1,7 @@
 
 <script setup>
-
+import Graf from "../components/Graf.vue";
+import TableDash from "../components/TableDash.vue";
 </script>
 <template>
  <div class="c-global-header">
@@ -12,8 +13,15 @@
       <span>| Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-     
+    
     </div>
   </div>
-
+  <div class="c-global-c-content">
+    <Graf ruta="UCHUCCHACUA"/>
+    <TableDash/>
+  </div>
 </template>
+<style lang="scss">
+
+
+</style>

@@ -61,15 +61,15 @@ const logout = async () => {
       </div>
       <ul class="s-content-menu">
         <li
-          @click.prevent="goToPage('map')"
-          :class="active == 'map' ? 'active' : ''"
+          @click.prevent="goToPage('/')"
+          :class="active == '/' ? 'active' : ''"
         >
           <div class="nav-select"><CRuma/></div>
           <span>Mapa de Pilas</span>
         </li>
         <li
-          @click.prevent="goToPage('/')"
-          :class="active == '/' ? 'active' : ''"
+          @click.prevent="goToPage('analysis')"
+          :class="active == 'analysis' ? 'active' : ''"
         >
           <div class="nav-select"> <IDash/> </div>
           <span>Análisis</span>
