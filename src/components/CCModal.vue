@@ -148,6 +148,24 @@ watch(selectedProducts, () => {
   onSelectionChange();
 });
 
+const rango = (ley) => {
+    // switch case
+    switch (true) {
+        case ley >= 0 && ley <= 3:
+            return '0-3'
+        case ley > 3 && ley <= 4:
+            return '3-4'
+        case ley > 4 && ley <= 4.5:
+            return '4-4.5'
+        case ley > 4.5 && ley <= 5:
+            return '4.5-5'
+        case ley > 5 && ley <= 10:
+            return '5-10'
+        default:
+            return '10'
+    }
+}
+
 const updateTravel = async () => {
   if (
     csvData.value.length === 0
@@ -173,6 +191,12 @@ const updateTravel = async () => {
         ley_mn: promedios["Mn (pct)"],
         ley_pb: promedios["Pb (pct)"],
         ley_zn: promedios["Zn (pct)"],
+        tmh_ag: promedios["Ag (ozt)"] * props.data.tonh,
+        tmh_fe: promedios["Fe (pct)"] * props.data.tonh,
+        tmh_mn: promedios["Mn (pct)"] * props.data.tonh,
+        tmh_pb: promedios["Pb (pct)"] * props.data.tonh,
+        tmh_zn: promedios["Zn (pct)"] * props.data.tonh,
+        rango: rango(promedios["Ag (ozt)"]),
         samples: csvData.value,
         isCoding: selectedCodTableta.value,
         name: store.state.user.name,

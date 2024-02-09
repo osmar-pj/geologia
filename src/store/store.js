@@ -7,6 +7,7 @@ const url = import.meta.env.VITE_API_URL;
 const store = createStore({
   state: {
     user: user,
+    // canvas: null,
     dataList: [],
     dataListControl: [],
     dataListGeneral: [],
@@ -248,7 +249,6 @@ const store = createStore({
       } catch (error) {commit("loading", false)}
     },
     ruma_update: async ({ commit }, data) => {
-      console.log(data);
       try {
         const response = await fetch(`${url}/pilamap/${data.pila._id}`, {
           method: "PUT",

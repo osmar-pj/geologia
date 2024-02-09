@@ -20,7 +20,8 @@ const formatColumnValue = (value, fn, field, row) => {
       return formatFixed(value);
     case "arr":
       if (Array.isArray(value)) {
-        return value.join(" - ");
+        const uniqueArrValue = [...new Set(value)];
+        return uniqueArrValue.join(" - ");
       } else if (typeof value === "string") {
         return value;
       }
@@ -28,7 +29,6 @@ const formatColumnValue = (value, fn, field, row) => {
 
     case "count":
       return value.length;
-      break;
     default:
       return value || "";
   }

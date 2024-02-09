@@ -7,15 +7,16 @@ const emit = defineEmits([
   // "mouse:dblclick",
   "click:selected",
   "click:updated",
+  "mouse:moving"
 ]);
 
 onMounted(() => {
   const canvas = new fabric.Canvas(canvasRef.value);
    // Configuraciones globales para objetos de tela
   fabric.Object.prototype.transparentCorners = false;
-  fabric.Object.prototype.cornerColor = 'red';
+  fabric.Object.prototype.cornerColor = 'blue';
   fabric.Object.prototype.cornerStyle = 'circle';
-  fabric.Object.prototype.borderColor = 'red';
+  fabric.Object.prototype.borderColor = 'gray';
   fabric.Object.prototype.padding = '0';
 
   // canvas.on("mouse:dblclick", (e) => {
@@ -28,8 +29,14 @@ onMounted(() => {
     emit("click:selected", e);
   });
   canvas.on('object:modified', (e) => {
-        emit('click:updated', e)
-    })
+      emit('click:updated', e)
+  })
+  canvas.on("selection:cleared", (e) => {
+    emit("click:selected", e);
+  })
+  canvas.on("object:moving", (e) => {
+    emit("mouse:moving", e);
+  });
   emit("canvas-created", canvas);
 });
 </script>

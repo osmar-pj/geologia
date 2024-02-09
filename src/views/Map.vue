@@ -1,21 +1,23 @@
 <script setup>
-import { ref, markRaw, onMounted, computed, inject } from "vue";
-import FabricCanvas from "../components/FabricCanvas.vue";
+import { ref, markRaw, onMounted, computed, inject } from "vue"
+import FabricCanvas from "../components/FabricCanvas.vue"
 import { fabric } from 'fabric'
-import { useStore } from "vuex";
-import { Subject } from "rxjs";
-import IPlus from "../icons/IPlus.vue";
-import Bind from "../icons/Bind.vue";
-import CEdit from "../icons/CEdit.vue";
-import Delete from "../icons/Delete.vue";
-import ISave from "../icons/ISave.vue";
-import { useToast } from 'primevue/usetoast';
-import Totals from "../components/Totals.vue";
+import { useStore } from "vuex"
+import { Subject } from "rxjs"
+import IPlus from "../icons/IPlus.vue"
+import Bind from "../icons/Bind.vue"
+import CEdit from "../icons/CEdit.vue"
+import Delete from "../icons/Delete.vue"
+import ISave from "../icons/ISave.vue"
+import { useToast } from 'primevue/usetoast'
+import Totals from "../components/Totals.vue"
+import IPila from "../icons/IPila.vue"
+import IGiba from "../icons/IGiba.vue"
 
-const socket = inject("socket");
-const pila$ = new Subject();
+const socket = inject("socket")
+const pila$ = new Subject()
 const store = useStore();
-const url = import.meta.env.VITE_API_URL;
+const url = import.meta.env.VITE_API_URL
 
 
 class CustomCircle extends fabric.Circle {
@@ -33,7 +35,7 @@ class CustomText extends fabric.Textbox {
     this.cod_tableta = options.cod_tableta
     this.ton = options.ton
     this.mining = options.mining
-    this.fontFamily = options.fontFamily || "Rubik";
+    this.fontFamily = options.fontFamily || "Rubik"
   }
 }
 
@@ -46,106 +48,132 @@ class CustomRect extends fabric.Rect {
   }
 }
 
-const pilas = ref([])
+// const canvas = computed(() => store.state.canvas)
 const canvas = ref()
+const pilas = computed(() => store.state.rumaTotal)
 
-socket.on("pilas", (data) => {
+socket.on("pilas", async (data) => {
   console.log("socket Data", data)
   const pilasFound = data.map((i) => {
     const pila = pilas.value.find((p) => p._id === i._id)
     return pila
   })
+  console.log("pilas", pilasFound)
   pilasFound.length > 0
     ? updatePilas(pilasFound, data)
     : console.log("No se encontraron pilas")
 })
 
-const updatePilas = (pilasFound, data) => {
+const updatePilas = async (pilasFound, data) => {
   pilasFound.forEach((pila, index) => {
     pila.stock = data[index].stock
     pila.tonh = data[index].tonh
     pila.ton = data[index].tonh * 0.94
-    pila.travels = data[index].travels
-    pila.tajo = data[index].tajo
     pila$.next(pila)
   })
+  await store.dispatch("pila_total")
+  createSVGData()
+  console.log('SI FUNKA')
 }
 
 const visible = ref(false)
-// const pilas = computed(() => {
-//   return  [
-//     { ley_ag: 2.66, cod_tableta: '12', ton: 15000, mining: 'Yumpag', x: 100, y: 50 },
-//     { ley_ag: 2.78, cod_tableta: '4', ton: 500, mining: 'Uchucchacua', x: 100, y: 50 },
-//     { ley_ag: 21.23, cod_tableta: 'E1', ton: 1200, mining: 'Uchucchacua', x: 100, y: 50 },
-//     { ley_ag: 19.23, cod_tableta: 'E1', ton: 1700, mining: 'Uchucchacua', x: 100, y: 50 },
-//     { ley_ag: 9.12, cod_tableta: 'E2', ton: 11500, mining: 'Uchucchacua', x: 100, y:50 }
-//   ]
-// })
-
-onMounted(() => {
+onMounted(async () => {
+  await store.dispatch("pila_total")
   // canvas.value.forEachObject((o) => {
   //   o.hasBorders = false
   //   o.selectable = false
   // })
 })
-const selectColor = (mining, dominio) => {
-  if (mining == 'YUMPAG') {
-    if (dominio == 'Ag/Alabandita') return '#8CBEB249'
-    if (dominio == 'Ag/Carbonatos') return '#9FE5C249'
-    if (dominio == 'Polimetálico') return 'yellow'
-  }
-  if (mining == 'UCHUCCHACUA') {
-    if (dominio == 'Ag/Alabandita') return '#fb5663'
-    if (dominio == 'Ag/Carbonatos') return '#FF9900'
-    if (dominio == 'Polimetálico') return '#6666FF'
-  }
+
+const createSVGData = () => {
+  const pillas = pilas.value.filter(i => i.typePila == 'Pila')
+  const gibas = pilas.value.filter(i => i.typePila == 'Giba')
+  const p = pillas.forEach(i => {
+    const pilaSVG = document.getElementById('pila')
+    pilaSVG.querySelector('.tonh').textContent = i.stock ? (i.stock).toFixed(1) : '-'
+    pilaSVG.querySelector('.tableta').textContent = i.pila
+    pilaSVG.querySelector('.ley').textContent = i.ley_ag ? (i.ley_ag).toFixed(2) : '-'
+    pilaSVG.querySelector('.mining').style.fill = i.mining == 'YUMPAG' ? '#33cc66' : '#ddee55'
+    const svgElem = new fabric.loadSVGFromString(pilaSVG.outerHTML, (objects, options) => {
+      const obj = fabric.util.groupSVGElements(objects, options)
+      obj.set({
+        left: i.x,
+        top: i.y,
+        scaleX: 0.8,
+        scaleY: 0.8,
+        selectable: false
+      })
+      obj.pila = i
+      canvas.value.add(obj)
+    })
+  })
+
+  const g = gibas.forEach(i => {
+    const gibaSVG = document.getElementById('giba')
+    gibaSVG.querySelector('.tonh').textContent = i.tonh ? (i.tonh).toFixed(1) : '-'
+    gibaSVG.querySelector('.tableta').textContent = i.pila
+    gibaSVG.querySelector('.ley').textContent = i.ley_ag ? (i.ley_ag).toFixed(2) : '-'
+    gibaSVG.querySelector('.mining').style.fill = i.mining == 'YUMPAG' ? '#33cc66' : '#ddee55'
+    const svgElem = new fabric.loadSVGFromString(gibaSVG.outerHTML, (objects, options) => {
+      const obj = fabric.util.groupSVGElements(objects, options)
+      obj.set({
+        left: i.x,
+        top: i.y,
+        scaleX: 0.7,
+        scaleY: 0.7,
+        selectable: false
+      })
+      obj.pila = i
+      canvas.value.add(obj)
+    })
+  })
+  canvas.value.renderAll()
+  // return p, g
 }
 
-const newPila = (pila, mining, dominios, msg, x, y, delta, delta_left, d2) => {
-  const dominio = dominios.reduce((acc, dominio) => {
-      if (!acc.includes(dominio)) {
-          acc.push(dominio)
-      }
-      return acc
-  }, [])[0]
-  const circle = new CustomCircle({
-    radius: delta + 20,
-    fill: selectColor(mining, dominio),
-    left: x,
-    top: y
-  })
-  const text = new CustomText(msg, {
-    fontSize: Math.log(delta) * 6.5,
-    fill: mining == 'YUMPAG' ? 'black' : '#333',
-    textAlign: 'center',
-    left: x + delta_left * 0.5,
-    top: y + d2 - 10,
-    fontFamily: "Saira"
-  })
-  const group = new fabric.Group([circle, text], {})
-  group.pila = pila
-  return group
-}
-
-const handleCreated = async(fabricCanvas) => {
+const handleCreated = async (fabricCanvas) => {
   await store.dispatch("pila_total")
-  pilas.value = store.state.rumaTotal
+  // await store.dispatch("pila_total")
+  // pilas.value = store.state.rumaTotal
   canvas.value = fabricCanvas
-  const max = 30000
-  const min = 50
-  pilas.value.forEach((r) => {
-    const d = (r.tonh - min) * 100/(max - min)
-    const d2 = Math.floor((r.tonh - min) * 85/(max - min))
-    const delta = Math.floor(10 + (r.tonh - min)*100/(max - min))
-    const delta_left = r.tonh * 0.65 / min
-    const msg = `L-${r.ley_ag ? r.ley_ag.toFixed(2) : 0}\n${r.pila}\n${r.stock.toFixed(1)}-T`
-    const group = newPila(r, r.mining, r.dominio, msg, r.x, r.y, delta, delta_left, d2)
-    canvas.value.add(markRaw(group))
-    canvas.value.renderAll()
+  const colquicocha = new CustomRect({
+    width: 900,
+    height: 500,
+    fill: 'red',
+    left: 100,
+    top: 200,
+    opacity: 0.1,
+    selectable: false
   })
-  canvas.value.hasControls = false
-  canvas.value.hasBorders = false
-  canvas.value.selectable = false
+  colquicocha.set('type', 'colquicocha')
+  canvas.value.add(colquicocha)
+  
+  const cancha2 = new CustomRect({
+    width: 650,
+    height: 200,
+    fill: 'blue',
+    left: 1050,
+    top: 450,
+    opacity: 0.1,
+    selectable: false
+  })
+  cancha2.set('type', 'cancha2')
+  canvas.value.add(cancha2)
+
+  const cancha1 = new CustomRect({
+    width: 200,
+    height: 200,
+    fill: 'green',
+    left: 1700,
+    top: 200,
+    opacity: 0.1,
+    selectable: false
+  })
+  cancha1.set('type', 'cancha1')
+  canvas.value.add(cancha1)
+  createSVGData()
+  // canvas.value.hasControls = false
+  canvas.value.hasBorders = true
   canvas.value.renderAll()
 }
 
@@ -182,49 +210,79 @@ const handleCreated = async(fabricCanvas) => {
 //   canvas.value.renderAll()
 // }
 
-const toast = useToast();
+const toast = useToast()
+
+const empty = () => {
+  canvas.value.clear()
+  canvas.value.renderAll()
+}
+
+const moving = (e) => {
+  const objectSelected = canvas.value.getActiveObject()
+  if (objectSelected) {
+    objectSelected.setCoords()
+    // check if intersect with other object colquicocha
+    // console.log(canvas.value.getObjects())
+    const colquicocha = canvas.value.getObjects().find((o) => o.type === 'colquicocha')
+    if (colquicocha && objectSelected.intersectsWithObject(colquicocha)) {
+      console.log('Colquicocha')
+      objectSelected.set('fill', 'green')
+      canvas.value.renderAll()
+      return
+    }
+    const cancha2 = canvas.value.getObjects().find((o) => o.type === 'cancha2')
+    if (cancha2 && objectSelected.intersectsWithObject(cancha2)) {
+      console.log('Cancha2')
+      objectSelected.set('fill', 'blue')
+      canvas.value.renderAll()
+      return
+    }
+    const cancha1 = canvas.value.getObjects().find((o) => o.type === 'cancha1')
+    if (cancha1 && objectSelected.intersectsWithObject(cancha1)) {
+      console.log('Cancha1')
+      objectSelected.set('fill', 'red')
+      canvas.value.renderAll()
+      return
+    }
+  }
+}
 
 const handleSelect = (e) => {
   const objectsSelected = canvas.value.getActiveObjects()
-  console.log(objectsSelected)
+  // console.log('ObjectsSelected', objectsSelected)
   if (objectsSelected.length > 1) {
     const tolerance = 0.5
     const leyes = objectsSelected.map((o) => o.pila.ley_ag)
     const promedio = leyes.reduce((a, b) => a + b) / leyes.length
     const differences = leyes.map((ley) => Math.abs(ley - promedio))
     const maxDifference = Math.max(...differences)
-    console.log(maxDifference, tolerance)
     if (maxDifference > tolerance) {
       visible.value = false
-      // No se puede unir MESSAGE
-      console.log("No se puede unir")
-      toast.add({ severity: 'error', summary: 'Error', detail: 'No se puede unir' });
-     
+      toast.add({ severity: 'error', summary: 'Error', detail: 'No se puede unir', life: 3000})
       return
     }
-    console.log("Se puede unir")
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Se puede unir' });
+    toast.add({ severity: 'success', summary: 'Union de pilas', detail: 'Las leyes de las pilas son similares', life: 3000})
     visible.value = true
   } else {
     visible.value = false
   }
 }
-const handleMoveUpdatePosition = (e) => {
-  const objectsSelected = canvas.value.getActiveObjects()
-  // console.log(objectsSelected)
-  objectsSelected.forEach(async (o) => {
-    o.data = {
-      x: o.left,
-      y: o.top
+const handleMoveUpdatePosition = async (e) => {
+  // const objectsSelected = canvas.value.getActiveObjects()
+  const objectSelected = canvas.value.getActiveObject()
+  // console.log('ObjectSelected', objectSelected)
+  if (objectSelected) {
+    objectSelected.data = {
+      x: objectSelected.left,
+      y: objectSelected.top
     }
-    console.log('FORMAT', o)
-    await store.dispatch("ruma_update", o);
-  })
+    await store.dispatch("ruma_update", objectSelected)
+  }
 }
 
 const mergePilas = async () => {
   const pilasSelected = canvas.value.getActiveObjects()
-  console.log('MergePilas', pilasSelected)
+  // console.log('MergePilas', pilasSelected)
   try {
     // buttonClicked.value = true
     const response = await fetch(`${url}/pila`, {
@@ -261,14 +319,14 @@ const mergePilas = async () => {
         ley_zn: pilasSelected.reduce((a, b) => a + b.pila.ley_zn, 0) / pilasSelected.length,
         // cod_despacho: pilasSelected.map((p) => p.pila.cod_despacho),
       }
-      await store.dispatch("ruma_update", data);
+      await store.dispatch("ruma_update", data)
       pilasSelected.forEach(async (p) => {
         p.data = {
           statusBelong: "Belong",
           statusPila: "Finalizado",
           history: [...p.pila.history, {work: 'Se unio con otra pila', date: new Date(), user: store.state.user._id}]
         }
-        await store.dispatch("ruma_update", p);
+        await store.dispatch("ruma_update", p)
       })
       await store.dispatch("pila_total")
       pilas.value = store.state.rumaTotal
@@ -310,13 +368,11 @@ const editRuma = () => {
   }
   pilas.value.push(ruma)
   // update canvas value text on 5 index
-  console.log(canvas.value.getActiveObject())
   const text = canvas.value.getActiveObject().item(1)
   text.set('text', `${ruma.ley_ag}\n${ruma.cod_tableta}\n${ruma.ton}t`)
 
   canvas.value.renderAll()
 }
-
 
 // const ungroup = () => {
 //   const group = canvas.value.getActiveObject()
@@ -344,6 +400,27 @@ const remove = () => {
   canvas.value.renderAll()
 }
 
+const formatColumnValue = (value, fn) => {
+  switch (fn) {
+    case "date":
+      return formatDate(value)
+    case "fixed":
+      return formatFixed(value)
+      case "arr":
+      if (Array.isArray(value)) {
+        const uniqueArrValue = [...new Set(value)]
+        return uniqueArrValue.join(", ")
+      } else if (typeof value === "string") {
+        return value
+      }
+      return ""
+    case "count":
+      return value.length
+      break
+    default:
+      return value || ""
+  }
+};
 </script>
 
 <template>
@@ -358,18 +435,101 @@ const remove = () => {
     </div>
   </div> -->
   <Totals/>
+  <Button class="is-primary" @click="() => $refs.html2Pdf.generatePdf()">Generate PDF</Button>
+  <div v-show="false">
+    <IPila id="pila"/>
+    <IGiba id="giba"/>
+  </div>
+  <div>
+    <vue3-html2pdf
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="0"
+      :filename="`Geology report ${new Date().toLocaleDateString()}`"
+      :pdf-quality="2"
+      :manual-pagination="false"
+      pdf-orientation="landscape"
+      pdf-format="a4"
+      pdf-content-width="1200px"
+      ref="html2Pdf"
+      >
+      <template v-slot:pdf-content>
+        <div class="pdf">
+          <h1>MAP</h1>
+          <!-- DataTable pila -->
+          <div class="tableContainer">
+            <DataTable
+              :value="pilas"
+              tableStyle="width: 100%; border-collapse: collapse;"
+              paginator
+              :rows="20"
+              paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
+              currentPageReportTemplate="Página {currentPage} de {totalPages}"
+              :header="false"
+              :loading="store.state.loading"
+            >
+              <Column field="pila" header="Tableta"></Column>
+              <Column field="stock" header="Stock"></Column>
+              <Column field="tonh" header="Tonh"></Column>
+              <Column field="ton" header="Ton"></Column>
+              <Column field="ley_ag" header="Ley"></Column>
+            </DataTable>
+          </div>
+          <div class="html2pdf__page-break"/>
+          <div class="tableContainer">
+            <DataTable
+              :value="pilas"
+              tableStyle="width: 100%; border-collapse: collapse;"
+              paginator
+              :rows="20"
+              paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
+              currentPageReportTemplate="Página {currentPage} de {totalPages}"
+              :header="false"
+              :loading="store.state.loading"
+            >
+              <Column field="pila" header="Tableta"></Column>
+              <Column field="stock" header="Stock"></Column>
+              <Column field="tonh" header="Tonh"></Column>
+              <Column field="ton" header="Ton"></Column>
+              <Column field="ley_ag" header="Ley"></Column>
+            </DataTable>
+          </div>
+          <div class="tableContainer">
+            <DataTable
+              :value="pilas"
+              tableStyle="width: 100%; border-collapse: collapse;"
+              paginator
+              :rows="20"
+              paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
+              currentPageReportTemplate="Página {currentPage} de {totalPages}"
+              :header="false"
+              :loading="store.state.loading"
+            >
+              <Column field="pila" header="Tableta"></Column>
+              <Column field="stock" header="Stock"></Column>
+              <Column field="tonh" header="Tonh"></Column>
+              <Column field="ton" header="Ton"></Column>
+              <Column field="ley_ag" header="Ley"></Column>
+            </DataTable>
+          </div>
+        </div>
+      </template>
+    </vue3-html2pdf>
+  </div>
   <div class="c-global-container-map">
     <div class="global-map-button">
       <!-- <Button
         outlined
         class="btn-map"
         @click="handleClick"
-        v-tooltip.right="{
+        v-tooltip.bottom="{
           value: 'Crear',
           pt: {
             arrow: {
               style: {
-                borderRightColor: 'var(--primary-color)',
+                borderBottomColor: 'var(--primary-color)',
               },
             },
           },
@@ -381,12 +541,12 @@ const remove = () => {
         outlined
         class="btn-map"
         @click="edit"
-        v-tooltip.right="{
+        v-tooltip.bottom="{
           value: 'Editar',
           pt: {
             arrow: {
               style: {
-                borderRightColor: 'var(--primary-color)',
+                borderBottomColor: 'var(--primary-color)',
               },
             },
           },
@@ -398,12 +558,12 @@ const remove = () => {
         class="btn-map"
         @click="mergePilas"
         v-if="visible"
-        v-tooltip.right="{
+        v-tooltip.bottom="{
           value: 'Unir',
           pt: {
             arrow: {
               style: {
-                borderRightColor: 'var(--primary-color)',
+                borderBottomColor: 'var(--primary-color)',
               },
             },
           },
@@ -415,12 +575,12 @@ const remove = () => {
         class="btn-map"
         @click="editRuma"
         v-if="visible"
-        v-tooltip.right="{
+        v-tooltip.bottom="{
           value: 'Editar Ruma',
           pt: {
             arrow: {
               style: {
-                borderRightColor: 'var(--primary-color)',
+                borderBottomColor: 'var(--primary-color)',
               },
             },
           },
@@ -431,12 +591,12 @@ const remove = () => {
         outlined
         class="btn-map"
         @click="save"
-        v-tooltip.right="{
+        v-tooltip.bottom="{
           value: 'Guardar',
           pt: {
             arrow: {
               style: {
-                borderRightColor: 'var(--primary-color)',
+                borderBottomColor: 'var(--primary-color)',
               },
             },
           },
@@ -447,12 +607,12 @@ const remove = () => {
         outlined
         class="btn-map"
         @click="remove"
-        v-tooltip.right="{
+        v-tooltip.bottom="{
           value: 'Eliminar',
           pt: {
             arrow: {
               style: {
-                borderRightColor: 'var(--primary-color)',
+                borderBottomColor: 'var(--primary-color)',
               },
             },
           },
@@ -461,9 +621,11 @@ const remove = () => {
       </Button>
     </div>
     <FabricCanvas
-      @canvas-created="handleCreated"     
+      @canvas-created="handleCreated"
       @click:selected="handleSelect"
       @click:updated="handleMoveUpdatePosition"
+      @click:cleared="empty"
+      @mouse:moving="moving"
     />
   </div>
 </template>
@@ -471,17 +633,16 @@ const remove = () => {
 <style lang="scss">
 .global-map-button {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.5rem;
   position: absolute;
-  padding: 5px;
-  border-radius: 0 0 8px 0;
+  padding: 8px;
+  border-radius: 10px;
   z-index: 1;
-  background-color: var(--white);
+  background-color: rgba(255,255,255,0.5);
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.02);
-  top: 5px;
-  left: 5px;
-  
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   .btn-map {
     color: var(--grey-2);
     background-color: var(--grey-light-1);
@@ -515,6 +676,15 @@ const remove = () => {
   background-size: contain;
   background-repeat: no-repeat;
   // background-position: center;
-  
+}
+.pdf {
+  padding: 2rem;
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  p {
+    font-size: 1.5rem;
+  }
 }
 </style>

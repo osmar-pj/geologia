@@ -43,65 +43,65 @@ const updatePilas = (pilasFound, data) => {
 
 onMounted(async () => {
   await store.dispatch("get_listControl")
-});
+})
 
 const filteredData = computed(() => {
   if (pilas.value.data) {
     return pilas.value.data.filter(
       (item) => item.statusPila === selectedStatus.value
-    );
+    )
   }
-  return [];
+  return []
 })
 
 const calculateQtyByStatus = computed(() => (status) => {
-  return calcularCantidadPorEstado(status);
+  return calcularCantidadPorEstado(status)
 })
 
 const calcularCantidadPorEstado = (estado) => {
   if (pilas.value.data) {
-    return pilas.value.data.filter((item) => item.statusPila === estado).length;
+    return pilas.value.data.filter((item) => item.statusPila === estado).length
   }
-  return 0;
-};
+  return 0
+}
 
-const showCCModal = ref(false);
-const showMuestraModal = ref(false);
-const showCanchaModal = ref(false);
-const modalData = ref(null);
+const showCCModal = ref(false)
+const showMuestraModal = ref(false)
+const showCanchaModal = ref(false)
+const modalData = ref(null)
 
 const openMuestraModal = (data) => {
-  modalData.value = data;
-  showMuestraModal.value = true;
-};
+  modalData.value = data
+  showMuestraModal.value = true
+}
 const openCanchaModal = (data) => {
-  modalData.value = data;
-  showCanchaModal.value = true;
-};
+  modalData.value = data
+  showCanchaModal.value = true
+}
 const openModal = (data) => {
-  modalData.value = data;
-  showCCModal.value = true;
-};
+  modalData.value = data
+  showCCModal.value = true
+}
 
 const formatColumnValue = (value, fn) => {
   switch (fn) {
     case "date":
-      return formatDate(value);
+      return formatDate(value)
     case "fixed":
-      return formatFixed(value);
+      return formatFixed(value)
       case "arr":
       if (Array.isArray(value)) {
-        const uniqueArrValue = [...new Set(value)];
-        return uniqueArrValue.join(", ");
+        const uniqueArrValue = [...new Set(value)]
+        return uniqueArrValue.join(", ")
       } else if (typeof value === "string") {
-        return value;
+        return value
       }
-      return "";
+      return ""
     case "count":
-      return value.length;
-      break;
+      return value.length
+      break
     default:
-      return value || "";
+      return value || ""
   }
 };
 </script>
