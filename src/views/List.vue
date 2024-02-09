@@ -44,6 +44,7 @@ const updateTrips = (tripsFound, data) => {
     trip.cod_tableta = data[index].cod_tableta
     trip.dominio = data[index].dominio
     trip.pila = data[index].pila
+    trip.rango = data[index].rango
     trip$.next(trip)
   })
 }
@@ -110,19 +111,6 @@ const getStatusClass = (status) => statusClassMapping[status] || ""
       :loading="store.state.loading"
       
     >
-      <!-- <template #header>
-        <div style="text-align: left">
-           <MultiSelect
-            :modelValue="selectedColumns"
-            :options="data.columns"
-            optionLabel="title"
-            @update:modelValue="onToggle"
-            display="chip"
-            placeholder="Select Columns"
-            :groupRowsBy="['year', 'month', 'date', 'status','ubication','turn','mining','level','type','veta','tajo','dominio','rango','date_abas']"
-          /> 
-        </div>
-      </template> -->
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>
       <Column
         v-for="(header, index) in trips.header"

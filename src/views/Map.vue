@@ -21,7 +21,6 @@ const socket = inject("socket")
 const pila$ = new Subject()
 const store = useStore();
 const url = import.meta.env.VITE_API_URL
-const route = 'map'
 const access = ref(false)
 const mergeAvailable = ref(false)
 
@@ -62,7 +61,7 @@ class CustomPolygon extends fabric.Polygon {
 // const canvas = computed(() => store.state.canvas)
 const canvas = ref()
 const pilas = computed(() => store.state.rumaTotal)
-const trips = computed(() => store.state.dataListGeneral)
+const trips = ref([])
 const weights = computed(() => store.state.weights)
 const ubication = ref('')
 
@@ -99,6 +98,27 @@ const updatePilas = async (pilasFound, data) => {
     access.value = false
   }
 }
+
+const sendFilter = async () => {  
+    try {
+      const response = await fetch(`${url}/trips`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": true,
+        },
+        body: JSON.stringify({ arr: ['year', 'month', 'rango', 'type']}),
+      });
+
+      const data = await response.json();
+      trips.value = data;
+      if (data.status === true) {
+        console.log("correcto");
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    }  
+};
 
 const visible = ref(false)
 onMounted(async () => {
@@ -221,7 +241,7 @@ const createSVGRect = () => {
     height:350,
     fill: 'transparent',
     // stroke: 'black',
-    strokeWidth: 2,
+    // strokeWidth: 2,
     selectable: false,
     angle: 25
   })
@@ -234,7 +254,7 @@ const createSVGRect = () => {
     height: 150,
     fill: 'transparent',
     // stroke: 'black',
-    strokeWidth: 2,
+    // strokeWidth: 2,
     selectable: false,
     angle: -15
   })
@@ -247,7 +267,7 @@ const createSVGRect = () => {
     height: 200,
     fill: 'transparent',
     // stroke: 'black',
-    strokeWidth: 2,
+    // strokeWidth: 2,
     selectable: false
   })
   cancha1.type = 'cancha1'
@@ -257,6 +277,8 @@ const createSVGRect = () => {
 
 const handleCreated = async (fabricCanvas) => {
   await store.dispatch("pila_total")
+  await sendFilter()
+  // await store.dispatch(get)
   weights.value.stock = {
     total: pilas.value.reduce((a, b) => a + b.stock, 0),
     colquicocha: pilas.value.filter(p => p.ubication == 'Cancha Colquicocha').reduce((a, b) => a + b.stock, 0),
@@ -360,7 +382,6 @@ const empty = () => {
 }
 
 const moving = async (e) => {
-  if (!mergeAvailable.value) return
   const objectSelected = canvas.value.getActiveObject()
   if (objectSelected) {
     objectSelected.setCoords()
@@ -429,8 +450,13 @@ const handleMoveUpdatePosition = async (e) => {
 }
 
 const mergePilas = async () => {
+  if (!mergeAvailable.value) return
   const pilasSelected = canvas.value.getActiveObjects()
   // console.log('MergePilas', pilasSelected)
+  if (pilasSelected.length < 2) {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Seleccione al menos dos pilas', life: 3000})
+    return
+  }
   try {
     // buttonClicked.value = true
     const response = await fetch(`${url}/pila`, {
@@ -498,6 +524,19 @@ const mergePilas = async () => {
 }
 
 const edit = () => {
+  // filter rect objects and set selectable false
+  canvas.value.getObjects().filter((o) => o.type === 'colquicocha').forEach((o) => {
+    o.selectable = false
+    o.hasBorders = false
+  })
+  canvas.value.getObjects().filter((o) => o.type === 'cancha2').forEach((o) => {
+    o.selectable = false
+    o.hasBorders = false
+  })
+  canvas.value.getObjects().filter((o) => o.type === 'cancha1').forEach((o) => {
+    o.selectable = false
+    o.hasBorders = false
+  })
   canvas.value.forEachObject((o) => {
     o.hasBorders = true
     o.selectable = true
@@ -565,6 +604,7 @@ setInterval(() => {
   currentDate.value = new Date();
   formattedDate.value = formatDate(currentDate.value);
 }, 1000);
+
 </script>
 
 <template>
@@ -593,11 +633,10 @@ setInterval(() => {
       :float-layout="true"
       :enable-download="false"
       :preview-modal="true"
-      :paginate-elements-by-height="0"
+      :paginate-elements-by-height="1400"
       :filename="`Geology report ${new Date().toLocaleDateString()}`"
       :pdf-quality="2"
       :manual-pagination="false"
-      
       pdf-format="a4"
       :pdf-margins="{ top: 2.5 * 28.35, right: 2.5 * 28.35, bottom: 2.5 * 28.35, left: 2.5 * 28.35 }"
       pdf-content-width="calc(100% - (2.5 * 28.35 * 2))"
@@ -612,28 +651,53 @@ setInterval(() => {
             <h4>{{ storedUser.name }}</h4>
           </div>
         </div>
+        <!-- <div class="html2pdf__page-break"/> -->
         <div class="pdf-content">
-          <h1>Reporte de Geología</h1>
-          <p>Este es un reporte de geología generado por el sistema de control de calidad de la mina.</p>
-          <div class="tableContainer">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Stock</th>
-                  <th>Toneladas</th>
-                  <th>Ubicación</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="pila in pilas.data" :key="pila._id">
-                  <td>{{ pila.pila }}</td>
-                  <td>{{ pila.stock }}</td>
-                  <td>{{ pila.tonh }}</td>
-                  <td>{{ pila.ubication }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="c-global-header">
+            <div class="global-h-title">
+              <div class="g-h-t-primary">
+                <h1>Reporte Geología</h1>
+                <span>{{ trips ? trips.length : 0 }}</span>
+              </div>
+              <span> Análisis de datos de muestra y pilas </span>
+            </div>
+          </div>
+          <div class="c-global-c-content">
+            <DataTable :value="trips">
+              <Column field="month" header="Mes"></Column>
+              <Column field="rango" header="Rango"></Column>
+              <Column field="type" header="Tipo"></Column>
+              <Column field="tonh" header="Tonelaje">
+                <template #body="slotProps">
+                  {{ slotProps.data.tonh.toFixed(2) }}
+                </template>
+              </Column>
+              <Column field="ley_ag" header="Ley Ag">
+                <template #body="slotProps">
+                  {{ slotProps.data.ley_ag.toFixed(2) }}
+                </template>
+              </Column>
+              <Column field="ley_fe" header="Ley Fe">
+                <template #body="slotProps">
+                  {{ slotProps.data.ley_fe.toFixed(2) }}
+                </template>
+              </Column>
+              <Column field="ley_mn" header="Ley Mn">
+                <template #body="slotProps">
+                  {{ slotProps.data.ley_mn.toFixed(2) }}
+                </template>
+              </Column>
+              <Column field="ley_pb" header="Ley Pb">
+                <template #body="slotProps">
+                  {{ slotProps.data.ley_pb.toFixed(2) }}
+                </template>
+              </Column>
+              <Column field="ley_zn" header="Ley Zn">
+                <template #body="slotProps">
+                  {{ slotProps.data.ley_zn.toFixed(2) }}
+                </template>
+              </Column>
+            </DataTable>
           </div>
         </div>
       </template>
@@ -806,6 +870,9 @@ setInterval(() => {
   }
   p {
     font-size: 1.5rem;
+  }
+  .c-global-c-content {
+    padding: 2rem;
   }
 }
 .btn-GP {

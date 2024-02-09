@@ -289,6 +289,19 @@ const store = createStore({
         commit("getDataAnalysis", data);
       } catch (error) {commit("loading", false)}
     },
+    getTripsPlanta: async ({ commit }) => {
+      try {
+        const response = await fetch(`${url}/planta`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": true,
+          },
+        });
+        const data = await response.json();
+        commit("getListControl", data);
+      } catch (error) {commit("loading", false)}
+    }
   },
   modules: {},
 });

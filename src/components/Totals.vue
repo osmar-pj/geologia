@@ -1,5 +1,19 @@
 <script setup>
 import IPlus from "../icons/IPlus.vue";
+import { onMounted, ref, computed} from "vue"
+import { useStore } from "vuex"
+
+const store = useStore()
+
+onMounted(async () => {
+  // await store.dispatch("getWeights")
+  await store.dispatch("get_list")
+})
+
+// const totalWeights = computed(() => store.state.weights)
+const oreControl = computed(() => store.state.dataList)
+
+
 </script>
 
 <template>
@@ -11,37 +25,39 @@ import IPlus from "../icons/IPlus.vue";
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>123,223.4</h1>
+              <!-- <h1> {{ (totalWeights.stock.total).toFixed(2) }} </h1> -->
+              <h1> 488.82 </h1>
               <small>TMH</small>
             </div>
           </div>
         </div>
         <div class="w-w-calc">
-          <h5>de un total de 13 pilas</h5>
+          <!-- <h5>de un total de 13 pilas</h5> -->
         </div>
       </div>
       <div class="Item-w-total">
-        <h5 class="w-w-title">Total TMH</h5>
+        <h5 class="w-w-title">Total Mineral Ingresado Dia</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>123,340</h1>
+              <!-- <h1> {{ totalWeights.ton.toFixed(2) }} </h1> -->
+              <h1> 463.44 </h1>
               <small>TMH</small>
             </div>
           </div>
         </div>
         <div class="w-w-calc">
-          <h5>+ 3 leyes nuevas</h5>
+          <!-- <h5>+ 3 leyes nuevas</h5> -->
         </div>
       </div>
       <div class="Item-w-total">
-        <h5 class="w-w-title">Total Salida</h5>
+        <h5 class="w-w-title">Total Mineral Enviado a Planta</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>123,340</h1>
+              <h1>254.56</h1>
               <small>TMH</small>
             </div>
           </div>
@@ -60,8 +76,10 @@ import IPlus from "../icons/IPlus.vue";
           </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>65</h1>
-              <small>pilas</small>
+              <h1>1</h1>
+              <small>pila</small>
+              <!-- <h1> {{ oreControl.data.length }} </h1> -->
+              <!-- <small> {{ oreControl.data.length > 1 ? 'pilas' : 'pila' }} </small> -->
             </div>
           </div>
         </div>
@@ -76,12 +94,12 @@ import IPlus from "../icons/IPlus.vue";
         </div>
       </div>
       <div class="Item-w-total">
-        <h5 class="w-w-title">Control de Calidad</h5>
+        <h5 class="w-w-title">Analisis</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total2.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>65</h1>
+              <h1>5</h1>
               <small>pilas</small>
             </div>
           </div>
@@ -97,23 +115,23 @@ import IPlus from "../icons/IPlus.vue";
         </div>
       </div>
       <div class="Item-w-total">
-        <h5 class="w-w-title">Control de Calidad</h5>
+        <h5 class="w-w-title">Abastecimiento</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total3.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>65</h1>
+              <h1>3</h1>
               <small>pilas</small>
             </div>
           </div>
         </div>
         <div class="w-w-calc">
           <div class="calc-item">
-            <span class="t-porcent t-min"> proc/ 55% </span>
+            <span class="t-porcent t-min"> proc/ 60% </span>
           </div>
           <div class="calc-item">
             <div class="t-icon"></div>
-            <span class="t-porcent t-max"> x proc/ 45% </span>
+            <span class="t-porcent t-max"> x proc/ 40% </span>
           </div>
         </div>
       </div>
