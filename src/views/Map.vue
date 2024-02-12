@@ -23,6 +23,8 @@ const store = useStore();
 const url = import.meta.env.VITE_API_URL
 const access = ref(false)
 const mergeAvailable = ref(false)
+const pilasSelected = ref([])
+const toast = useToast()
 
 class CustomCircle extends fabric.Circle {
   constructor(options) {
@@ -51,19 +53,13 @@ class CustomRect extends fabric.Rect {
     this.mining = options.mining
   }
 }
-
-class CustomPolygon extends fabric.Polygon {
-  constructor(options) {
-    super(options)
-  }
-}
-
 // const canvas = computed(() => store.state.canvas)
 const canvas = ref()
 const pilas = computed(() => store.state.rumaTotal)
 const trips = ref([])
 const weights = computed(() => store.state.weights)
 const ubication = ref('')
+const visible = ref(false)
 
 socket.on("pilas", async (data) => {
   console.log("socket Data", data)
@@ -99,6 +95,7 @@ const updatePilas = async (pilasFound, data) => {
   }
 }
 
+// PDF content
 const sendFilter = async () => {  
     try {
       const response = await fetch(`${url}/trips`, {
@@ -120,7 +117,6 @@ const sendFilter = async () => {
     }  
 };
 
-const visible = ref(false)
 onMounted(async () => {
   await store.dispatch("pila_total")
   // canvas.value.forEachObject((o) => {
@@ -128,6 +124,7 @@ onMounted(async () => {
   //   o.selectable = false
   // })
 })
+
 const modaData = (data) => {
   if (data.length === 0) return ''
     const dataCount = {}
@@ -291,6 +288,7 @@ const handleCreated = async (fabricCanvas) => {
   // await store.dispatch("pila_total")
   // pilas.value = store.state.rumaTotal
   canvas.value = fabricCanvas
+  console.log('Canvas', canvas.value)
   const colquicocha = document.getElementById('icc')
   const cancha2 = document.getElementById('ic2')
   const cancha1 = document.getElementById('ic1')
@@ -341,40 +339,7 @@ const handleCreated = async (fabricCanvas) => {
   canvas.value.renderAll()
 }
 
-// const handleClick = (r) => {
-//   // crea el circulo nnuevo
-//   if (!canvas.value) return
-//   const d = (r.tonh - min) * 100/(max - min)
-//   const d2 = Math.floor((r.tonh - min) * 85/(max - min))
-//   const delta = Math.floor(10 + (r.tonh - min)*100/(max - min))
-//   const delta_left = r.tonh * 0.65 / min
-//   const circle = new CustomCircle({
-//     radius: delta + 10,
-//     fill: selectColor(r.mining, r.dominio),
-//     left: r.x,
-//     top: r.y
-//   })
-//   const text = new CustomText('', {
-//     text: `${r.ley_ag ? r.ley_ag.toFixed(2) : 0}\n${r.pila}\n${r.tonh}_T`,
-//     fontSize: Math.log(delta) * 4.5,
-//     fill: r.mining == 'YUMPAG' ? 'black' : 'white',
-//     textAlign: 'center',
-//     left: r.x + delta_left * 0.5,
-//     top: r.y + d2 - 10
-//   })
-//   const group = new fabric.Group([circle, text], {
-//   })
-//   // add new feature to group call id
-//   group.id = r._id
-//   group.hasControls = false
-//   group.hasBorders = false
-//   group.selectable = true
-//   visible.value = true
-//   canvas.value.add(markRaw(group))
-//   canvas.value.renderAll()
-// }
 
-const toast = useToast()
 
 const empty = () => {
   canvas.value.clear()
@@ -407,8 +372,41 @@ const moving = async (e) => {
 }
 
 const handleSelect = (e) => {
-  const objectsSelected = canvas.value.getActiveObjects()
-  // console.log('ObjectsSelected', objectsSelected)
+  const objectsSelected = canvas.value.getActiveObjects().filter((o) => o.type !== 'colquicocha' && o.type !== 'cancha2' && o.type !== 'cancha1' && o.type !== 'letrero1' && o.type !== 'letrero2' && o.type !== 'letrero3')
+  canvas.value.forEachObject((o) => {
+    o.hasBorders = true
+    o.selectable = true
+    o.hasControls = true
+    o.lockUniScaling = true
+    o.lockRotation = true
+  })
+  canvas.value.getObjects().filter((o) => o.type === 'colquicocha' || o.type === 'cancha2' || o.type === 'cancha1' || o.type === 'letrero1' || o.type === 'letrero2' || o.type === 'letrero3').forEach((o) => {
+    o.selectable = false
+    o.hasControls = false
+    o.hasBorders = false
+  })
+  pilasSelected.value = objectsSelected
+}
+const handleMoveUpdatePosition = async (e) => {
+  if (pilasSelected.value.length > 1) {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Seleccione solo una pila', life: 3000})
+    return
+  }
+  const objectSelected = canvas.value.getActiveObject()
+  if (objectSelected) {
+    objectSelected.data = {
+      x: objectSelected.left,
+      y: objectSelected.top,
+      ubication: ubication.value
+    }
+    access.value = true
+    await store.dispatch("ruma_update", objectSelected)
+  }
+}
+
+const mergePilas = async () => {
+  if (!mergeAvailable.value) return
+  const pilasSelected = canvas.value.getActiveObjects()
   const existLeyes = objectsSelected.every((o) => o.pila.ley_ag)
   if (!existLeyes) {
     visible.value = false
@@ -435,26 +433,9 @@ const handleSelect = (e) => {
     visible.value = false
     mergeAvailable.value = false
   }
-}
-const handleMoveUpdatePosition = async (e) => {
-  const objectSelected = canvas.value.getActiveObject()
-  if (objectSelected) {
-    objectSelected.data = {
-      x: objectSelected.left,
-      y: objectSelected.top,
-      ubication: ubication.value
-    }
-    access.value = true
-    await store.dispatch("ruma_update", objectSelected)
-  }
-}
-
-const mergePilas = async () => {
-  if (!mergeAvailable.value) return
-  const pilasSelected = canvas.value.getActiveObjects()
   // console.log('MergePilas', pilasSelected)
   if (pilasSelected.length < 2) {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Seleccione al menos dos pilas', life: 3000})
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Seleccione al menos dos pilas para unir', life: 3000})
     return
   }
   try {
@@ -540,7 +521,7 @@ const edit = () => {
   canvas.value.forEachObject((o) => {
     o.hasBorders = true
     o.selectable = true
-    o.hasControls = false
+    o.hasControls = true
   })
 }
 
