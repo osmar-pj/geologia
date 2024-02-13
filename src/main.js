@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import './style.scss'
 import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
+import 'primevue/resources/themes/tailwind-light/theme.css'
+// import 'primeflex/primeflex.css'
 
 // import 'primevue/resources/themes/saga-blue/theme.css'
 
@@ -10,7 +12,6 @@ import router from './router/router'
 import PrimeVue from 'primevue/config'
 import store from './store/store'
 import io from 'socket.io-client'
-import ToastService from 'primevue/toastservice'
 import jsPDF from 'jspdf'
 import Vue3Html2pdf from 'vue3-html2pdf'
 
@@ -18,7 +19,6 @@ import Dropdown from 'primevue/dropdown'
 import MultiSelect from 'primevue/multiselect'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import Row from 'primevue/row'
 import FileUpload from 'primevue/fileupload'
 import Skeleton from 'primevue/skeleton'
 import Button from 'primevue/button'
@@ -31,6 +31,7 @@ import ColumnGroup from 'primevue/columngroup'
 import Toast from 'primevue/toast'
 import Dock from 'primevue/dock';
 
+import ToastService from 'primevue/toastservice'
 
 const app = createApp(App)
 const socket = io(import.meta.env.VITE_API_URL)
@@ -64,4 +65,5 @@ app.component('InputNumber', InputNumber)
 app.component('ColumnGroup', ColumnGroup)
 app.component('Toast', Toast)
 app.component('Dock', Dock)
+
 app.mount('#app')

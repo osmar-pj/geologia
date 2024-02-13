@@ -4,12 +4,12 @@ import FabricCanvas from "../components/FabricCanvas.vue"
 import { fabric } from 'fabric'
 import { useStore } from "vuex"
 import { Subject, merge } from "rxjs"
+import { useToast } from 'primevue/usetoast'
 import IPlus from "../icons/IPlus.vue"
 import Bind from "../icons/Bind.vue"
 import CEdit from "../icons/CEdit.vue"
 import Delete from "../icons/Delete.vue"
 import ISave from "../icons/ISave.vue"
-import { useToast } from 'primevue/usetoast'
 import Totals from "../components/Totals.vue"
 import IPila from "../maps/IPila.vue"
 import IGiba from "../maps/IGiba.vue"
@@ -59,7 +59,12 @@ const pilas = computed(() => store.state.rumaTotal)
 const trips = ref([])
 const weights = computed(() => store.state.weights)
 const ubication = ref('')
-const visible = ref(false)
+const visibleMerge = ref(false)
+const visibleDate = ref(false)
+const nonePilaSelected = ref(false)
+const unlessOnePilaSelected = ref(false)
+const thereAreUnlessTwoPilasSelected = ref(false)
+const thereArePilasWithLey = ref(false)
 
 socket.on("pilas", async (data) => {
   console.log("socket Data", data)
@@ -146,11 +151,9 @@ const modaData = (data) => {
     return moda
 }
 const chooseMiningShadesColor = (mining) => {
-  // if (mining) return 'fff'
   return mining == 'YUMPAG' ? '#215E08' : '#5C1E05'
 }
 const chooseMiningMainColor = (mining) => {
-  // if (mining) return 'fff'
   return mining == 'YUMPAG' ? '#42B017' : '#E06500'
 }
 const chooseDominioShadeColor = (dominios) => {
@@ -342,6 +345,8 @@ const handleCreated = async (fabricCanvas) => {
 
 
 const empty = () => {
+  console.log('Cleared')
+  visible.value = false
   canvas.value.clear()
   canvas.value.renderAll()
 }
@@ -386,96 +391,97 @@ const handleSelect = (e) => {
     o.hasBorders = false
   })
   pilasSelected.value = objectsSelected
+  console.log('Pilas Selected', pilasSelected.value, pilasSelected.value.length)
+  nonePilaSelected.value = pilasSelected.value.length === 0
+  unlessOnePilaSelected.value = pilasSelected.value.length > 0
+  thereAreUnlessTwoPilasSelected.value = pilasSelected.value.length > 1
+  thereArePilasWithLey.value = pilasSelected.value.some((o) => o.pila.ley_ag)
+  if (unlessOnePilaSelected.value) {
+    console.log('1 o mas')
+    visibleDate.value = true
+  }
+  if (thereAreUnlessTwoPilasSelected.value) {
+    console.log('2 o mas')
+    visibleMerge.value = true
+  }
+  if (nonePilaSelected.value) {
+    console.log('Ninguna')
+    visibleMerge.value = false
+    visibleDate.value = false
+  }
 }
 const handleMoveUpdatePosition = async (e) => {
   if (pilasSelected.value.length > 1) {
     toast.add({ severity: 'error', summary: 'Error', detail: 'Seleccione solo una pila', life: 3000})
     return
   }
-  const objectSelected = canvas.value.getActiveObject()
-  if (objectSelected) {
-    objectSelected.data = {
-      x: objectSelected.left,
-      y: objectSelected.top,
+  pilasSelected.value.forEach((p) => {
+    p.data = {
+      x: p.left,
+      y: p.top,
       ubication: ubication.value
     }
     access.value = true
-    await store.dispatch("ruma_update", objectSelected)
-  }
+    store.dispatch("ruma_update", p)
+  })
 }
 
 const mergePilas = async () => {
-  if (!mergeAvailable.value) return
-  const pilasSelected = canvas.value.getActiveObjects()
-  const existLeyes = objectsSelected.every((o) => o.pila.ley_ag)
-  if (!existLeyes) {
-    visible.value = false
+  if (!thereArePilasWithLey.value) {
+    visibleMerge.value = false
     mergeAvailable.value = false
     toast.add({ severity: 'error', summary: 'Error', detail: 'Una o mas leyes aun no fueron calculadas', life: 3000})
     return
   }
-  if (objectsSelected.length > 1) {
-    const tolerance = 0.5
-    const leyes = objectsSelected.map((o) => o.pila.ley_ag)
-    const promedio = leyes.reduce((a, b) => a + b) / leyes.length
-    const differences = leyes.map((ley) => Math.abs(ley - promedio))
-    const maxDifference = Math.max(...differences)
-    if (maxDifference > tolerance) {
-      visible.value = false
-      mergeAvailable.value = false
-      toast.add({ severity: 'error', summary: 'Error', detail: 'No se puede unir', life: 3000})
-      return
-    }
-    toast.add({ severity: 'success', summary: 'Union de pilas', detail: 'Las leyes de las pilas son similares', life: 3000})
-    visible.value = true
-    mergeAvailable.value = true
-  } else {
-    visible.value = false
-    mergeAvailable.value = false
-  }
-  // console.log('MergePilas', pilasSelected)
-  if (pilasSelected.length < 2) {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Seleccione al menos dos pilas para unir', life: 3000})
+  const tolerance = 0.5
+  const leyes = pilasSelected.value.map((o) => o.pila.ley_ag)
+  const promedio = leyes.reduce((a, b) => a + b) / leyes.length
+  const differences = leyes.map((ley) => Math.abs(ley - promedio))
+  const maxDifference = Math.max(...differences)
+  if (maxDifference > tolerance) {
+    visibleMerge.value = false
+    toast.add({ severity: 'error', summary: 'Error', detail: 'No se puede unir', life: 3000})
     return
   }
+  toast.add({ severity: 'success', summary: 'Union de pilas', detail: 'Las leyes de las pilas son similares', life: 3000})
+  console.log('Unir pilas', pilasSelected.value)
+  const mining = pilasSelected.value.map(p => p.pila.mining)[0]
   try {
-    // buttonClicked.value = true
     const response = await fetch(`${url}/pila`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({mining: 'YUMPAG'}),
+      body: JSON.stringify({mining: mining}),
     })
     const data = await response.json()
     if (data.status === true) {
       console.log("Correcto")
       await store.dispatch("pila_list")
+      const length = pilasSelected.value.length
+      const tonh_total = pilasSelected.value.reduce((a, b) => a + b.pila.tonh, 0)
       data.data = {
-        tonh: pilasSelected.reduce((a, b) => a + b.pila.tonh, 0),
-        ton: pilasSelected.reduce((a, b) => a + b.pila.ton, 0),
-        stock: pilasSelected.reduce((a, b) => a + b.pila.stock, 0),
-        // travels: pilasSelected.reduce((a, b) => a + b.pila.travels, 0),
-        // tajo: pilasSelected.map(p => p.pila.tajo),
-        mining: pilasSelected.map(p => p.pila.mining)[0],
-        dominio: pilasSelected.map(p => {
+        tonh: pilasSelected.value.reduce((a, b) => a + b.pila.tonh, 0),
+        ton: pilasSelected.value.reduce((a, b) => a + b.pila.ton, 0),
+        stock: pilasSelected.value.reduce((a, b) => a + b.pila.stock, 0),
+        mining: mining,
+        dominio: pilasSelected.value.map(p => {
           const arr = p.pila.dominio
           return [...arr]
         }),
-        x: pilasSelected.reduce((a, b) => a + b.pila.x, 0) / pilasSelected.length,
-        y: pilasSelected.reduce((a, b) => a + b.pila.y, 0) / pilasSelected.length,
-        pilas_merged: pilasSelected.map((p) => p.pila._id),
+        x: pilasSelected.value.reduce((a, b) => a + b.pila.x, 0) / length,
+        y: pilasSelected.value.reduce((a, b) => a + b.pila.y, 0) / length,
+        pilas_merged: pilasSelected.value.map((p) => p.pila._id),
         statusPila: 'waitDateAbastecimiento',
-        history: [...data.pila.history, {work: 'Unidos', date: new Date(), user: store.state.user._id}],
-        ley_ag: pilasSelected.reduce((a, b) => a + b.pila.ley_ag, 0) / pilasSelected.length,
-        ley_fe: pilasSelected.reduce((a, b) => a + b.pila.ley_fe, 0) / pilasSelected.length,
-        ley_mn: pilasSelected.reduce((a, b) => a + b.pila.ley_mn, 0) / pilasSelected.length,
-        ley_pb: pilasSelected.reduce((a, b) => a + b.pila.ley_pb, 0) / pilasSelected.length,
-        ley_zn: pilasSelected.reduce((a, b) => a + b.pila.ley_zn, 0) / pilasSelected.length,
-        // cod_despacho: pilasSelected.map((p) => p.pila.cod_despacho),
+        history: [...data.pila.history, {work: 'UPDATE se crea a partir de 2 o mas pilas unidas', date: new Date(), user: store.state.user}],
+        ley_ag: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_ag, 0) / tonh_total,
+        ley_fe: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_fe, 0) / tonh_total,
+        ley_mn: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_mn, 0) / tonh_total,
+        ley_pb: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_pb, 0) / tonh_total,
+        ley_zn: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_zn, 0) / tonh_total,
       }
       await store.dispatch("ruma_update", data)
-      pilasSelected.forEach(async (p) => {
+      pilasSelected.value.forEach(async (p) => {
         p.data = {
           statusBelong: "Belong",
           statusPila: "Finalizado",
@@ -483,21 +489,15 @@ const mergePilas = async () => {
         }
         await store.dispatch("ruma_update", p)
       })
-      await store.dispatch("pila_total")
-      pilas.value = store.state.rumaTotal
-      // showForm.value = false
+      remove()
+      // await store.dispatch("pila_total")
+      // pilas.value = store.state.rumaTotal
       setTimeout(() => {
-        // showSuccessM.value = true
       }, 600)
       setTimeout(() => {
-          // cerrarModal()
-          // showForm.value = true
-          // showSuccessM.value = false
         }, 2500)
-      // buttonClicked.value = false
     } else {
       console.log("error")
-      // buttonClicked.value = false
     }
   } catch (error) {
     console.error("Error al crear la Pila:", error)
@@ -505,19 +505,6 @@ const mergePilas = async () => {
 }
 
 const edit = () => {
-  // filter rect objects and set selectable false
-  canvas.value.getObjects().filter((o) => o.type === 'colquicocha').forEach((o) => {
-    o.selectable = false
-    o.hasBorders = false
-  })
-  canvas.value.getObjects().filter((o) => o.type === 'cancha2').forEach((o) => {
-    o.selectable = false
-    o.hasBorders = false
-  })
-  canvas.value.getObjects().filter((o) => o.type === 'cancha1').forEach((o) => {
-    o.selectable = false
-    o.hasBorders = false
-  })
   canvas.value.forEachObject((o) => {
     o.hasBorders = true
     o.selectable = true
@@ -542,14 +529,6 @@ const editRuma = () => {
   canvas.value.renderAll()
 }
 
-// const ungroup = () => {
-//   const group = canvas.value.getActiveObject()
-//   group._restoreObjectsState()
-//   canvas.value.remove(group)
-//   canvas.value.add(...group._objects)
-//   canvas.value.renderAll()
-// }
-
 const save = () => {
   canvas.value.forEachObject((o) => {
     o.hasBorders = false
@@ -557,7 +536,7 @@ const save = () => {
     o.hasControls = false
   })
   canvas.value.renderAll()
-  visible.value = false
+  visibleMerge.value = false
 }
 
 const remove = () => {
@@ -589,16 +568,6 @@ setInterval(() => {
 </script>
 
 <template>
-  <Toast />
-  <!-- <div class="c-global-header">
-    <div class="global-h-title">
-      <div class="g-h-t-primary">
-        <h1>Mapa de pilas</h1>
-        <span></span>
-      </div>
-      <span>| Dia terminado en Mina </span>
-    </div>
-  </div> -->
   <Totals/>
   <Button class="btn-success btn-GP" @click="() => $refs.html2Pdf.generatePdf()">Generate PDF</Button>
   <div v-show="false">
@@ -607,6 +576,7 @@ setInterval(() => {
     <ICC id="icc"/>
     <IC1 id="ic1"/>
     <IC2 id="ic2"/>
+    <Toast />
   </div>
   <div>
     <vue3-html2pdf
@@ -723,7 +693,7 @@ setInterval(() => {
         outlined
         class="btn-map"
         @click="mergePilas"
-        v-if="visible"
+        v-if="visibleMerge"
         v-tooltip.bottom="{
           value: 'Unir',
           pt: {
@@ -740,7 +710,7 @@ setInterval(() => {
       outlined
         class="btn-map"
         @click="editRuma"
-        v-if="visible"
+        v-if="visibleMerge"
         v-tooltip.bottom="{
           value: 'Editar Ruma',
           pt: {

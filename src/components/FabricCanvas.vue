@@ -29,7 +29,7 @@ onMounted(() => {
     emit("click:selected", e);
   });
   canvas.on('object:modified', (e) => {
-      emit('click:updated', e)
+    emit('click:updated', e)
   })
   canvas.on("selection:cleared", (e) => {
     emit("click:selected", e);
