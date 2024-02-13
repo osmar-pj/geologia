@@ -15,6 +15,7 @@ import IGiba from "../maps/IGiba.vue";
 import ICC from "../maps/ICC.vue";
 import IC1 from "../maps/IC1.vue";
 import IC2 from "../maps/IC2.vue";
+import ICalendar from "../icons/ICalendar.vue";
 import GeneratePDF from "../components/GeneratePDF.vue";
 
 const socket = inject("socket");
@@ -688,8 +689,8 @@ const remove = () => {
       <Button outlined class="btn-map" @click="mergePilas" v-if="visibleMerge"
         ><Bind /><span> Unir </span>
       </Button>
-      <Button outlined class="btn-map" @click="editRuma" v-if="visibleMerge"
-        ><CEdit /><span> Editar Ruma </span>
+      <Button outlined class="btn-map" 
+        ><ICalendar /><span> Abstec. </span>
       </Button>
       <Button outlined class="btn-map" @click="save"
         ><ISave /><span> Guardar </span>
@@ -738,7 +739,7 @@ const remove = () => {
     color: var(--grey-2);
     background-color: var(--grey-light-1);
     height: 60px;
-    width: auto;
+    min-width: 60px;
     border-radius: 8px;
     padding: 0 0.8rem;
     display: flex;
