@@ -121,11 +121,8 @@ const formatColumnValue = (value, fn) => {
         <label
           class="radio"
           v-for="status in [
-            'Acumulando',
-            'waitBeginAnalysis',
-            'Analizando',
-            'waitDateAbastecimiento',
-            'waitBeginDespacho'
+            'Acumulando',           
+            'Analizando',           
           ]"
           :key="status"
         >
