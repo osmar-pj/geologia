@@ -1,16 +1,23 @@
+<!-- LISTA DE PILAS GENERAL -->
+
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, inject } from "vue";
 import { useStore } from "vuex";
 import { Subject } from "rxjs";
 import { formatDate, formatFixed } from "../libs/utils";
 
 const store = useStore();
-const pilas = ref([]);
+const socket = inject("socket")
+// const pilas = ref([]);
+const pilas = computed(() => store.state.pilaList)
 
 onMounted(async () => {
   await store.dispatch("pila_list");
-  pilas.value = store.state.pilaList;
-});
+})
+
+socket.on("newPila", (data) => {
+  store.commit("addDataPilaList", data);
+})
 
 const formatColumnValue = (value, fn, field, row) => {
   switch (fn) {

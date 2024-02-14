@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
+const url = import.meta.env.VITE_API_URL
 
 const trips = ref([])
 // PDF content

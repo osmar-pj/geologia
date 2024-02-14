@@ -1,25 +1,20 @@
-const data = {
-    arr: [1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5]
-}
-
-const modaData = (data) => {
-    const dataCount = {}
-    let max = 0
-    let moda = 0
-    data.forEach((i) => {
-        if (dataCount[i]) {
-            dataCount[i]++
-        } else {
-            dataCount[i] = 1
-        }
-    })
-    for (const i in dataCount) {
-        if (dataCount[i] > max) {
-            moda = i
-            max = dataCount[i]
-        }
+const workers = [
+    {
+        name: 'John',
+        skills: ['JavaScript', 'React', 'Node'],
+    },
+    {
+        name: 'Jane',
+        skills: ['JavaScript', 'Nginx', 'Vue'],
+    },
+    {
+        name: 'Tom',
+        skills: ['JQuery', 'React', 'Node', 'Nginx', 'PHP'],
     }
-    return moda
-}
+]
 
-console.log(modaData(data.arr)) // 2
+const skillsTogether = workers.reduce((allSkills, worker) => {
+    return [...allSkills, ...worker.skills]
+}, [])
+
+console.log(skillsTogether)
