@@ -16,7 +16,7 @@ const cerrarModal = () => {
 };
 const showError = ref(false);
 const selectedCodTableta = ref(false);
-const CodDespacho = ref("");
+const CodDespacho = ref("UCCA0008893");
 const showSuccessModal = ref(false);
 const showForm = ref(true);
 
@@ -32,7 +32,7 @@ const updateTravel = async () => {
          isCoding: selectedCodTableta.value,
          cod_despacho: CodDespacho.value,
        };
-       console.log(dataUpdate);
+       
         const response = await fetch(`${url}/pila/${props.data._id}`, {
           method: "PUT",
           headers: {
@@ -150,22 +150,20 @@ const updateTravel = async () => {
           </Transition>
         </div>
         <div class="mC-c-footer">
+        <button @click="cerrarModal" class="btn-cancel" type="button">
+          Cancelar
+        </button>
+        <button
+          class="btn-success"
+          type="submit"
+          @click.prevent="updateTravel()"
+        >
           <template v-if="buttonClicked">
-            <div class="loader"></div>
+             <span class="loader"></span>Proces...
           </template>
-          <template v-else>
-            <button @click="cerrarModal" class="btn-cancel" type="button">
-              Cancelar
-            </button>
-            <button
-              class="btn-success"
-              type="submit"
-              @click.prevent="updateTravel()"
-            >
-              Aceptar
-            </button>
-          </template>
-        </div>
+          <template v-else> Aceptar </template>
+        </button>
+      </div>
       </form>
     </Transition>
     <Transition name="bounce">

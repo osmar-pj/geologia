@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.scss'
-import 'primevue/resources/primevue.min.css'
-import 'primeicons/primeicons.css'
+// import 'primevue/resources/primevue.min.css'
+
 // import 'primevue/resources/themes/tailwind-light/theme.css'
 // import 'primeflex/primeflex.css'
 
@@ -12,10 +12,11 @@ import router from './router/router'
 import PrimeVue from 'primevue/config'
 import store from './store/store'
 import io from 'socket.io-client'
-import jsPDF from 'jspdf'
-import Vue3Html2pdf from 'vue3-html2pdf'
+
+// import Vue3Html2pdf from 'vue3-html2pdf'
 
 import Dropdown from 'primevue/dropdown'
+import Row from 'primevue/row'
 import MultiSelect from 'primevue/multiselect'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -36,19 +37,12 @@ import ToastService from 'primevue/toastservice'
 const app = createApp(App)
 const socket = io(import.meta.env.VITE_API_URL)
 app.provide('socket', socket)
-app.provide('jsPDF', jsPDF)
 
 app.use(router)
 app.use(store)
 app.use(PrimeVue, {ripple: true})
 app.use(ToastService)
-app.use(Vue3Html2pdf, {
-  margin: 20,
-  filename: 'report.pdf',
-  image: { type: 'jpeg', quality: 0.98 },
-  html2canvas: {},
-  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-})
+
 
 app.component('Dropdown', Dropdown)
 app.component('MultiSelect', MultiSelect)

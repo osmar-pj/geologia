@@ -1,23 +1,26 @@
 <script setup>
 import Graf from "../components/Graf.vue";
-
 </script>
 
 <template>
   <div class="c-global-header">
     <div class="global-h-title">
       <div class="g-h-t-primary">
-        <h1>Total Guardia Semanal</h1>
+        <h1>Cumplimiento de Producción</h1>
       </div>
       <span>Hoy| Dia terminado en Mina </span>
     </div>
-    <div class="global-h-button">
-     
-    </div>
+    <div class="global-h-button"></div>
   </div>
-  <div class="c-global-c-content">
-    <Graf ruta="YUMPAG"/>
-    <Graf ruta="UCHUCCHACUA"/>
+  <div class="c-global-c-analysis">
+    <div class="c-analysis-items">
+      <Graf ruta="YUMPAG" />
+      <Graf ruta="UCHUCCHACUA" />
+    </div>
+    <div class="c-analysis-items">
+      <Graf ruta="YUMPAG" />
+      <Graf ruta="UCHUCCHACUA" />
+    </div>
   </div>
 </template>
 
@@ -63,107 +66,17 @@ import Graf from "../components/Graf.vue";
   //   }
 }
 
-.c-global-c-content {
+.c-global-c-analysis {
   display: flex;
   flex-direction: column;
   padding: 0 2.5rem;
   padding-bottom: 1rem;
   gap: 1rem;
   flex: 1 1;
-  overflow: hidden;
-  .users-c-c-filters {
+  .c-analysis-items {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex: 1 1 300px;    
     gap: 1rem;
-    .c-c-filters-search {
-      display: flex;
-      position: relative;
-      max-width: 300px;
-      width: 100%;
-      img {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 15px;
-        width: 1rem;
-      }
-    }
-    .c-c-filters-type {
-      flex: 1 1 250px;
-      label {
-        font-size: clamp(5px, 8vw, 10px);
-        font-weight: 500;
-        //   @include md {
-        //     font-size: clamp(6px, 8vw, 12px);
-        //   }
-      }
-      .imputs-i-input {
-        position: relative;
-        img {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          left: 15px;
-          width: 1rem;
-        }
-      }
-    }
-    .c-c-filters-items {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: clamp(6px, 8vw, 14px);
-      // @include md {
-      //   font-size: clamp(6px, 8vw, 13px);
-      // }
-    }
   }
-
-  .users-c-c-footer {
-    display: flex;
-    justify-content: space-between;
-    .c-c-footer-page {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      button {
-        height: 30px;
-        width: 30px;
-        padding: 0;
-        border: 0.5px solid var(--grey-light-2);
-        display: grid;
-        place-items: center;
-        border-radius: 5px;
-        img {
-          width: 0.7rem;
-        }
-        &:nth-child(1) {
-          img {
-            transform: rotate(90deg);
-          }
-        }
-        &:nth-child(3) {
-          img {
-            transform: rotate(270deg);
-          }
-        }
-        &:hover {
-          background-color: #f3f3f4;
-        }
-      }
-      span {
-        display: flex;
-        gap: 0.5rem;
-        font-size: clamp(6px, 8vw, 12px);
-        //   @include md {
-        //     font-size: clamp(6px, 8vw, 13px);
-        //   }
-      }
-    }
-  }
-  // @include md {
-  //   padding: 3rem;
-  // }
 }
 </style>

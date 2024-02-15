@@ -574,7 +574,7 @@ input[type="checkbox"] {
       display: flex;
       flex-wrap: wrap;
       box-sizing: border-box;
-      min-width: 300px;
+      min-width: 150px;
       height: 50px;
     }
 
@@ -600,9 +600,10 @@ input[type="checkbox"] {
       color: var(--grey-1);
       transition: all 0.15s ease-in-out;
       border: 1px solid var(--grey-light-1);
-      span {
+      position: relative;
+      .total-count {
         color: var(--grey-2);
-        font-size: clamp(6px, 8vw, 12.5px);
+        font-size: clamp(6px, 8vw, 12px);
         width: 25px;
         height: 22px;
         background-color: var(--grey-light-1);
@@ -612,7 +613,7 @@ input[type="checkbox"] {
       }
       h5 {
         color: var(--grey-2);
-        font-size: clamp(6px, 8vw, 13.5px);
+        font-size: clamp(6px, 8vw, 13px);
       }
     }
 
@@ -620,7 +621,7 @@ input[type="checkbox"] {
       background-color: #dceaee;
       border: 1px solid #dceaee;
       
-      span {
+      .total-count {
         color: var(--white);
         background-color: #0f5cd7;
       }
@@ -839,13 +840,12 @@ input[type="checkbox"] {
 /*--------------LOADING-------------*/
 /*==========================================*/
 .loader {
-  width: 25px;
-  height: 25px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2.5px solid var(--primary);
-  border-top-color: transparent;
-  animation: rot1 1.2s linear infinite;
-  margin: auto;
+  border: 2px solid var(--white);  
+  border-right-color: transparent;
+  animation: rot1 2s linear infinite;
 }
 
 @keyframes rot1 {
@@ -1279,7 +1279,6 @@ input[type="checkbox"] {
   }
 }
 
-
 /*==========================================*/
 /*------TOAST --------------*/
 /*==========================================*/
@@ -1577,13 +1576,14 @@ input[type="checkbox"] {
     cursor: pointer;
     user-select: none;
     &:hover {
-      background-color: var(--grey-light-1);
+      background-color: var(--grey-light-22);
+      
     }
   }
   .p-highlight {
-    background-color: var(--grey-light-11);
+    background-color: var(--grey-light-22);
     color: var(--primary);
-    font-weight: 500;
+   
     position: relative;
 
     &::before {
@@ -1804,3 +1804,4 @@ input[type="checkbox"] {
     }
   }
 }
+

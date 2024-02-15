@@ -55,7 +55,7 @@ setInterval(() => {
 
 <template>
   <Button class="btn-success btn-GP" @click="() => $refs.html2Pdf.generatePdf()">Generate PDF</Button>
-  <div>
+  <!-- <div>
     <vue3-html2pdf
       :show-layout="false"
       :float-layout="true"
@@ -79,7 +79,7 @@ setInterval(() => {
             <h4>{{ storedUser.name }}</h4>
           </div>
         </div>
-        <!-- <div class="html2pdf__page-break"/> -->
+       
         <div class="pdf-content">
           <div class="c-global-header">
             <div class="global-h-title">
@@ -130,7 +130,7 @@ setInterval(() => {
         </div>
       </template>
     </vue3-html2pdf>
-  </div>
+  </div> -->
   
 </template>
 
