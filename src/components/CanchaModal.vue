@@ -19,39 +19,47 @@ const selectedEstado = ref(new Date());
 const showSuccessModal = ref(false);
 const showForm = ref(true);
 
-const updateTravel = async () => {
-  try {
-    buttonClicked.value = true;
-    const updatedData={
-      dateSupply: selectedEstado.value ,
-      name:store.state.user.name,
-    }
-    const response = await fetch(`${url}/pila/${props.data._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    });
+const datas = ref([]);
+onMounted(async () => {
+  datas.value = props.data;
+});
 
-    const result = await response.json();
-    if (result.status === true) {
-      console.log("correcto");
-      await store.dispatch("get_list");
-      showForm.value = false;     
-      setTimeout(() => {
-        showSuccessModal.value = true;
-        }, 600)
+const updateTravel = async () => {
+  console.log(datas.value)
+  datas.value.forEach(async (i) => {
+    try {
+      buttonClicked.value = true;
+      const updatedData={
+        dateSupply: selectedEstado.value ,
+        name:store.state.user.name,
+      }
+      const response = await fetch(`${url}/pila/${i.pila._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+  
+      const result = await response.json();
+      if (result.status === true) {
+        console.log("correcto");
+        await store.dispatch("get_list");
+        showForm.value = false;     
         setTimeout(() => {
-          cerrarModal();
-        }, 2000)
-    } else {
-      console.log("error");
-      buttonClicked.value = false;
+          showSuccessModal.value = true;
+          }, 600)
+          setTimeout(() => {
+            cerrarModal();
+          }, 2000)
+      } else {
+        console.log("error");
+        buttonClicked.value = false;
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
     }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
-  }
+  })
 };
 </script>
 

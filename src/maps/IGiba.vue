@@ -179,7 +179,7 @@
               'max-width': '50px',
             }"
           >
-            
+            {{ pila }}
           </text>
         </g>
       </g>
@@ -269,7 +269,7 @@
                 'text-overflow': 'ellipsis',
                 'max-width': '50px',
               }"
-            ></text>
+            > {{ ley_ag ? ley_ag.toFixed(2) : '-' }} </text>
           </g>
         </g>
         <g>
@@ -387,7 +387,7 @@
                 'text-overflow': 'ellipsis',
                 'max-width': '50px',
               }"
-            ></text>
+            > {{ stock ? stock.toFixed(1) : '-' }} </text>
           </g>
         </g>
       </g>
@@ -399,18 +399,34 @@
 export default {
   name: "IPila",
   props: {
-    cod_tableta: {
+    pila: {
       type: String,
       default: "", // Valor por defecto si no se proporciona ningún texto
     },
-    ley: {
+    ley_ag: {
+      type: Number,
+      default: 0, // Valor por defecto si no se proporciona ningún texto
+    },
+    stock: {
+      type: Number,
+      default: 0, // Valor por defecto si no se proporciona ningún texto
+    },
+    mining1 : {
       type: String,
       default: "", // Valor por defecto si no se proporciona ningún texto
     },
-    ton: {
+    mining2 : {
       type: String,
       default: "", // Valor por defecto si no se proporciona ningún texto
     },
-  },
+    dominio1 : {
+      type: String,
+      default: "", // Valor por defecto si no se proporciona ningún texto
+    },
+    dominio2 : {
+      type: String,
+      default: "", // Valor por defecto si no se proporciona ningún texto
+    },
+  }
 };
 </script>

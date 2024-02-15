@@ -18,6 +18,7 @@ import IC1 from "../maps/IC1.vue"
 import IC2 from "../maps/IC2.vue"
 import ICalendar from "../icons/ICalendar.vue"
 import GeneratePDF from "../components/GeneratePDF.vue"
+import CanchaModal from "../components/CanchaModal.vue"
 
 const socket = inject("socket")
 const pila$ = new Subject()
@@ -30,6 +31,8 @@ const pilas = computed(() => store.state.rumaTotal)
 const trips = ref([])
 const weights = computed(() => store.state.weights)
 const ubication = ref("")
+const ubicationId = ref("")
+const ubicationType = ref("")
 const visibleMerge = ref(false)
 const visibleDate = ref(false)
 const nonePilaSelected = ref(false)
@@ -41,6 +44,11 @@ const thereAreSameDominio = ref(false)
 const access = ref(true)
 const mergeAvailable = ref(false)
 const pilasSelected = ref([])
+const colquicocha_stock = computed(() => store.state.colquicocha_stock)
+const cancha1_stock = computed(() => store.state.cancha1_stock)
+const cancha2_stock = computed(() => store.state.cancha2_stock)
+const openCalendar = ref(false)
+const dataModalCalendar = ref(null)
 const colquicocha = ref()
 const cancha1 = ref()
 const cancha2 = ref()
@@ -55,19 +63,104 @@ class CustomRect extends fabric.Rect {
 }
 
 const handleCreated = async (fabricCanvas) => {
-  await sendFilter()
+  console.log("Canvas Created")
   await store.dispatch("pila_total")
-  colquicocha.value  = document.getElementById("icc")
-  cancha1.value = document.getElementById("ic1")
-  cancha2.value = document.getElementById("ic2")
-  await createSVGRect(fabricCanvas)
-  await setWeights()
-  await createSVGLetters()
-  await createSVGData()
   canvas.value = fabricCanvas
-  canvas.value.hasControls = false
-  canvas.value.hasBorders = true
+  await createSVGRect(fabricCanvas)
+  pilas.value.filter(i => i.typePila == 'Pila').forEach(i => {
+    const pilaSVG = document.getElementById(i._id)
+    const svgElem = new fabric.loadSVGFromString(
+      pilaSVG.outerHTML,
+      (objects, options) => {
+        const obj = fabric.util.groupSVGElements(objects, options)
+        obj.set({
+          left: i.x,
+          top: i.y,
+          scaleX: 0.3,
+          scaleY: 0.3,
+          selectable: true,
+        })
+        obj.type = i._id
+        obj.pila = i
+        canvas.value.add(obj)
+      }
+    )
+  })
+  pilas.value.filter(i => i.typePila == 'Giba').forEach(i => {
+    const gibaSVG = document.getElementById(i._id)
+    const svgElem = new fabric.loadSVGFromString(
+      gibaSVG.outerHTML,
+      (objects, options) => {
+        const obj = fabric.util.groupSVGElements(objects, options)
+        obj.set({
+          left: i.x,
+          top: i.y,
+          scaleX: 0.3,
+          scaleY: 0.3,
+          selectable: true
+        })
+        obj.type = i._id
+        obj.pila = i
+        canvas.value.add(obj)
+      }
+    )
+  })
+  await panelsSVG()
+  // canvas.value.hasControls = false
+  // canvas.value.hasBorders = true
   canvas.value.renderAll()
+
+}
+
+const panelsSVG = () => {
+  const colquicocha = document.getElementById("icc")
+  const svgElem = new fabric.loadSVGFromString(
+    colquicocha.outerHTML,
+    (objects, options) => {
+      const obj = fabric.util.groupSVGElements(objects, options)
+      obj.set({
+        left: 140,
+        top: 70,
+        scaleX: 2,
+        scaleY: 2,
+        selectable: false
+      })
+      obj.type = "panel_colquicocha"
+      canvas.value.add(obj)
+    }
+  )
+  const cancha2 = document.getElementById("ic2")
+  const svgElem2 = new fabric.loadSVGFromString(
+    cancha2.outerHTML,
+    (objects, options) => {
+      const obj = fabric.util.groupSVGElements(objects, options)
+      obj.set({
+        left: 950,
+        top: 450,
+        scaleX: 2,
+        scaleY: 2,
+        selectable: false,
+      })
+      obj.type = "panel_cancha2"
+      canvas.value.add(obj)
+    }
+  )
+  const cancha1 = document.getElementById("ic1")
+  const svgElem3 = new fabric.loadSVGFromString(
+    cancha1.outerHTML,
+    (objects, options) => {
+      const obj = fabric.util.groupSVGElements(objects, options)
+      obj.set({
+        left: 1550,
+        top: 50,
+        scaleX: 2,
+        scaleY: 2,
+        selectable: false,
+      })
+      obj.type = "panel_cancha1"
+      canvas.value.add(obj)
+    }
+  )
 }
 
 const handleSelect = (e) => {
@@ -78,9 +171,9 @@ const handleSelect = (e) => {
         o.type !== "colquicocha" &&
         o.type !== "cancha2" &&
         o.type !== "cancha1" &&
-        o.type !== "letrero1" &&
-        o.type !== "letrero2" &&
-        o.type !== "letrero3"
+        o.type !== "panel_colquicocha" &&
+        o.type !== "panel_cancha2" &&
+        o.type !== "panel_cancha1"
     )
   canvas.value.forEachObject((o) => {
     o.hasBorders = true
@@ -96,9 +189,9 @@ const handleSelect = (e) => {
         o.type === "colquicocha" ||
         o.type === "cancha2" ||
         o.type === "cancha1" ||
-        o.type === "letrero1" ||
-        o.type === "letrero2" ||
-        o.type === "letrero3"
+        o.type === "panel_colquicocha" ||
+        o.type === "panel_cancha2" ||
+        o.type === "panel_cancha1"
     )
     .forEach((o) => {
       o.selectable = false
@@ -106,7 +199,7 @@ const handleSelect = (e) => {
       o.hasBorders = false
     })
   pilasSelected.value = objectsSelected
-  console.log("Pilas Selected", pilasSelected.value.map(i => i.pila.mining))
+  console.log("Pilas Seleccionadas", pilasSelected.value)
   nonePilaSelected.value = pilasSelected.value.length === 0
   unlessOnePilaSelected.value = pilasSelected.value.length > 0
   thereAreUnlessTwoPilasSelected.value = pilasSelected.value.length > 1
@@ -118,22 +211,21 @@ const handleSelect = (e) => {
     (o) => modaData(o.pila.dominio) === modaData(pilasSelected.value[0].pila.dominio)
   )
   if (unlessOnePilaSelected.value) {
-    console.log("1 o mas")
+    // console.log("1 o mas")
     visibleDate.value = true
   }
   if (thereAreUnlessTwoPilasSelected.value) {
-    console.log("2 o mas")
+    // console.log("2 o mas")
     visibleMerge.value = true
   }
   if (nonePilaSelected.value) {
-    console.log("Ninguna")
+    // console.log("Ninguna")
     visibleMerge.value = false
     visibleDate.value = false
   }
 }
 
 const mergePilas = async () => {
-  console.log("mergePilas", thereArePilasWithLey.value, thereAreSameMining.value, thereAreSameDominio.value)
   if (!thereArePilasWithLey.value) {
     visibleMerge.value = false
     mergeAvailable.value = false
@@ -167,7 +259,7 @@ const mergePilas = async () => {
     })
     return
   }
-  const tolerance = 0.5
+  const tolerance = 1
   const leyes = pilasSelected.value.map((o) => o.pila.ley_ag)
   const promedio = leyes.reduce((a, b) => a + b) / leyes.length
   const differences = leyes.map((ley) => Math.abs(ley - promedio))
@@ -177,7 +269,7 @@ const mergePilas = async () => {
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "No se puede unir",
+      detail: "Las pilas no tienen leyes similares",
       life: 3000,
     });
     return;
@@ -199,8 +291,9 @@ const mergePilas = async () => {
     });
     const data = await response.json();
     if (data.status === true) {
+      console.log("Data", pilasSelected.value);
       console.log("Correcto")
-      const length = pilasSelected.value.length;
+      // const length = pilasSelected.value.length;
       const tonh_total = pilasSelected.value.reduce(
         (a, b) => a + b.pila.tonh,
         0
@@ -224,6 +317,8 @@ const mergePilas = async () => {
         }, []),
         x: pilasSelected.value.reduce((a, b) => a + b.pila.x, 0) / length,
         y: pilasSelected.value.reduce((a, b) => a + b.pila.y, 0) / length,
+        // x: 100,
+        // y: 100,
         pilas_merged: pilasSelected.value.map((p) => p.pila._id),
         statusPila: "waitDateAbastecimiento",
         history: [
@@ -249,6 +344,11 @@ const mergePilas = async () => {
         ley_zn:
           pilasSelected.value.reduce((a, b) => a + b.pila.tmh_zn, 0) /
           tonh_total,
+        tmh_ag: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_ag, 0),
+        tmh_fe: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_fe, 0),
+        tmh_mn: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_mn, 0),
+        tmh_pb: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_pb, 0),
+        tmh_zn: pilasSelected.value.reduce((a, b) => a + b.pila.tmh_zn, 0),
       }
       await store.dispatch("ruma_update", data)
       pilasSelected.value.forEach(async (p) => {
@@ -258,16 +358,14 @@ const mergePilas = async () => {
           history: [
             ...p.pila.history,
             {
-              work: "Se unio con otra pila",
+              work: "UPDATE Se unio con otra pila",
               date: new Date(),
-              user: store.state.user._id,
+              user: store.state.user.name,
             },
           ],
         }
-        access.value = false
         await store.dispatch("ruma_update", p)
       })
-      remove()
     } else {
       console.log("error")
     }
@@ -277,16 +375,51 @@ const mergePilas = async () => {
 }
 
 socket.on("pilas", async (data) => {
-  console.log("socket Data", data)
-  await store.dispatch("pila_total")
   const pilasFound = data.map((i) => {
     const pila = pilas.value.find((p) => p._id === i._id)
     return pila
   })
+  pilasFound.forEach((pila) => {
+    const oldPila = canvas.value.getObjects().find((o) => o.type === pila._id)
+    if (oldPila) {
+      canvas.value.remove(oldPila)
+    }
+  })
+  const isPilasFinalized = data.every((p) => p.statusPila === "Finalizado")
+  if (isPilasFinalized) {
+    await store.dispatch("pila_total")
+  }
   pilasFound.length > 0
-    ? updatePilas(pilasFound, data)
+    ? await updatePilas(pilasFound, data)
     : console.log("No se encontraron pilas")
-  await store.dispatch("pila_total")
+  await store.commit("getRumaTotal", pilas.value)
+  await store.commit('setWeights', pilas.value)
+  if (!isPilasFinalized) {
+    pilasFound.forEach((pila) => {
+      const pilaSVG = document.getElementById(pila._id)
+      const svgElem = new fabric.loadSVGFromString(
+        pilaSVG.outerHTML,
+        (objects, options) => {
+          const obj = fabric.util.groupSVGElements(objects, options)
+          obj.set({
+            left: pila.x,
+            top: pila.y,
+            scaleX: 0.3,
+            scaleY: 0.3,
+            selectable: true,
+          })
+          obj.type = pila._id
+          obj.pila = pila
+          canvas.value.add(obj)
+        }
+      )
+    })
+  }
+  const panels = canvas.value.getObjects().filter((o) => o.type.includes("panel"))
+  panels.forEach((p) => {//
+    canvas.value.remove(p)
+  })
+  await panelsSVG()
 })
 const updatePilas = async (pilasFound, data) => {
   pilasFound.forEach((pila, index) => {
@@ -294,73 +427,88 @@ const updatePilas = async (pilasFound, data) => {
     pila.tonh = data[index].tonh
     pila.ton = data[index].tonh * 0.94
     pila.ley_ag = data[index].ley_ag
+    pila.ley_fe = data[index].ley_fe
+    pila.ley_mn = data[index].ley_mn
+    pila.ley_pb = data[index].ley_pb
+    pila.ley_zn = data[index].ley_zn
+    pila.tmh_ag = data[index].tmh_ag
+    pila.tmh_fe = data[index].tmh_fe
+    pila.tmh_mn = data[index].tmh_mn
+    pila.tmh_pb = data[index].tmh_pb
+    pila.tmh_zn = data[index].tmh_zn
+    pila.travels = data[index].travels
+    pila.tajo = data[index].tajo
+    pila.cod_despacho = data[index].cod_despacho
     pila.x = data[index].x
     pila.y = data[index].y
     pila.ubication = data[index].ubication
+    pila.mining = data[index].mining
+    pila.dominio = data[index].dominio
     pila$.next(pila)
   })
-  if (access.value) {
-    createSVGData()
-    setWeights()
-    createSVGLetters()
-  }
-  access.value = true
-  // canvas.value.renderAll()
 }
 socket.on("newPila", async (data) => {
   await store.commit("addDataRumaList", data)
-  if (access.value) {
-    createSVGData()
-    setWeights()
-    createSVGLetters()
-  }
-  access.value = true
-  // canvas.value.renderAll()
+  const pila = pilas.value.find((p) => p._id === data._id)
+  const pilaSVG = document.getElementById(pila._id)
+  const svgElem = new fabric.loadSVGFromString(
+    pilaSVG.outerHTML,
+    (objects, options) => {
+      const obj = fabric.util.groupSVGElements(objects, options)
+      obj.set({
+        left: pila.x,
+        top: pila.y,
+        scaleX: 0.3,
+        scaleY: 0.3,
+        selectable: true,
+      })
+      obj.type = pila._id
+      obj.pila = pila
+      canvas.value.add(obj)
+    }
+  )
 })
 
-const setWeights = async () => {
-  const weights = {
-    colquicocha_stock: pilas.value
-      .filter((p) => p.ubication == "Cancha Colquicocha")
-      .reduce((a, b) => a + b.stock, 0),
-    cancha1_stock: pilas.value
-      .filter((p) => p.ubication == "Cancha 1")
-      .reduce((a, b) => a + b.stock, 0),
-    cancha2_stock: pilas.value
-      .filter((p) => p.ubication == "Cancha 2")
-      .reduce((a, b) => a + b.stock, 0),
-    tonh: pilas.value.reduce((a, b) => a + b.tonh, 0),
-    ton: pilas.value.reduce((a, b) => a + b.ton, 0)
-  }
-  colquicocha.value.querySelector(".icc").textContent = 
-    weights.colquicocha_stock.toFixed(1)
-  cancha2.value.querySelector(".ic2").textContent =
-    weights.cancha2_stock.toFixed(1)
-  cancha1.value.querySelector(".ic1").textContent =
-    weights.cancha1_stock.toFixed(1)
-  await store.commit("setWeights", weights)
-}
-
-// PDF content
-const sendFilter = async () => {
-  try {
-    const response = await fetch(`${url}/trips`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": true,
-      },
-      body: JSON.stringify({ arr: ["year", "month", "rango", "type"] }),
-    })
-
-    const data = await response.json()
-    trips.value = data
-    if (data.status === true) {
-      console.log("correcto")
-    }
-  } catch (error) {
-    console.error("Error al actualizar:", error)
-  }
+const createSVGRect = (fc) => {
+  canvas.value = fc
+  const colquicocha = new CustomRect({
+    left: 140,
+    top: 130,
+    width: 950,
+    height: 350,
+    fill: "transparent",
+    stroke: 'black',
+    strokeWidth: 2,
+    selectable: false,
+    angle: 25,
+  })
+  colquicocha.type = "colquicocha"
+  canvas.value.add(colquicocha)
+  const cancha2 = new CustomRect({
+    left: 1000,
+    top: 620,
+    width: 580,
+    height: 150,
+    fill: "transparent",
+    stroke: 'black',
+    strokeWidth: 2,
+    selectable: false,
+    angle: -15,
+  })
+  cancha2.type = "cancha2"
+  canvas.value.add(cancha2)
+  const cancha1 = new CustomRect({
+    left: 1640,
+    top: 250,
+    width: 120,
+    height: 200,
+    fill: "transparent",
+    stroke: 'black',
+    strokeWidth: 2,
+    selectable: false,
+  })
+  cancha1.type = "cancha1"
+  canvas.value.add(cancha1)
 }
 
 const modaData = (data) => {
@@ -416,172 +564,6 @@ const chooseDominioMainColor = (dominios) => {
   }
 }
 
-const createSVGLetters = () => {
-  const svgElem = new fabric.loadSVGFromString(
-      colquicocha.value.outerHTML,
-      (objects, options) => {
-        const obj = fabric.util.groupSVGElements(objects, options)
-        obj.set({
-          left: 200,
-          top: 110,
-          scaleX: 1.5,
-          scaleY: 1.5,
-          selectable: false,
-          opacity: 1,
-        })
-        obj.type = "letrero1"
-        canvas.value.add(obj)
-      }
-    )
-    const svgElem2 = new fabric.loadSVGFromString(
-      cancha2.value.outerHTML,
-      (objects, options) => {
-        const obj = fabric.util.groupSVGElements(objects, options)
-        obj.set({
-          left: 1100,
-          top: 500,
-          scaleX: 1.5,
-          scaleY: 1.5,
-          selectable: false,
-        })
-        obj.type = "letrero2"
-        canvas.value.add(obj)
-      }
-    )
-    const svgElem3 = new fabric.loadSVGFromString(
-      cancha1.value.outerHTML,
-      (objects, options) => {
-        const obj = fabric.util.groupSVGElements(objects, options)
-        obj.set({
-          left: 1700,
-          top: 150,
-          scaleX: 1.5,
-          scaleY: 1.5,
-          selectable: false,
-        })
-        obj.type = "letrero3"
-        canvas.value.add(obj)
-      }
-    )
-}
-const createSVGData = () => {
-  // const desmonte = pilas.value.filter((i) => i.typePila == "Desmonte")
-  const pillas = pilas.value.filter((i) => i.typePila == "Pila")
-  const gibas = pilas.value.filter((i) => i.typePila == "Giba")
-  const p = pillas.forEach((i) => {
-    const pilaSVG = document.getElementById("pila")
-    pilaSVG.querySelector(".stock").textContent = i.stock
-      ? i.stock.toFixed(1)
-      : "-"
-    pilaSVG.querySelector(".tableta").textContent = i.pila
-    pilaSVG.querySelector(".ley").textContent = i.ley_ag
-      ? i.ley_ag.toFixed(2)
-      : "-"
-    pilaSVG.querySelector(".mining1").style.fill = chooseMiningMainColor(
-      i.mining
-    )
-    pilaSVG.querySelector(".mining2").style.fill = chooseMiningShadesColor(
-      i.mining
-    )
-    pilaSVG.querySelector(".dominio1").style.fill = chooseDominioMainColor(
-      i.dominio
-    )
-    pilaSVG.querySelector(".dominio2").style.fill = chooseDominioShadeColor(
-      i.dominio
-    )
-    const svgElem = new fabric.loadSVGFromString(
-      pilaSVG.outerHTML,
-      (objects, options) => {
-        const obj = fabric.util.groupSVGElements(objects, options)
-        obj.set({
-          left: i.x,
-          top: i.y,
-          scaleX: 0.3,
-          scaleY: 0.3,
-          selectable: false,
-        })
-        obj.pila = i
-        canvas.value.add(obj)
-      }
-    )
-  })
-  const g = gibas.forEach((i) => {
-    const gibaSVG = document.getElementById("giba")
-    gibaSVG.querySelector(".stock").textContent = i.tonh
-      ? i.tonh.toFixed(1)
-      : "-"
-    gibaSVG.querySelector(".tableta").textContent = i.pila
-    gibaSVG.querySelector(".ley").textContent = i.ley_ag
-      ? i.ley_ag.toFixed(2)
-      : "-"
-    gibaSVG.querySelector(".dominio1").style.fill = chooseDominioMainColor(
-      i.dominio
-    )
-    gibaSVG.querySelector(".dominio2").style.fill = chooseDominioShadeColor(
-      i.dominio
-    )
-    const svgElem = new fabric.loadSVGFromString(
-      gibaSVG.outerHTML,
-      (objects, options) => {
-        const obj = fabric.util.groupSVGElements(objects, options)
-        obj.set({
-          left: i.x,
-          top: i.y,
-          scaleX: 0.3,
-          scaleY: 0.3,
-          selectable: false,
-        })
-        obj.pila = i
-        canvas.value.add(obj)
-      }
-    )
-  })
-  console.log('CANVAS SVGDATA', canvas.value)
-  // canvas.value.renderAll()
-}
-const createSVGRect = (fc) => {
-  canvas.value = fc
-  const __colquicocha = new CustomRect({
-    left: 140,
-    top: 130,
-    width: 950,
-    height: 350,
-    fill: "transparent",
-    // stroke: 'black',
-    // strokeWidth: 2,
-    selectable: false,
-    angle: 25,
-  })
-  __colquicocha.type = "colquicocha"
-  canvas.value.add(__colquicocha)
-  const __cancha2 = new CustomRect({
-    left: 1050,
-    top: 620,
-    width: 580,
-    height: 150,
-    fill: "transparent",
-    // stroke: 'black',
-    // strokeWidth: 2,
-    selectable: false,
-    angle: -15,
-  })
-  __cancha2.type = "cancha2"
-  canvas.value.add(__cancha2)
-  const __cancha1 = new CustomRect({
-    left: 1740,
-    top: 250,
-    width: 120,
-    height: 200,
-    fill: "transparent",
-    // stroke: 'black',
-    // strokeWidth: 2,
-    selectable: false,
-  })
-  __cancha1.type = "cancha1"
-  canvas.value.add(__cancha1)
-  // canvas.value.renderAll()
-}
-
 const empty = () => {
   console.log("Cleared")
   canvas.value.clear()
@@ -598,18 +580,18 @@ const handleMoveUpdatePosition = async () => {
     })
     return
   }
-  pilasSelected.value.forEach((p) => {
+  pilasSelected.value.forEach(async (p) => {
     p.data = {
       x: p.left,
       y: p.top,
       ubication: ubication.value,
     }
-    access.value = false
-    store.dispatch("ruma_update", p)
+    await store.dispatch("ruma_update", p)
   })
+  await store.dispatch("pila_total")
 }
 const moving = async (e) => {
-  console.log("Moving")
+  // console.log("Moving")
   if (thereAreUnlessTwoPilasSelected.value) {
     canvas.value.discardActiveObject()
     toast.add({
@@ -627,20 +609,26 @@ const moving = async (e) => {
       .getObjects()
       .find((o) => o.type === "colquicocha")
     if (colquicocha && objectSelected.intersectsWithObject(colquicocha)) {
-      console.log("Colquicocha")
+      // console.log("Colquicocha")
       ubication.value = "Cancha Colquicocha"
+      ubicationId.value = "icc"
+      ubicationType.value = "panel_colquicocha"
       return
     }
     const cancha2 = canvas.value.getObjects().find((o) => o.type === "cancha2")
     if (cancha2 && objectSelected.intersectsWithObject(cancha2)) {
-      console.log("Cancha2")
+      // console.log("Cancha2")
       ubication.value = "Cancha 2"
+      ubicationId.value = "ic2"
+      ubicationType.value = "panel_cancha2"
       return
     }
     const cancha1 = canvas.value.getObjects().find((o) => o.type === "cancha1")
     if (cancha1 && objectSelected.intersectsWithObject(cancha1)) {
-      console.log("Cancha1")
+      // console.log("Cancha1")
       ubication.value = "Cancha 1"
+      ubicationId.value = "ic1"
+      ubicationType.value = "panel_cancha1"
       return
     }
   }
@@ -653,23 +641,24 @@ const edit = () => {
     o.hasControls = true
   })
 }
-
-const editRuma = () => {
-  const ruma = {
-    ley_ag: 9.66,
-    cod_tableta: "12",
-    ton: 11000,
-    mining: "Yumpag",
-    x: 50,
-    y: 300,
-  }
-  pilas.value.push(ruma)
-  const text = canvas.value.getActiveObject().item(1)
-  text.set("text", `${ruma.ley_ag}\n${ruma.cod_tableta}\n${ruma.ton}t`)
-
+const remove = () => {
+  // canvas.value.remove(...canvas.value.getActiveObjects())
+  pilasSelected.value.forEach(async (p) => {
+    p.data = {
+      statusPila: "Finalizado",
+      history: [
+        ...p.pila.history,
+        {
+          work: "UPDATE pila mal elaborada o en desuso",
+          date: new Date(),
+          user: store.state.user.name,
+        },
+      ],
+    }
+    await store.dispatch("ruma_update", p)
+  })
   // canvas.value.renderAll()
 }
-
 const save = () => {
   canvas.value.forEachObject((o) => {
     o.hasBorders = false
@@ -679,26 +668,31 @@ const save = () => {
   canvas.value.renderAll()
   visibleMerge.value = false
 }
-
-const remove = () => {
-  canvas.value.getActiveObjects().forEach((o) => {
-    canvas.value.remove(o)
-  })
-  canvas.value.discardActiveObject()
-  // canvas.value.renderAll()
+const getDataCalendar = (data) => {
+  openCalendar.value = true
+  dataModalCalendar.value = data
 }
 </script>
 
 <template>
   <Totals />
-   <GeneratePDF /> 
+  <GeneratePDF />
+  <CanchaModal v-if="openCalendar" @cerrarModal="openCalendar = false"  :data="dataModalCalendar" />
   <div v-show="false">
-    <IPila id="pila" />
-    <IGiba id="giba" />
-    <IDesmonte id="desmonte" />
-    <ICC id="icc" />
-    <IC1 id="ic1" />
-    <IC2 id="ic2" />
+    <IPila v-for="{ley_ag, stock, pila, mining, dominio, _id, pilas_merged} in pilas.filter(i => i.typePila == 'Pila')"
+      :ley_ag="ley_ag" :stock="stock" :pila="pila" 
+      :mining1="chooseMiningMainColor(mining)" :mining2="chooseMiningShadesColor(mining)"
+      :dominio1="chooseDominioMainColor(dominio)" :dominio2="chooseDominioShadeColor(dominio)"
+      :id="_id" :merged="pilas_merged.length > 0 ? '*' : ''"/>
+    <IGiba v-for="{ley_ag, stock, pila, mining, dominio, _id} in pilas.filter(i => i.typePila == 'Giba')"
+      :ley_ag="ley_ag" :stock="stock" :pila="pila" 
+      :mining1="chooseMiningMainColor(mining)" :mining2="chooseMiningShadesColor(mining)"
+      :dominio1="chooseDominioMainColor(dominio)" :dominio2="chooseDominioShadeColor(dominio)"
+      :id="_id"/>
+    <!-- <IDesmonte id="desmonte" v-for="desmonte in pilas.filter(i => i.typePila == 'Desmonte')" :pila="desmonte" :id="desmonte.cod_tableta"/> -->
+    <ICC id="icc" :stock="colquicocha_stock" />
+    <IC1 id="ic1" :stock="cancha1_stock" />
+    <IC2 id="ic2" :stock="cancha2_stock" />
   </div>
   <Toast />
   <div class="c-global-container-map">
@@ -706,10 +700,10 @@ const remove = () => {
       <Button outlined class="btn-map" @click="edit"
         ><CEdit /><span> Editar </span>
       </Button>
-      <Button outlined class="btn-map" @click="mergePilas" v-if="visibleMerge"
+      <Button outlined class="btn-map" @click.prevent="mergePilas" v-if="visibleMerge"
         ><Bind /><span> Unir </span>
       </Button>
-      <Button outlined class="btn-map" v-if="visibleDate"
+      <Button outlined class="btn-map" v-if="visibleDate" @click.prevent="getDataCalendar(pilasSelected)"
         ><ICalendar /><span> Abstec. </span>
       </Button>
       <Button outlined class="btn-map" @click="save"

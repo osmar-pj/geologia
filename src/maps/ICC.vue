@@ -83,7 +83,7 @@ viewBox="0 0 84.4 62"
      </g>
      <g>
       <g transform="matrix(1.00001 0 0 1 -1386.68 605.123)">
-       <text class="icc" x="1416.13" y="-560.9"  fill="black" font-weight="normal" font-size="5.73px" font-family="Lilita One"></text>
+       <text x="1416.13" y="-560.9"  fill="black" font-weight="normal" font-size="5.73px" font-family="Lilita One"> {{ stock ? stock.toFixed(2) : '-' }} </text>
       </g>
      </g>
     </g>
@@ -107,3 +107,15 @@ viewBox="0 0 84.4 62"
  </g>
 </svg>
 </template>
+
+<script>
+export default {
+  name: 'ICC',
+  props: {
+    stock: {
+      type: Number,
+      default: 0
+    }
+  }
+}
+</script>

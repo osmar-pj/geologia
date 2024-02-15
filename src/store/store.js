@@ -21,7 +21,10 @@ const store = createStore({
     rumaTotal: [],
     userModal: null,
     errior: null,
-    loading: false
+    loading: false,
+    colquicocha_stock: 0,
+    cancha1_stock: 0,
+    cancha2_stock: 0,
   },
   getters: {
     get_data_analysis: (state) => {
@@ -128,7 +131,9 @@ const store = createStore({
       state.dataListControl.slice(payload, 1)
     },
     setWeights(state, payload) {
-      state.weights = payload
+      state.colquicocha_stock = payload.filter(i => i.ubication === "Cancha Colquicocha").reduce((acc, i) => acc + i.stock, 0)
+      state.cancha1_stock = payload.filter(i => i.ubication === "Cancha 1").reduce((acc, i) => acc + i.stock, 0)
+      state.cancha2_stock = payload.filter(i => i.ubication === "Cancha 2").reduce((acc, i) => acc + i.stock, 0)
     },
     // ADD to general list of pilas
     addDataPilaList(state, payload) {
@@ -137,6 +142,9 @@ const store = createStore({
     // ADD to ruma list of pilas inMap
     addDataRumaList(state, payload) {
       state.rumaTotal.unshift(payload)
+    },
+    lessDataRumaList(state, payload) {
+      state.rumaTotal.slice(payload, 1)
     }
   },
   actions: {
@@ -258,6 +266,7 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getRumaTotal", data.pilasToMap)
+        commit("setWeights", data.pilasToMap)
       } catch (error) {commit("loading", false)}
     },
     ruma_update: async ({ commit }, data) => {
@@ -270,7 +279,7 @@ const store = createStore({
           body: JSON.stringify(data.data),
         })
         const dataResponse = await response.json()
-        commit("getRumaTotal", dataResponse.rumas)
+        // commit("getRumaTotal", dataResponse.rumas)
       } catch (error) {commit("loading", false)}
     },
     tajo_list: async ({ commit }) => {

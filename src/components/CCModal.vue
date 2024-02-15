@@ -176,10 +176,7 @@ const updateTravel = async () => {
     setTimeout(() => {
       showError.value = false;
     }, 5000);
-
-    console.log("promedios",averages.value);
   } else {
-   
     showError.value = false;
     const promedios = targetColumns.reduce((acc, column) => {
       acc[column] = calculateColumnAverage(column);
@@ -203,7 +200,6 @@ const updateTravel = async () => {
         isCoding: selectedCodTableta.value,
         name: store.state.user.name,
       };
-      console.log(updatedTravel);
       const response = await fetch(`${url}/pila/${props.data._id}`, {
         method: "PUT",
         headers: {

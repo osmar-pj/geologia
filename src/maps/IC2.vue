@@ -237,7 +237,7 @@
                   font-size="5.73px"
                   font-family="Lilita One"
                 >
-                   T
+                   {{ stock ? stock.toFixed(2) : '-' }}
                 </text>
               </g>
             </g>
@@ -281,3 +281,15 @@
     </g>
   </svg>
 </template>
+
+<script>
+export default {
+  name: 'IC2',
+  props: {
+    stock: {
+      type: Number,
+      default: 0
+    }
+  }
+}
+</script>

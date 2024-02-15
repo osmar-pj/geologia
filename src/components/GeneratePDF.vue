@@ -90,7 +90,7 @@ setInterval(() => {
 </script>
 <template>
   <Button class="btn-success btn-GP" @click="generatePDF">Generate PDF</Button>
-  <div>
+  <div v-if="false">
     <!-- <div class="caratula">
        <div class="contenido-caratula">
          <h3>{{ formattedDate  }}</h3>
