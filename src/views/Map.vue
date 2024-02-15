@@ -691,7 +691,7 @@ const remove = () => {
 
 <template>
   <Totals />
-  <!-- <GeneratePDF /> -->
+   <GeneratePDF /> 
   <div v-show="false">
     <IPila id="pila" />
     <IGiba id="giba" />
