@@ -1,9 +1,8 @@
 <script setup>
 import { Subject } from "rxjs";
-import { computed, inject, onMounted, ref, reactive, watch } from "vue";
+import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
 import CCModal from "../components/CCModal.vue";
-import CanchaModal from "../components/CanchaModal.vue";
 import MuestraModal from "../components/MuestraModal.vue";
 import Edit from "../icons/Edit.vue";
 import { formatDate, formatFixed } from "../libs/utils";
@@ -16,11 +15,11 @@ const selectedStatus = ref("Acumulando");
 const pilas = computed(() => store.state.dataListControl);
 
 const countPilasSocket = reactive({
-  Analizando: { count: 0, animation: false }
+  Analizando: { count: 0, animation: false },
 });
 
-const resetCount = () => {
-  countPilasSocket.Analizando = 0;
+const resetCount = (status) => {
+  countPilasSocket[status].count = 0;
 };
 
 const updatePilasFromSocket = (data) => {
@@ -106,7 +105,6 @@ const calcularCantidadPorEstado = (estado) => {
 
 const showCCModal = ref(false);
 const showMuestraModal = ref(false);
-const showCanchaModal = ref(false);
 const modalData = ref(null);
 
 const openMuestraModal = (data) => {
@@ -169,7 +167,9 @@ const formatColumnValue = (value, fn) => {
             <span class="total-count">{{ calculateQtyByStatus(status) }}</span>
             <h5>{{ status }}</h5>
             <span
-              v-if="status !== 'Acumulando' && countPilasSocket[status].count !== 0"
+              v-if="
+                status !== 'Acumulando' && countPilasSocket[status].count !== 0
+              "
               :class="{
                 'radio-Badge': true,
                 'r-animation': countPilasSocket.Analizando.animation,

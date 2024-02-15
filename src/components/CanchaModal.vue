@@ -114,22 +114,24 @@ const updateTravel = async () => {
         </div>
       </div>
       <div class="mC-c-footer">
-        <template v-if="buttonClicked">
-          <div class="loader"></div>
-        </template>
-        <template v-else>
           <button @click="cerrarModal" class="btn-cancel" type="button">
             Cancelar
           </button>
           <button
             class="btn-success"
             type="submit"
-            @click.prevent="updateTravel()"
+            @click.prevent="updateTravel"
           >
-            Aceptar
+          <template v-if="buttonClicked">
+            <span class="loader"></span>Procesando...
+          </template>
+          <template v-else>
+              Guardar
+            </template>
           </button>
-        </template>
-      </div>
+        </div>
+
+      
     </form>
   </Transition>
     <Transition name="bounce">

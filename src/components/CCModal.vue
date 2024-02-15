@@ -68,6 +68,7 @@ const handleFileUpload = (event) => {
             row["id"] = index + 1;
             row["disabled"] = false;
           });
+          console.log(finalData);
 
           csvData.value.push(...finalData);
         },
