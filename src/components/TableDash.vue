@@ -10,8 +10,7 @@ const data = computed(() => {
 </script>
 
 <template>
-  <div class="table-dash">
-    tabla
+  <div class="table-dash">    
     <div class="container-t-dash">
       <table>
         <thead>
@@ -35,7 +34,7 @@ const data = computed(() => {
           </tr>
         </tbody>
       </table>
-      <!-- <DataTable :value="data.data">
+       <DataTable :value="data.data">
       <Column
         v-for="(column, index) in data.columns"
         :key="index"
@@ -55,7 +54,7 @@ const data = computed(() => {
           }}
         </template>
       </Column>
-    </DataTable> -->
+    </DataTable>
     </div>
   </div>
 </template>

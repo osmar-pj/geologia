@@ -78,6 +78,7 @@ const sendFilter = async () => {
       });
 
       const data = await response.json();
+     
       if (data.status === true) {
         store.dispatch("filter_list", data);
         cerrarModal();
@@ -181,21 +182,21 @@ const sendFilter = async () => {
           </div>
         </div>
         <div class="mF-c-footer">
-          <template v-if="buttonClicked">
-            <div class="loader"></div>
-          </template>
-          <template v-else>
-            <button @click="cleanFilter" class="btn-cancel" type="button">
-              Limpiar
-            </button>
-            <button
+          <button @click="cleanFilter" class="btn-cancel" type="button">
+            Limpiar
+          </button>
+          <button
               @click.prevent="sendFilter"
               class="btn-success"
               type="submit"
             >
-              <IStart /> Filtrar
-            </button>
+          <template v-if="buttonClicked">
+            <span class="loader"></span> Proces...
           </template>
+          <template v-else>
+              <IStart /> Filtrar
+            </template>
+          </button>
         </div>
       </form>
     </div>
@@ -272,12 +273,7 @@ const sendFilter = async () => {
           font-weight: 600;
           letter-spacing: -0.03em;
         }
-        h4 {
-          padding-top: 0.1rem;
-          font-weight: 500;
-          color: var(--grey-2);
-          font-size: clamp(6px, 8vw, 13px);
-        }
+        
       }
       .mF-h-close {
         position: absolute;
@@ -346,7 +342,7 @@ const sendFilter = async () => {
             align-items: center;
             gap: 0.5rem;
             label {
-              font-size: clamp(6px, 8vw, 14px);
+              font-size: clamp(6px, 8vw, 12.5px);
               line-height: 0.8rem;
             }
           }
@@ -363,7 +359,7 @@ const sendFilter = async () => {
               padding: 6px 15px;
               border-radius: var(--br-m);
               background-color: var(--grey-light-11);
-              font-size: clamp(6px, 8vw, 14px);
+              font-size: clamp(6px, 8vw, 12.5px);
               line-height: 0.8rem;
               display: flex;
               align-items: center;

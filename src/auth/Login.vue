@@ -24,19 +24,19 @@ const login = async () => {
 
 <template>
   <section class="L-Home">
-    <form action="" >
-      <div class="login-container">
+    <form action="">
+      <div
+        class="login-container"
+        :style="{
+          userSelect: buttonClicked ? 'none' : 'auto',
+          pointerEvents: buttonClicked ? 'none' : 'auto',
+        }"
+      >
         <div class="login-c-header">
           <h1>Bienvenido de nuevo</h1>
           <h4>Bienvenido, por favor ingrese sus datos</h4>
         </div>
-        <div
-          class="login-c-body"
-          :style="{
-            userSelect: buttonClicked ? 'none' : 'auto',
-            pointerEvents: buttonClicked ? 'none' : 'auto',
-          }"
-        >
+        <div class="login-c-body">
           <div class="Login-imputs-item">
             <label>Código de acceso</label>
             <div class="imputs-i-input">
@@ -55,18 +55,16 @@ const login = async () => {
           </div>
         </div>
         <div class="login-c-footer">
-          <template v-if="buttonClicked">
-            <div class="loader"></div>
-          </template>
-          <template v-else>
-            <button class="btn-success" type="button" @click.prevent="login">
-              Continuar
-            </button>
-            <p>
-              Al ingresar, acepta los Términos de servicio y la Política de
-              privacidad.
-            </p>
-          </template>
+          <button class="btn-success" type="button" @click.prevent="login">
+            <template v-if="buttonClicked">
+              <span class="loader"></span>Procesando...
+            </template>
+            <template v-else> Continuar </template>
+          </button>
+          <p>
+            Al ingresar, acepta los Términos de servicio y la Política de
+            privacidad.
+          </p>
         </div>
       </div>
     </form>
@@ -144,5 +142,4 @@ const login = async () => {
     }
   }
 }
-
 </style>

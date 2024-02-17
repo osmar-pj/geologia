@@ -12,6 +12,15 @@ import ILogout from "../icons/ILogout.vue";
 const router = useRouter();
 const store = useStore();
 const active = ref("/");
+const menuItems = [
+  { name: '/', label: 'Mapa de Pilas', icon: CRuma, route: '/' },
+  { name: 'analysis', label: 'Análisis', icon: IDash, route: 'analysis' },
+  { name: 'oreControl', label: 'Ore Control', icon: IControl, route: 'oreControl' },
+  { name: 'controlCalidad', label: 'Control de Calidad', icon: CQuality, route: 'controlCalidad' },
+  { name: 'list', label: 'Lista de viajes', icon: IList, route: 'list' },
+  { name: 'planta', label: 'Lista de Planta', icon: CQuality, route: 'planta' },
+  { name: 'pila', label: 'Lista de Pilas', icon: CQuality, route: 'pila' },
+];
 const goToPage = (page) => {
   router.push(page);
   active.value = page;
@@ -60,57 +69,14 @@ const logout = async () => {
         </div>
       </div>
       <ul class="s-content-menu">
-        <li
-          @click.prevent="goToPage('/')"
-          :class="active == '/' ? 'active' : ''"
-        >
-          <div class="nav-select"><CRuma/></div>
-          <span>Mapa de Pilas</span>
-        </li>
-        <li
-          @click.prevent="goToPage('analysis')"
-          :class="active == 'analysis' ? 'active' : ''"
-        >
-          <div class="nav-select"> <IDash/> </div>
-          <span>Análisis</span>
-        </li>
-        <li
-          @click.prevent="goToPage('list')"
-          :class="active == 'list' ? 'active' : ''"
-        >
-          <div class="nav-select"><IList/></div>
-          <span>Lista de viajes</span>
-        </li>
-        <li
-          @click.prevent="goToPage('oreControl')"
-          :class="active == 'oreControl' ? 'active' : ''"
-        >
-          <div class="nav-select"><IControl/></div>
-          <span>Ore Control</span>
-        </li>
-        <li
-          @click.prevent="goToPage('controlCalidad')"
-          :class="active == 'controlCalidad' ? 'active' : ''"
-        >
-          <div class="nav-select"><CQuality/></div>
-          <span>Control de Calidad</span>
-        </li>
-        <li
-          @click.prevent="goToPage('pila')"
-          :class="active == 'pila' ? 'active' : ''"
-        >
-          <div class="nav-select"><IList/></div>
-          <span>Lista de Pilas</span>
-        </li>               
-        
-        <li
-          @click.prevent="goToPage('planta')"
-          :class="active == 'planta' ? 'active' : ''"
-        >
-          <div class="nav-select"><CRuma/></div>
-          <span>Planta </span>
-        </li>
-      </ul>
+      <li v-for="menuItem in menuItems"
+          :key="menuItem.name"
+          @click.prevent="goToPage(menuItem.route)"
+          :class="active === menuItem.route ? 'active' : ''">
+        <div class="nav-select"><component :is="menuItem.icon"/></div>
+        <span>{{ menuItem.label }}</span>
+      </li>
+    </ul>
       <div class="s-content-msg">
         <div class="s-c-msg-header"><span>Mensajes</span></div>
         <div class="s-c-msg-items">
@@ -307,11 +273,12 @@ const logout = async () => {
 
         span {
           color: var(--grey-light-3);
-          font-size: clamp(5px, 8vw, 14px);
+          font-size: clamp(5px, 8vw, 13px);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           max-width: 160px;
+          font-weight: 400;
         }
         &:hover {
           opacity: 1;

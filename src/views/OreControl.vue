@@ -1,19 +1,27 @@
 <script setup>
-import { ref, onMounted, computed, inject } from "vue";
+import { ref, onMounted, computed, inject, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
 import Edit from "../icons/Edit.vue";
 import OCModal from "../components/OCModal.vue";
-import {formatDate, formatFixed, formatArrayField} from "../libs/utils";
+import { formatDate, formatFixed, formatDateAbas, formatHour } from "../libs/utils";
 
-const store = useStore()
-const socket = inject("socket")
+const store = useStore();
+const socket = inject("socket");
+
 socket.on("OreControl", (data) => {
-  store.commit("addDataListOreControl", data)
+  store.commit("addDataListOreControl", data);
 });
 
 onMounted(async () => {
-  await store.dispatch("get_list")
+  await store.dispatch("get_list");
 });
+
+onBeforeUnmount(() => {
+  // Desconectar el socket al desmontar el componente
+  socket.off("OreControl");
+});
+const excludedFields = ["mining", "ubication","date"];
+
 
 const data = computed(() => {
   return store.state.dataList;
@@ -33,26 +41,22 @@ const formatColumnValue = (value, fn, field, row) => {
     case "fixed":
       return formatFixed(value);
     case "arr":
-      if (field === "destiny") {        
-        const result = row.destiny.join(',');
+      if (field === "destiny") {
+        const result = row.destiny.join(",");
         return result;
-
-      } else if (field === "dominio") {       
+      } else if (field === "dominio") {
         if (row.materials && row.materials.length > 0) {
-          return row.materials.map(i => i.material).join(', ');
+          return row.materials.map((i) => i.material).join(", ");
         } else if (row.dominio) {
           return row.dominio;
         }
-        
-        return ""; 
+        return "";
       }
       break;
     default:
       return value || "";
   }
 };
-
-
 </script>
 
 <template>
@@ -63,7 +67,7 @@ const formatColumnValue = (value, fn, field, row) => {
         <span>{{ data.data ? data.data.length : 0 }}</span>
       </div>
       <span>| Dia terminado en Mina </span>
-    </div>    
+    </div>
   </div>
   <div class="tableContainer">
     <DataTable
@@ -75,33 +79,69 @@ const formatColumnValue = (value, fn, field, row) => {
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :loading="store.state.loading"
     >
-      <Column selectionMode="multiple" headerStyle="width: 2.5rem"> </Column>     
-      <Column
-        v-for="(header, index) in data.header"
-        :key="index"
-        :field="header.field"
-        :header="header.title"       
-      >
+    <Column header="#" headerStyle="width: 2.5rem">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>
-                <Skeleton v-if="store.state.loading" height="100px"></Skeleton>
-                <span v-else>
-                {{
-                  formatColumnValue(
-                    slotProps.data[header.field],
-                    header.fn,
-                    header.field,
-                    slotProps.data
-                  )
-                }}
-                </span>
-              </h4>
+              <h5>#{{ slotProps.index + 1 }}</h5>
             </div>
           </div>
         </template>
       </Column>
+      <Column header="Fecha" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ formatDateAbas(slotProps.data.date) }}
+            </h4>
+            <h5>
+              {{
+                formatHour(slotProps.data.date)
+              }} hora 
+            </h5>
+          </div>
+        </template>
+      </Column>
+      <Column header="Mina" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ slotProps.data.mining }}
+            </h4>
+            <h5>
+              {{
+                slotProps.data.ubication
+              }}
+            </h5>
+          </div>
+        </template>
+      </Column>
+      <template v-for="(header, index) in data.header || []">
+      <Column
+      v-if="
+            !header || (header.field && !excludedFields.includes(header.field))
+          "
+        :key="index"
+        :field="header.field"
+        :header="header.title"
+      >
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <h4 v-else>
+            {{
+              formatColumnValue(
+                slotProps.data[header.field],
+                header.fn,
+                header.field,
+                slotProps.data
+              )
+            }}
+          </h4>
+        </template>
+      </Column>
+    </template>
       <Column field="Acciones" header="Acciones">
         <template #body="slotProps">
           <div className="btns">
@@ -138,6 +178,4 @@ const formatColumnValue = (value, fn, field, row) => {
   </Transition>
 </template>
 
-<style lang="scss">
-
-</style>
+<style lang="scss"></style>

@@ -8,23 +8,23 @@ const store = useStore();
 const url = import.meta.env.VITE_API_URL;
 
 const trips = ref([]);
-
+const generatingPDF = ref(true);
 // Función para enviar el filtro y obtener los datos
 const sendFilter = async () => {
   try {
-    const response = await fetch(`${url}/trips`, {
+    const response = await fetch(`${url}/plantalist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": true,
       },
-      body: JSON.stringify({ arr: ["year", "month", "rango", "type"] }),
+      body: JSON.stringify({ arr: ["year", "month"] }),
     });
 
     const data = await response.json();
-    trips.value = data;
     if (data.status === true) {
       console.log("correcto");
+      trips.value = data.data;
     }
   } catch (error) {
     console.error("Error al actualizar:", error);
@@ -49,7 +49,7 @@ const generatePDF = () => {
     },
     jsPDF: {
       unit: "in",
-      format: "a4",
+      format: "letter",
       orientation: "landscape",
     },
     pagebreak: {
@@ -95,7 +95,7 @@ setInterval(() => {
   <button class="btn-success btn-GP" @click="generatePDF">
     Exportar PDF
   </button>
-  <div class="pdf-content">
+  <div class="pdf-content"  v-show="!generatingPDF">
     <div id="app" ref="document" style="text-align: center">
       <div id="element-to-convert">
         <!-- Contenido de la caratula hoja -->

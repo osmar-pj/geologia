@@ -144,7 +144,7 @@ const oreControl = computed(() => store.state.dataList)
 .Container-totals {
   display: flex;
   flex-wrap: wrap;
-  padding: 0 2rem 1rem 2rem;
+  padding-bottom: 1rem;
   gap: 1rem;
   .H-left-totals {
     flex: 1 1 200px;

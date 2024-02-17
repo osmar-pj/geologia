@@ -24,7 +24,7 @@ console.log(props.data);
   
     </div>
     <div className="modalFooter">
-      <span>© 2023 Gunjop</span>
+      <span>© 2024 Gunjop</span>
     </div>
   </div>
 </template>

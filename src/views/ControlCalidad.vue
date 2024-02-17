@@ -13,7 +13,7 @@ const pila$ = new Subject();
 // const pilas = ref([])
 const selectedStatus = ref("Acumulando");
 const pilas = computed(() => store.state.dataListControl);
-
+const excludedFields = ["mining", "ubication", "travels", "pila","ley_ag", "ley_fe","ley_mn", "ley_pb","ley_zn"];
 const countPilasSocket = reactive({
   Analizando: { count: 0, animation: false },
 });
@@ -34,7 +34,7 @@ const updatePilasFromSocket = (data) => {
       // Después de 300 ms, quita la clase de animación
       setTimeout(() => {
         countPilasSocket.Analizando.animation = false;
-      }, 1500);
+      }, 3500);
     }
   });
 };
@@ -65,17 +65,23 @@ socket.on("pilas", (data) => {
 
 const updatePilas = (pilasFound, data) => {
   pilasFound.forEach((pila, index) => {
-    pila.stock = data[index].stock;
-    pila.tonh = data[index].tonh;
-    pila.ton = data[index].tonh * 0.94;
-    pila.travels = data[index].travels;
-    pila.tajo = data[index].tajo;
-    pila.cod_despacho = data[index].cod_despacho;
-    pila.statusPila = data[index].statusPila;
-    pila.history = data[index].history;
-    pila.date_abastecimiento = data[index].date_abastecimiento;
-    pila.ubication = data[index].ubication;
-    pila$.next(pila);
+    if (data[index]) {
+      pila.stock = data[index].stock;
+      pila.tonh = data[index].tonh;
+      pila.ton = data[index].tonh * 0.94;
+      pila.travels = data[index].travels;
+      pila.tajo = data[index].tajo;
+      pila.cod_despacho = data[index].cod_despacho;
+      pila.statusPila = data[index].statusPila;
+      pila.history = data[index].history;
+      pila.date_abastecimiento = data[index].date_abastecimiento;
+      pila.ubication = data[index].ubication;
+      pila$.next(pila);
+    } else {
+      console.error(
+        `No se pudo encontrar el elemento correspondiente en data para el índice ${index}.`
+      );
+    }
   });
 };
 
@@ -193,60 +199,69 @@ const formatColumnValue = (value, fn) => {
       :header="false"
       :loading="store.state.loading"
     >
-      <!-- <Column field="mining" headerStyle="text-align: center;">
+      <Column header="#" headerStyle="width: 2.5rem">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
-              <h4>
-                {{
-                  formatColumnValue(
-                    slotProps.data.mining,
-                    "text",
-                    "mining",
-                    slotProps.data
-                  )
-                }}
-              </h4>
-              <h5>
-                {{
-                  formatColumnValue(
-                    slotProps.data.statusPila,
-                    "text",
-                    "ubication",
-                    slotProps.data
-                  )
-                }}
-              </h5>
+              <h5>#{{ slotProps.index + 1 }}</h5>
             </div>
           </div>
-        </template>
-      </Column> -->
-      <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
-      <Column
-        v-for="(header, index) in pilas.header"
-        :key="index"
-        :field="header.field"
-        :header="header.title"
-      >
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h4>
-                {{
-                  formatColumnValue(
-                    slotProps.data[header.field],
-                    header.fn,
-                    header.field,
-                    slotProps.data
-                  )
-                }}
-              </h4>
-            </div>
-          </div>
-          <!-- <Skeleton></Skeleton> -->
         </template>
       </Column>
-
+      <Column header="Mina" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ slotProps.data.mining }}
+            </h4>
+            <h5>
+              {{ slotProps.data.ubication }}
+            </h5>
+          </div>
+        </template>
+      </Column>
+      <Column header="Pila" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ slotProps.data.pila }}
+            </h4>
+            <h5>
+              {{
+                slotProps.data.travels && Array.isArray(slotProps.data.travels)
+                  ? slotProps.data.travels.length
+                  : 0
+              }} viajes
+            </h5>
+          </div>
+        </template>
+      </Column>
+      <template v-for="(header, index) in pilas.header || []">
+        <Column
+          v-if="
+            !header || (header.field && !excludedFields.includes(header.field))
+          "
+          :key="index"
+          :field="header.field"
+          :header="header.title"
+        >
+          <template #body="slotProps">
+            <Skeleton v-if="store.state.loading"></Skeleton>
+            <h4 v-else>
+              {{
+                formatColumnValue(
+                  slotProps.data[header.field],
+                  header.fn,
+                  header.field,
+                  slotProps.data
+                )
+              }}
+            </h4>
+          </template>
+        </Column>
+      </template>
       <Column field="Acciones">
         <template #body="slotProps">
           <div className="btns">

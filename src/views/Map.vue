@@ -676,7 +676,7 @@ const getDataCalendar = (data) => {
 
 <template>
   <Totals />
-  <!-- <GeneratePDF /> -->
+  <GeneratePDF />
   <CanchaModal v-if="openCalendar" @cerrarModal="openCalendar = false"  :data="dataModalCalendar" />
   <div v-show="false">
     <IPila v-for="{ley_ag, stock, pila, mining, dominio, _id, pilas_merged} in pilas.filter(i => i.typePila == 'Pila')"
@@ -784,7 +784,6 @@ const getDataCalendar = (data) => {
   }
 }
 .c-global-container-map {
-  margin: 0 2.5rem;
   flex: 1 1;
   position: relative;
   background-image: url("../assets/img/map-ruma.svg");

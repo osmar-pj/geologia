@@ -9,6 +9,14 @@ const props = defineProps(["ruta"]);
 const store = useStore();
 const buttonClicked = ref(false);
 const selectedEstado = ref(new Date());
+
+// Obtener la fecha del mes anterior
+const fechaMesAnterior = new Date();
+fechaMesAnterior.setMonth(fechaMesAnterior.getMonth() - 1);
+
+// Asignar la fecha del mes anterior a selectedEstado
+selectedEstado.value = fechaMesAnterior;
+
 const analysisData = ref(null);
 const graficData = ref(null);
 
@@ -118,7 +126,7 @@ const chartOptions = {
   },
   dataLabels: {
     enabled: true,
-    enabledOnSeries: [0],
+    enabledOnSeries: [0,1],
     formatter: (val) => {
       if (val === null) {
         return "";
@@ -127,14 +135,14 @@ const chartOptions = {
       }
     },
   },
-  colors: ["rgb(255, 69, 96)", "#C5EDAC", "rgb(0, 143, 251)", "#66C7F4"],
+  colors: ["rgb(255, 69, 96)", "#00B050", "rgb(0, 143, 251)", "#66C7F4"],
 
   stroke: {
-    width: [4, 4, 4],
+    width: [1, 1, 1],
   },
   plotOptions: {
     bar: {
-      borderRadius: 5,
+      borderRadius: 1.5,
       borderWidth: 1,
     },
   },
@@ -279,7 +287,7 @@ const DataToday = ref({
             view="month"
             :minDate="minDate"
             :maxDate="maxDate"
-            manualInput="false"
+            :manualInput="false"
             dateFormat="mm/yy"
             aria-placeholder="mm/yy"
             showIcon
@@ -295,12 +303,12 @@ const DataToday = ref({
       <div class="g-d-header-totales">
         <div>
           <div class="circular-graf">
-            <span class="donut-title">Ley</span>
+            <span class="donut-title">Tonelada</span>
             <span class="donut-total"
               >{{ analysisData ? analysisData.total_ton.toFixed(2) : 0 }}
             </span>
             <div
-              class="semi-donut margin semi-ley"
+              class="semi-donut margin semi-tonelada"
               :style="{
                 '--percentage':
                   DataToday && DataToday.NOCHE ? DataToday.NOCHE.percent : 0,
@@ -317,12 +325,12 @@ const DataToday = ref({
         </div>
         <div>
           <div class="circular-graf">
-            <span class="donut-title">Tonelada</span>
+            <span class="donut-title"> Ley</span>
             <span class="donut-total"
               >{{ analysisData ? analysisData.aver_ley.toFixed(2) : 0 }}
             </span>
             <div
-              class="semi-donut semi-tonelada"
+              class="semi-donut semi-ley"
               :style="{
                 '--percentage':
                   DataToday && DataToday.NOCHE ? DataToday.NOCHE.percent : 0,
@@ -365,7 +373,7 @@ const DataToday = ref({
       <template v-else>
         <div id="chart">
           <VueApexCharts
-            height="270"
+            height="250"
             :options="chartOptions"
             :series="graficData"
           />

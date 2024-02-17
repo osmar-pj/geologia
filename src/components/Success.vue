@@ -17,7 +17,7 @@
       <p>Acción realizado satisfactoriamente.</p>
     </div>
     <div className="modalFooter">
-      <span>© 2023 Gunjop</span>
+      <span>© 2024 Gunjop</span>
     </div>
   </div>
 </template>

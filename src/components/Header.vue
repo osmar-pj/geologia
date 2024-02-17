@@ -30,60 +30,7 @@
 </template>
 
 <style lang="scss">
-.c-header {
-  height: 70px;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 1.5rem;
 
-  .header-left {
-    display: none;
-    align-items: center;
-    gap: 1rem;
-    .header-l-menu {
-      display: grid;
-      place-items: center;
-      padding: 0;
-      width: 30px;
-      background-color: var(--secondary);
-      img {
-        width: 1.2rem;
-      }
-    }
-    .header-l-search {
-      display: flex;
-      position: relative;
-      img {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 15px;
-        width: 1rem;
-      }
-    }
-    // @include md {
-    //   gap: 1.5rem;
-    // }
-  }
- 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-
-    span{
-      gap: 0.5rem;
-    color: var(--grey-1);
-    font-size: clamp(6px,8vw,14px);
-    line-height: 1.1rem;
-    font-weight: 500;
-    }
-  }
-  //   @include md {
-  //     height: 80px;
-  //     padding: 0 3rem;
-  //   }
-}
 
 .burger {
   position: relative;

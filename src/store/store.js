@@ -13,9 +13,11 @@ const store = createStore({
     dataListControl: [],
     dataListGeneral: [],
     dataListFilters: [],
+    dataFilterPlanta: [],
     dataFilterTable: [],
     dataSelectedFilters: [],
     dataAnalysis: [],
+   
     tajoList: [],
     pilaList: [],
     rumaTotal: [],
@@ -90,6 +92,7 @@ const store = createStore({
     getListControl(state, payload) {
       state.dataListControl = payload
     },
+    
     getListGeneral(state, payload) {
       state.dataListGeneral = payload
     },
@@ -107,6 +110,9 @@ const store = createStore({
     },
     getFilterTable(state, payload) {
       state.dataFilterTable = payload
+    },
+    getFilterPlanta(state, payload) {
+      state.dataFilterPlanta = payload
     },
     getSelectedFilters(state, payload) {
       state.dataSelectedFilters = payload
@@ -187,7 +193,8 @@ const store = createStore({
             "ngrok-skip-browser-warning": true,
           },
         })
-        const data = await response.json()  
+        const data = await response.json()
+        console.log(data)  
         commit("getList", data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
@@ -298,6 +305,9 @@ const store = createStore({
     filter_list: async ({ commit }, data) => {
       commit("getFilterTable", data)
     },
+    filter_Planta: async ({ commit }, data) => {
+      commit("getFilterPlanta", data)
+    },
     selected_filters: async ({ commit }, data) => {
       commit("getSelectedFilters", data)
     },
@@ -306,7 +316,7 @@ const store = createStore({
         commit("getDataAnalysis", data)
       } catch (error) {commit("loading", false)}
     },
-    getTripsPlanta: async ({ commit }) => {
+    get_listPlanta: async ({ commit }) => {
       try {
         const response = await fetch(`${url}/planta`, {
           method: "GET",
@@ -316,7 +326,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        commit("getListControl", data)
+        commit("getListPlanta", data)
       } catch (error) {commit("loading", false)}
     }
   },

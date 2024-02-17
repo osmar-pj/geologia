@@ -20,7 +20,6 @@ const isSplitRequired = computed(() => data.value.splitRequired);
 const numberOfMaterials = isSplitRequired.value
   ? data.value.materials.length
   : 1;
-const isOdd = (number) => number % 2 !== 0;
 
 const dataToUpdate = ref([]);
 

@@ -40,6 +40,7 @@ const hour = (t)  => {
   const hour = `${date.getHours()}:${date.getMinutes()}`
   return hour
 }
+
 </script>
 
 <template>
@@ -82,16 +83,7 @@ const hour = (t)  => {
       tableStyle="width: 100%"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
-    >
-      <!-- <template #header>
-        <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
-            <h4 class="m-0">Manage Products</h4>
-            <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="filters['global'].value" placeholder="Search..." />
-            </span>
-        </div>
-    </template> -->
+    >     
       <Column selectionMode="multiple" headerStyle="width: 2.5rem"></Column>
       <Column header="#" headerStyle="width:3rem">
         <template #body="slotProps">
