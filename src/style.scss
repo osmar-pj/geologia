@@ -162,7 +162,7 @@ h3 {
 h4 {
   color: var(--black);
   font-size: clamp(5px, 8vw, 10px);
-  font-weight: 500;
+  font-weight: 450;
   @include md {
     font-size: clamp(7px, 8vw, 12.5px);
     line-height: 1rem;
@@ -176,7 +176,7 @@ h5 {
   font-weight: 400;
   @include md {
     font-size: clamp(5px, 8vw, 12px);
-    line-height: 1.1rem;
+    line-height: 1rem;
   }
 }
 
@@ -417,7 +417,7 @@ strong {
     .mC-c-body {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem 0;
+      gap: 1rem 0;
       padding: 0.5rem 1.5rem;
       overflow: auto;
       max-height: 70vh;
@@ -736,6 +736,7 @@ input[type="checkbox"] {
   }
 }
 
+
 .td-status {
   font-size: clamp(7px, 8vw, 13px);
   text-transform: capitalize;
@@ -776,11 +777,10 @@ input[type="checkbox"] {
 .t-name {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.25rem;
 
   h5 {
-    text-transform: unset;
-    font-size: clamp(6px, 8vw, 12px);
+    font-size: clamp(6px, 8vw, 11.5px);
     line-height: 0.8rem;
     color: var(--grey-1);
     //   @include md {
@@ -788,34 +788,149 @@ input[type="checkbox"] {
     //   }
   }
   h4 {
-    font-weight: 600;
-    font-size: clamp(6px, 8vw, 13px);
+    font-weight: 550;
     text-transform: capitalize;
     //   @include md {
     //     font-size: clamp(6px, 8vw, 14px);
     //   }
   }
   .t-2 {
+    opacity: 0.6;
     text-transform: capitalize;
+    font-size: clamp(6px, 8vw, 10px);
   }
 }
 
-.td-cot {
+.t-vehiculo {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   img {
-    width: 1.1rem;
-  }
-  h4 {
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: clamp(6px, 8vw, 12px);
-    // @include md {
-    //   font-size: clamp(6px, 8vw, 14px);
-    // }
+    width: 1.6rem;
+    height: 1.6rem;
   }
 }
+
+.t-hour {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3rem;
+  img {
+    width: 1rem;
+    height: 1rem;
+  }
+  .text-hour {
+    color: var(--grey-1);
+    //   @include md {
+    //     font-size: clamp(6px, 8vw, 12px);
+    //   }
+  }
+}
+
+.t-complet {
+  color: var(--grey-light-3);
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  img {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+
+.t-textCort{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.t-container{
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  width: 180px;
+  .t-c-title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h4{
+      font-weight: 550;
+    }
+    h5{
+      display: flex;
+    align-items: center;
+    gap: .25rem;
+    svg{
+      fill: transparent;
+      color: var(--grey-2);
+      width: 1rem;
+      height: 1rem;
+      stroke-width: 1.5;
+    }
+    }
+  }
+}
+
+.porcent-status {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background-color: var(--grey-light-22);
+  // &::before{
+  //   --porcentaje-finalizado: 10%; 
+  //   content: "10%";
+  // }
+  &::after{  
+    content: "";
+  animation: porc1 1.5s ease-in-out forwards;
+  position: absolute;
+  height: 100%;  
+  border-radius: 5px;}
+}
+
+
+.P-Acumulando::after{
+  background-color: #ff694f;
+  --porcentaje-finalizado: 20%; 
+}
+
+.P-Analizando::after{
+  background-color: #ffbc58;
+  --porcentaje-finalizado: 40%; 
+}
+.P-waitDateAbastecimiento::after{
+  background-color: #5d95ff;
+  --porcentaje-finalizado: 60%; 
+}
+
+.P-waitBeginDespacho::after{
+  background-color: #b964ff;
+  --porcentaje-finalizado: 80%; 
+}
+.P-Finalizado::after {
+  background-color: #6cff67;
+  --porcentaje-finalizado: 100%; 
+}
+
+@keyframes porc1 {
+  0% {
+    width: 0%;
+  }
+  55% {
+    width: 75%;
+  }  
+  100% {
+    width: var(--porcentaje-finalizado); 
+  }
+}
+
+
+
 
 .t-cort {
   white-space: nowrap;
@@ -1598,7 +1713,7 @@ input[type="checkbox"] {
   white-space: nowrap;
   overflow: hidden;
   flex: 1 1;
-  border-radius: var(--br-s);
+
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -1725,6 +1840,8 @@ input[type="checkbox"] {
 
   .p-datatable-wrapper {
     height: calc(100% - 60px);
+    border: 1px solid var(--grey-light-1);
+    border-radius: var(--br-s);
   }
 
   .p-datatable-tbody {

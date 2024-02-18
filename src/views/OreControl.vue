@@ -3,7 +3,12 @@ import { ref, onMounted, computed, inject, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
 import Edit from "../icons/Edit.vue";
 import OCModal from "../components/OCModal.vue";
-import { formatDate, formatFixed, formatDateAbas, formatHour } from "../libs/utils";
+import {
+  formatDate,
+  formatFixed,
+  formatDateAbas,
+  formatHour,
+} from "../libs/utils";
 
 const store = useStore();
 const socket = inject("socket");
@@ -20,8 +25,15 @@ onBeforeUnmount(() => {
   // Desconectar el socket al desmontar el componente
   socket.off("OreControl");
 });
-const excludedFields = ["mining", "ubication","date"];
-
+const excludedFields = [
+  "mining",
+  "ubication",
+  "date",
+  "tag",
+  "statusPila",
+  "vagones",
+  "tonh",
+];
 
 const data = computed(() => {
   return store.state.dataList;
@@ -79,7 +91,7 @@ const formatColumnValue = (value, fn, field, row) => {
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :loading="store.state.loading"
     >
-    <Column header="#" headerStyle="width: 2.5rem">
+      <Column header="#" headerStyle="width: 2.5rem">
         <template #body="slotProps">
           <div class="td-user">
             <div class="t-name">
@@ -95,11 +107,12 @@ const formatColumnValue = (value, fn, field, row) => {
             <h4>
               {{ formatDateAbas(slotProps.data.date) }}
             </h4>
-            <h5>
-              {{
-                formatHour(slotProps.data.date)
-              }} hora 
-            </h5>
+            <div class="t-hour">
+              <img src="../assets/img/i-time.svg" alt="" />
+              <h5 class="text-hour">
+                {{ formatHour(slotProps.data.date) }}
+              </h5>
+            </div>
           </div>
         </template>
       </Column>
@@ -111,37 +124,84 @@ const formatColumnValue = (value, fn, field, row) => {
               {{ slotProps.data.mining }}
             </h4>
             <h5>
-              {{
-                slotProps.data.ubication
-              }}
+              {{ slotProps.data.ubication }}
             </h5>
           </div>
         </template>
       </Column>
-      <template v-for="(header, index) in data.header || []">
-      <Column
-      v-if="
-            !header || (header.field && !excludedFields.includes(header.field))
-          "
-        :key="index"
-        :field="header.field"
-        :header="header.title"
-      >
+      <Column header="Vehículo" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
-          <h4 v-else>
-            {{
-              formatColumnValue(
-                slotProps.data[header.field],
-                header.fn,
-                header.field,
-                slotProps.data
-              )
-            }}
-          </h4>
+          <div v-else class="t-vehiculo">
+            <img
+              :src="
+                slotProps.data.carriage === 'Vagones'
+                  ? 'src/assets/img/i-wagon.svg'
+                  : 'src/assets/img/i-truck.svg'
+              "
+              alt=""
+            />
+            <div class="t-name">
+              <h4>
+                {{ slotProps.data.tag }}
+              </h4>
+              <h5 v-if="slotProps.data.vagones">
+                {{ slotProps.data.vagones }} vagones
+              </h5>
+              <h5 class="t-2" v-else>---</h5>
+            </div>
+          </div>
         </template>
       </Column>
-    </template>
+      <template v-for="(header, index) in data.header || []">
+        <Column
+          v-if="
+            !header || (header.field && !excludedFields.includes(header.field))
+          "
+          :key="index"
+          :field="header.field"
+          :header="header.title"
+        >
+          <template #body="slotProps">
+            <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+            <template v-else>
+              <template
+                v-if="
+                  slotProps.data[header.field] !== '' &&
+                  slotProps.data[header.field] !== null &&
+                  slotProps.data[header.field] !== undefined
+                "
+              >
+                <h4 :class="{ 't-turn': header.field === 'turn' }">
+                  {{
+                    formatColumnValue(
+                      slotProps.data[header.field],
+                      header.fn,
+                      header.field,
+                      slotProps.data
+                    )
+                  }}
+                </h4>
+              </template>
+              <template v-else>
+                <h5 class="t-complet"><img src="../assets/img/i-square.svg" alt="" />Completar</h5>
+              </template>
+            </template>
+          </template>
+        </Column>
+      </template>
+
+      <Column header="Tonelada" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ slotProps.data.tonh.toFixed(2) }}
+            </h4>
+            <h5>toneladas</h5>
+          </div>
+        </template>
+      </Column>
       <Column field="Acciones" header="Acciones">
         <template #body="slotProps">
           <div className="btns">

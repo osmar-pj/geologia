@@ -136,7 +136,7 @@ const logout = async () => {
       border-radius: 50%;
       display: grid;
       place-items: center;
-      background-color: #26d452;
+      background-color: var(--primary);
       color: var(--white);
       font-size: clamp(5px, 8vw, 18px);
       font-weight: 500;

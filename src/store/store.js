@@ -226,7 +226,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        
+        console.log(data)      
         commit("getListGeneral", data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
@@ -243,6 +243,7 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getListFilters", data)
+           
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },

@@ -249,7 +249,7 @@ const formatColumnValue = (value, fn) => {
         >
           <template #body="slotProps">
             <Skeleton v-if="store.state.loading"></Skeleton>
-            <h4 v-else>
+            <h4 v-else :class="{ 't-textCort': header.field === 'dominio' || header.field === 'tajo' }">
               {{
                 formatColumnValue(
                   slotProps.data[header.field],

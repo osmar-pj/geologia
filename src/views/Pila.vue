@@ -6,6 +6,7 @@ import { formatDateAbas, formatFixed } from "../libs/utils";
 import Edit from "../icons/Edit.vue";
 import InfoPila from "../components/InfoPila.vue";
 import { FilterMatchMode } from "primevue/api";
+import IList from "../icons/IList.vue";
 
 const store = useStore();
 const socket = inject("socket");
@@ -18,7 +19,7 @@ onMounted(async () => {
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
-const excludedFields = ["mining", "ubication","pila","travels"];
+const excludedFields = ["mining", "ubication", "pila", "travels", "statusPila"];
 
 const modalData = ref(null);
 const showOCModal = ref(false);
@@ -124,7 +125,7 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
           </div>
         </template>
       </Column>
-      <Column header="Pila" headerStyle="text-align: center;">
+      <!-- <Column header="Nombre" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
           <div v-else class="t-name">
@@ -136,8 +137,46 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
                 slotProps.data.travels && Array.isArray(slotProps.data.travels)
                   ? slotProps.data.travels.length
                   : 0
-              }} viajes
+              }}
+              viajes
             </h5>
+          </div>
+        </template>
+      </Column> -->
+      <Column header="Pila" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div class="t-container" v-else>
+            <div  class="t-c-title">
+            <h4>
+              {{ slotProps.data.pila }} 
+            </h4>
+            <h5>
+              <IList/>
+              <strong>{{
+                slotProps.data.travels && Array.isArray(slotProps.data.travels)
+                  ? slotProps.data.travels.length
+                  : 0
+              }}</strong> viajes
+            </h5>            
+          </div>
+            <div
+            
+            :class="[
+              'porcent-status',
+              {
+                'P-Acumulando': slotProps.data.statusPila === 'Acumulando',
+                'P-Finalizado': slotProps.data.statusPila === 'Finalizado',
+                'P-waitDateAbastecimiento':
+                  slotProps.data.statusPila === 'waitDateAbastecimiento',
+                'P-waitBeginDespacho':
+                  slotProps.data.statusPila === 'waitBeginDespacho',
+                'P-Analizando': slotProps.data.statusPila === 'Analizando',
+              },
+            ]"
+          >
+            <!-- {{ slotProps.data.statusPila }}   -->
+          </div>
           </div>
         </template>
       </Column>
@@ -152,7 +191,13 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
         >
           <template #body="slotProps">
             <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
-            <h4 v-else :class="getStatusClass(slotProps.data[header.field])">
+            <h4
+              v-else
+              :class="{
+                't-textCort':
+                  header.field === 'dominio' || header.field === 'tajo',
+              }"
+            >
               {{
                 formatColumnValue(
                   slotProps.data[header.field],

@@ -23,7 +23,7 @@ const numberOfMaterials = isSplitRequired.value
 
 const dataToUpdate = ref([]);
 
-const selectedDominio = ref();
+const selectedDominio = ref(null);
 const dominios = ref([
   { name: "Ag/Alabandita" },
   { name: "Ag/Carbonatos" },
@@ -109,38 +109,48 @@ const getImagePath = (imageName) => {
 };
 
 const updateTravel = async () => {
-  try {
-    buttonClicked.value = true;
-    console.log();
-    const data = dataToUpdate.value.map((i) => {
-      return {
-        ...i,
-        name: store.state.user.name,
-      };
-    });
+  if (
+    dataToUpdate.value.length === 0 ||
+    dataToUpdate.value.some((item) =>
+      Object.values(item).some((value) => value === "" || value === null)
+    )
+  ) {
+    console.log(dataToUpdate.value);
+    console.log("Los datos a actualizar están vacíos");
+  } else {
+    try {
+      buttonClicked.value = true;
+      console.log();
+      const data = dataToUpdate.value.map((i) => {
+        return {
+          ...i,
+          name: store.state.user.name,
+        };
+      });
 
-    const response = await fetch(`${url}/trip/${props.data._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+      const response = await fetch(`${url}/trip/${props.data._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (result.status === true) {
-      console.log("Correcto");
-      await store.dispatch("get_list");
-      // await store.commit("addDataListControlCalidad", result.data)
-      cerrarModal();
-    } else {
-      console.log("error");
+      if (result.status === true) {
+        console.log("Correcto");
+        await store.dispatch("get_list");
+        // await store.commit("addDataListControlCalidad", result.data)
+        cerrarModal();
+      } else {
+        console.log("error");
+        buttonClicked.value = false;
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
       buttonClicked.value = false;
     }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
-    buttonClicked.value = false;
   }
 };
 </script>
@@ -172,7 +182,6 @@ const updateTravel = async () => {
       <div class="mC-c-body">
         <div className="mC-b-info">
           <div class="item-descrip" v-if="isVagones && isSplitRequired">
-            <!-- AGREGAR ESTILO DE WARNING O AVISO -->
             <div>Warning! Este viaje se debe dividir</div>
           </div>
           <h3 class="item-text">{{ data.operator }}</h3>
@@ -192,15 +201,16 @@ const updateTravel = async () => {
             <div v-else class="t-nulo"><IHelp /> Por completar...</div>
           </div>
         </div>
-        <div class="mC-b-imputs inputs-change" v-if="!isCamion">
+        <div class="mC-b-giba" v-if="!isCamion">
           <div
             v-for="(item, index) in dataToUpdate"
             :key="index"
-            class="container-count"
+            class="container-giba"
           >
-            <span>
-              Giba: <strong>{{ item.pila }}</strong>
-            </span>
+            <h2>
+              {{ item.pila }}
+            </h2>
+            <span class="text-giba">Giba</span>
           </div>
           <button
             class="btn-change"
@@ -222,28 +232,6 @@ const updateTravel = async () => {
                 <img :src="getImagePath(item.dominio)" alt="" />
                 <span>{{ item.dominio }} {{ item.vagones }}</span>
               </div>
-              <!-- <div class="count-input" v-if="isSplitRequired">
-                <button
-                  class="button-number"
-                  type="button"
-                  @click="decrease(index)"
-                >
-                  <IMinus />
-                </button>
-                <input
-                  class="input-number no-spinners"
-                  type="number"
-                  :value="item.vagones"
-                  @input="updateCount(index, $event)"
-                />
-                <button
-                  class="button-number"
-                  type="button"
-                  @click="increase(index)"
-                >
-                  <IMore />
-                </button>
-              </div> -->
             </div>
             <div class="count-item" v-if="!isCamion">
               <div className="mC-b-imputs">
@@ -348,7 +336,7 @@ const updateTravel = async () => {
           @click.prevent="updateTravel()"
         >
           <template v-if="buttonClicked">
-             <span class="loader"></span>Procesando...
+            <span class="loader"></span>Procesando...
           </template>
           <template v-else> Guardar </template>
         </button>
@@ -358,8 +346,24 @@ const updateTravel = async () => {
 </template>
 
 <style lang="scss">
-.inputs-change {
+.mC-b-giba {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  .container-giba {
+    padding: 15px 20px;
+    border: 1px solid var(--grey-light-2);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    .text-giba {
+      color: var(--grey-2);
+      font-size: clamp(6px, 8vw, 10px);
+      line-height: .8rem;
+    }
+  }
   .btn-change {
     position: absolute;
     color: var(--grey-2);
@@ -367,8 +371,8 @@ const updateTravel = async () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     padding: 0;
     display: grid;
     place-items: center;
@@ -408,9 +412,9 @@ const updateTravel = async () => {
 .container-count {
   flex: 1 1 150px;
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.2rem;
   flex-direction: column;
-  gap: 1rem;
   padding: 15px 20px;
   border: 1px solid var(--grey-light-2);
   border-radius: 10px;

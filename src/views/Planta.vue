@@ -116,7 +116,7 @@ const excludedFields = ["year", "month"];
         >
           <template #body="slotProps">
             <Skeleton v-if="store.state.loading" height="38px"></Skeleton>
-                <h4 v-else>
+                <h4 v-else :class="{ 't-textCort': header.field === 'dominio' || header.field === 'tajo' }">
                   {{
                     formatColumnValue(
                       slotProps.data[header.field],

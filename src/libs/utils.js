@@ -6,9 +6,9 @@ export const formatDate = (value) => {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  return `${hours}:${minutes}:${seconds}, ${day} ${getMonthName(
-    date.getMonth()
-  )} ${year}`;
+  return `${hours}:${minutes}:${seconds}, ${getMonthName(
+    date.getMonth() 
+  )} ${day} ${year}`;
 };
 
 export const formatDateAbas = (value) => {
@@ -16,7 +16,7 @@ export const formatDateAbas = (value) => {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  return `${day} ${getMonthName(date.getMonth())} ${year}`;
+  return `${getMonthName(date.getMonth())} ${day}, ${year}`;
 };
 
 export const formatHour = (value) => {
