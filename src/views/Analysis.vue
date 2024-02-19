@@ -1,5 +1,6 @@
 <script setup>
-import Graf from "../components/Graf.vue";
+import FeedingGraf from "../components/FeedingGraf.vue";
+import ComplianceGraf from "../components/ComplianceGraf.vue";
 </script>
 
 <template>
@@ -14,13 +15,13 @@ import Graf from "../components/Graf.vue";
   </div>
   <div class="c-global-c-analysis">
     <div class="c-analysis-items">
-      <Graf ruta="YUMPAG" />
-      <Graf ruta="UCHUCCHACUA" />
+      <ComplianceGraf stage="analysisIn" mining="YUMPAG"/>
+      <ComplianceGraf stage="analysisIn" mining="UCHUCCHACUA"/>
     </div>
-    <div class="c-analysis-items">
-      <Graf ruta="YUMPAG" />
-      <Graf ruta="UCHUCCHACUA" />
-    </div>
+    <div>
+    <h2>Alimentación de Planta</h2>
+  </div>
+      <FeedingGraf stage="analysisOut" mining="YUMPAG" />   
   </div>
 </template>
 
@@ -29,7 +30,6 @@ import Graf from "../components/Graf.vue";
   display: flex;
   gap: 1rem;
 }
-
 
 .c-global-c-analysis {
   display: flex;

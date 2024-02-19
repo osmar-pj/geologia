@@ -65,33 +65,38 @@ const deselectItem = (index) => {
   selectedCategories.value.splice(index, 1);
 };
 
-const sendFilter = async () => {  
-    try {
-      buttonClicked.value = true;
-      const response = await fetch(`${url}/listGeneral`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": true,
-        },
-        body: JSON.stringify({ arr: selectedCategories.value }),
-      });
+const sendFilter = async () => {
+  try {
+    buttonClicked.value = true;
 
-      const data = await response.json();
-     
-      if (data.status === true) {
-        console.log(data)  
-        store.dispatch("filter_list", data);
-        cerrarModal();
-        buttonClicked.value = false;
-      } else {
-        console.log("error");
-        buttonClicked.value = false;
-      }
-    } catch (error) {
-      console.error("Error al actualizar:", error);
+    const response = await fetch(`${url}/listGeneral`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": true,
+      },
+      body: JSON.stringify({
+        arr: selectedCategories.value,
+        category: "trips",
+        filter:"ENERO"
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.status === true) {
+      console.log(data);
+      store.dispatch("filter_list", data);
+      cerrarModal();
       buttonClicked.value = false;
-    }  
+    } else {
+      console.log("error");
+      buttonClicked.value = false;
+    }
+  } catch (error) {
+    console.error("Error al actualizar:", error);
+    buttonClicked.value = false;
+  }
 };
 </script>
 <template>
@@ -123,7 +128,9 @@ const sendFilter = async () => {
         <div class="mF-c-body">
           <div class="mF-b-categories">
             <div class="categories-title">
-              <ICategory /><span> Categorias ({{ selectedCategories.length }})</span>
+              <ICategory /><span>
+                Categorias ({{ selectedCategories.length }})</span
+              >
             </div>
             <div class="categories-contenedor">
               <div class="mF-imputs-item" v-if="store.state.loading">
@@ -149,7 +156,9 @@ const sendFilter = async () => {
           </div>
           <div class="mF-b-categories">
             <div class="categories-title">
-              <IItem /><span> Items seleccionados ({{ selectedCategories.length }})</span>
+              <IItem /><span>
+                Items seleccionados ({{ selectedCategories.length }})</span
+              >
             </div>
             <div class="categories-items">
               <TransitionGroup name="list" tag="ul">
@@ -186,17 +195,11 @@ const sendFilter = async () => {
           <button @click="cleanFilter" class="btn-cancel" type="button">
             Limpiar
           </button>
-          <button
-              @click.prevent="sendFilter"
-              class="btn-success"
-              type="submit"
-            >
-          <template v-if="buttonClicked">
-            <span class="loader"></span> Proces...
-          </template>
-          <template v-else>
-              <IStart /> Filtrar
+          <button @click.prevent="sendFilter" class="btn-success" type="submit">
+            <template v-if="buttonClicked">
+              <span class="loader"></span> Proces...
             </template>
+            <template v-else> <IStart /> Filtrar </template>
           </button>
         </div>
       </form>
@@ -206,7 +209,7 @@ const sendFilter = async () => {
 
 <style lang="scss">
 .btn-filters {
-  background-color: var(--white);  
+  background-color: var(--white);
   border: 1px solid var(--grey-light-2);
   border-radius: 8px;
   min-width: 100px;
@@ -274,7 +277,6 @@ const sendFilter = async () => {
           font-weight: 600;
           letter-spacing: -0.03em;
         }
-        
       }
       .mF-h-close {
         position: absolute;
@@ -315,22 +317,22 @@ const sendFilter = async () => {
       flex: 1 1;
       .mF-b-categories {
         .categories-title {
-          padding-bottom: .8rem;
+          padding-bottom: 0.8rem;
           display: flex;
           align-items: center;
-          gap: .5rem;
+          gap: 0.5rem;
           span {
             font-size: clamp(6px, 8vw, 14px);
             line-height: 0.8rem;
             color: var(--grey-2);
             font-weight: 500;
           }
-          svg{
+          svg {
             width: 1.4rem;
-                  height: 1.4rem;
-                  color: var(--grey-light-3);
-                  fill: transparent;
-                  stroke-width: 1.7;
+            height: 1.4rem;
+            color: var(--grey-light-3);
+            fill: transparent;
+            stroke-width: 1.7;
           }
         }
         .categories-contenedor {
@@ -404,7 +406,7 @@ const sendFilter = async () => {
     .mF-c-footer {
       padding: 1.5rem;
       display: flex;
-      gap: .5rem;
+      gap: 0.5rem;
 
       .btn-success {
         background-color: var(--primary);

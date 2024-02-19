@@ -78,5 +78,87 @@ console.log(props.data);
 }
 
 
+.modal-oops {
+  max-width: 300px;
+}
+
+.check-cont {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.check-circle {
+  position: relative;
+  height: 50px;
+  width: 50px;
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  animation: rotate 1s linear forwards;
+}
+
+@keyframes rotate {
+  0% {
+    border-left-color: #e67e22;
+  }
+  30% {
+    border-left-color: yellow;
+  }
+
+  55% {
+    border-left-color: #e67e22;
+  }
+
+  75% {
+    border-left-color: yellow;
+  }
+
+  100% {
+    transform: rotate(360deg);
+    background-color: var(--primary);
+  }
+}
+
+.check-icon {
+  position: absolute;
+  content: "";
+  transform: scaleX(-1) rotate(135deg);
+  height: 22px;
+  width: 12px;
+  border-top: 4px solid var(--white);
+  border-right: 4px solid var(--white);
+  transform-origin: left top;
+  animation: check-icon 2s ease-in-out;
+  top: 53%;
+  left: 43%;
+}
+
+@keyframes check-icon {
+  0% {
+    height: 0;
+    width: 0;
+    opacity: 0;
+  }
+
+  20% {
+    height: 0;
+    width: 12px;
+    opacity: 1;
+  }
+
+  40% {
+    height: 22px;
+    width: 12px;
+    opacity: 1;
+  }
+
+  100% {
+    height: 22px;
+    width: 12px;
+    opacity: 1;
+  }
+}
 
 </style>

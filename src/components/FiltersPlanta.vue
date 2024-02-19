@@ -74,7 +74,7 @@ const sendFilter = async () => {
           "Content-Type": "application/json",
           "ngrok-skip-browser-warning": true,
         },
-        body: JSON.stringify({ arr: selectedCategories.value }),
+        body: JSON.stringify({ arr: selectedCategories.value, category:"planta" }),
       });
 
       const data = await response.json();

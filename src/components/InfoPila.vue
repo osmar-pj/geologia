@@ -21,8 +21,8 @@ const data = ref(props.data);
             <Edit />
           </div>
           <div class="mC-c-title-text">
-            <h2>Información detallada</h2>
-            <h4>Información detallada</h4>
+            <h2>{{ data.pila }}</h2>
+            <h4>Detalles de pila</h4>
           </div>
         </div>
         <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -31,17 +31,9 @@ const data = ref(props.data);
       </div>
 
       <div class="mC-c-body">
-        <div class="mC-b-info">
+        <!-- <div class="mC-b-info">
           <div v-for="(value, key) in data" :key="key" class="item-descrip">
             <h5>{{ key }}</h5>
-            <h4 v-if="key === 'history'">
-              <ul>
-                <li v-for="(item, index) in value" :key="index">
-                  <strong>{{ item.work }}</strong
-                  >: {{ formatDate(item.date) }} - {{ item.user }}
-                </li>
-              </ul>
-            </h4>
             <h4 v-if="key === 'travels'">
               <ul>
                 <li v-for="(item, index) in value" :key="index">
@@ -62,175 +54,102 @@ const data = ref(props.data);
             </h4>
             <h4 v-else>{{ value }}</h4>
           </div>
+        </div> -->
+        <div class="mC-b-samples">
+          <div class="N-datatable">
+  <table>
+    <thead>
+      <tr>
+        <th v-for="(value, key) in data.samples[0]" v-if="key !== 'id'">{{ key }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(sample, index) in data.samples" :key="index">
+        <td v-for="(value, key) in sample" v-if="key !== 'id'">{{ value }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+        <div class="mC-b-history">
+          <div>
+            <h3>History</h3>
+          </div>
+          <div
+            v-for="(value, key) in data.history"
+            :key="key"
+            class="mC-h-container"
+          >
+            <div class="mC-h-c-item">
+              <div class="item-h-text">
+                <h4>{{ value.work }}</h4>
+                <h5>{{ value.user ? value.user : "--" }}</h5>
+              </div>
+              <h4 class="item-h-date">{{ formatDate(value.date) }}</h4>
+            </div>
+          </div>
         </div>
       </div>
       <div class="mC-c-footer">
-        <button @click="cerrarModal" class="btn-cancel" type="button">
+        <!-- <button @click="cerrarModal" class="btn-cancel" type="button">
           Cancelar
         </button>
-        <button class="btn-success" type="submit">Guardar</button>
+        <button class="btn-success" type="submit">Cerrar</button> -->
       </div>
     </form>
   </div>
 </template>
 
 <style lang="scss">
-.inputs-change {
-  position: relative;
-  .btn-change {
-    position: absolute;
-    color: var(--grey-2);
-    background-color: var(--grey-light-22);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    display: grid;
-    place-items: center;
-    svg {
-      fill: transparent;
-      color: var(--grey-2);
-      width: 1.5rem;
-      height: 1.5rem;
-      stroke-width: 1.5;
-    }
-    &:active {
-      transform: translate(-50%, -50%) scale(0.85);
-    }
-  }
-}
-
-.input-pila {
-  flex: 1 1 130px !important;
-}
-.t-nulo {
-  padding: 2px 6px;
-  background-color: #fee2e2b4;
-  border-radius: 5px;
-  display: flex;
-  place-items: center;
-  gap: 0.25rem;
-  font-size: clamp(6px, 8vw, 12px);
-  color: var(--red);
-  svg {
-    fill: transparent;
-    color: var(--red);
-    width: 15px;
-    height: 15px;
-    stroke-width: 1.5;
-  }
-}
-.container-count {
-  flex: 1 1 150px;
-  display: flex;
-  gap: 0.5rem;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 15px 20px;
-  border: 1px solid var(--grey-light-2);
-  border-radius: 10px;
-  .count-item {
+.mC-b-history {
+  .mC-h-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    .count-info {
+    gap: 1rem;
+    padding-left: 20px;
+    .mC-h-c-item {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      img {
-        width: 5rem;
-        height: 3rem;
+      justify-content: space-between;
+      position: relative;
+      .item-h-text {
+        h4 {
+          font-weight: 550;
+        }
       }
-      span {
-        color: var(--black);
-        transition: 0.375s ease;
-        text-align: left;
-        font-size: clamp(6px, 8vw, 14px);
-        line-height: 1.2rem;
-        font-weight: 500;
+      .item-h-date {
       }
-    }
-    .count-input {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      border: 1.5px solid var(--grey-light-2);
-      border-radius: 5px;
-      .input-number {
-        width: 35px;
-        height: 35px;
-        color: var(--black);
-        padding: 0;
-        text-align: center;
-        font-size: clamp(6px, 8vw, 14px);
-        border-radius: 0;
-        border: none;
+      &::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        position: absolute;
+        top: 4px;
+        left: -15px;
+        background-color: var(--black);
       }
-      .button-number {
-        width: 35px;
-        height: 35px;
-        color: var(--grey-2);
-        background-color: var(--grey-light-22);
-        padding: 0;
-        display: grid;
-        place-items: center;
-
-        svg {
-          fill: transparent;
-          color: var(--grey-2);
-          width: 1.2rem;
-          height: 1.2rem;
-          stroke-width: 2;
-        }
-        &:hover {
-          background-color: var(--primary);
-          svg {
-            color: var(--white);
-          }
-        }
-        &:active {
-          transform: scale(0.85);
-        }
-        &:nth-child(1) {
-          border-radius: 5px 0 0 5px;
-        }
-        &:nth-child(3) {
-          border-radius: 0 5px 5px 0;
-        }
+      &::after {
+        content: "";
+        width: 1px;
+        height: 100%;
+        border-radius: 50%;
+        position: absolute;
+        top: 4px;
+        left: -13px;
+        background-image: repeating-linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black) 2px,
+          transparent 2px,
+          transparent 4px
+        );
       }
     }
   }
-}
-.label-error {
-  font-size: clamp(6px, 8vw, 12px);
-  color: rgb(243, 89, 89);
-  font-weight: 600;
-  line-height: 0.8rem;
-  margin-top: 0.1rem;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .mCreate-3 {
   max-width: 650px !important;
-}
-
-.no-spinners::-webkit-inner-spin-button,
-.no-spinners::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 </style>

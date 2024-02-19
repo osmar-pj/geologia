@@ -5,7 +5,7 @@ import { useStore } from "vuex";
 import ICalendar from "../icons/ICalendar.vue";
 
 const url = import.meta.env.VITE_API_URL;
-const props = defineProps(["ruta"]);
+const props = defineProps(["stage", "mining"]);
 const store = useStore();
 const buttonClicked = ref(false);
 const selectedEstado = ref(new Date());
@@ -45,8 +45,8 @@ const handleGraphic = async () => {
     buttonClicked.value = true;
     const response = await fetch(
       `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
-        props.ruta
-      }`,
+        props.mining
+      }&stage=${props.stage}`,
       {
         method: "GET",
         headers: {
@@ -126,7 +126,7 @@ const chartOptions = {
   },
   dataLabels: {
     enabled: true,
-    enabledOnSeries: [0,1],
+    enabledOnSeries: [0, 1],
     formatter: (val) => {
       if (val === null) {
         return "";
@@ -276,7 +276,7 @@ const DataToday = ref({
     <div class="g-dash-header">
       <div class="g-d-header-title">
         <h3>
-          <strong> {{ props.ruta }} </strong>
+          <strong> Stock {{ props.mining }} </strong>
           (Análisis)
         </h3>
       </div>
@@ -344,26 +344,7 @@ const DataToday = ref({
               analysisData ? analysisData.aver_ley_prog.toFixed(2) : 0
             }}</span>
           </div>
-        </div>
-        <!-- <div class="g-d-h-totales-item">
-          <span>Programado</span>
-          <h4>
-            Ley/ {{ analysisData ? analysisData.aver_ley_prog.toFixed(2) : 0 }}
-          </h4>
-          <h4>
-            Tonelada/
-            {{ analysisData ? analysisData.total_ton_prog.toFixed(2) : 0 }}
-          </h4>
-        </div>
-        <div class="g-d-h-totales-item">
-          <span>Ejecutado</span>
-          <h4>
-            Ley/ {{ analysisData ? analysisData.aver_ley.toFixed(2) : 0 }}
-          </h4>
-          <h4>
-            Tonelada/ {{ analysisData ? analysisData.total_ton.toFixed(2) : 0 }}
-          </h4>
-        </div>  -->
+        </div>        
       </div>
     </div>
     <div class="g-dash-body">
@@ -373,7 +354,7 @@ const DataToday = ref({
       <template v-else>
         <div id="chart">
           <VueApexCharts
-            height="250"
+            height="100%"
             :options="chartOptions"
             :series="graficData"
           />
@@ -410,8 +391,11 @@ const DataToday = ref({
   padding-top: 1rem;
   border-radius: var(--br-xxl);
   border: 1px solid var(--grey-light-22);
-  padding: 2rem 2rem 0.5rem 2rem;
+  padding: 2rem 2rem 2rem 2rem;
   background-color: var(--white);
+flex: 1 1;
+ display: flex;
+ flex-direction: column;
   .g-dash-header {
     display: flex;
     justify-content: space-between;
@@ -424,6 +408,7 @@ const DataToday = ref({
         color: var(--grey-light-3);
         font-size: clamp(5px, 8vw, 12px);
         font-weight: 400;
+        text-transform: capitalize;
         strong {
           color: var(--black);
           font-size: clamp(5px, 8vw, 16px);
@@ -438,7 +423,7 @@ const DataToday = ref({
     }
     .g-d-header-totales {
       display: flex;
-      
+
       gap: 1rem;
       .g-d-h-totales-item {
         span {
@@ -457,6 +442,8 @@ const DataToday = ref({
     }
   }
   .g-dash-body {
+    flex: 1 1;
+    display: flex;
   }
 }
 
@@ -513,7 +500,7 @@ const DataToday = ref({
     content: "";
     width: 130px;
     height: 130px;
-    border: 17px solid;   
+    border: 17px solid;
     position: absolute;
     border-radius: 50%;
     left: 0;
@@ -524,15 +511,17 @@ const DataToday = ref({
   }
 }
 
-.semi-ley{
+.semi-ley {
   &:after {
-    border-color: var(--grey-light-22) var(--grey-light-22) rgb(255, 69, 96) rgb(255, 69, 96);
+    border-color: var(--grey-light-22) var(--grey-light-22) rgb(255, 69, 96)
+      rgb(255, 69, 96);
   }
 }
 
-.semi-tonelada{
+.semi-tonelada {
   &:after {
-    border-color: var(--grey-light-22) var(--grey-light-22) rgb(0, 143, 251) rgb(0, 143, 251);
+    border-color: var(--grey-light-22) var(--grey-light-22) rgb(0, 143, 251)
+      rgb(0, 143, 251);
   }
 }
 
@@ -551,9 +540,13 @@ const DataToday = ref({
 
 .gaTwo {
   transform: rotate(180deg);
- 
+
   &:after {
-    border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) #F3BD5A #F3BD5A !important;
-  }  
+    border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) #f3bd5a #f3bd5a !important;
+  }
+}
+
+#chart{
+flex: 1 1;
 }
 </style>
