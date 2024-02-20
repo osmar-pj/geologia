@@ -7,6 +7,7 @@ import IStart from "../icons/IStart.vue";
 import IClose from "../icons/IClose.vue";
 import ICategory from "../icons/ICategory.vue";
 import IItem from "../icons/IItem.vue";
+import ICalendar from "../icons/ICalendar.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -17,6 +18,23 @@ const draggableItem = ref([null]);
 const showFilters = ref(false);
 const showError = ref(false);
 const buttonClicked = ref(false);
+const selectedEstado = ref(new Date());
+// Obtener la fecha del mes anterior
+const fechaMesAnterior = new Date();
+fechaMesAnterior.setMonth(fechaMesAnterior.getMonth() - 1);
+
+// Asignar la fecha del mes anterior a selectedEstado
+selectedEstado.value = fechaMesAnterior;
+
+let today = new Date();
+let month = today.getMonth();
+let year = today.getFullYear();
+let prevMonth = month < 6 ? 12 - (6 - month) : month - 6;
+let prevYear = month < 6 ? year - 1 : year;
+const minDate = ref(new Date());
+const maxDate = ref(new Date());
+minDate.value.setMonth(prevMonth);
+minDate.value.setFullYear(prevYear);
 
 const openModal = () => {
   showFilters.value = true;
@@ -38,6 +56,8 @@ onMounted(async () => {
   );
   await sendFilter();
 });
+
+
 
 const hideError = () => {
   showError.value = false;
@@ -68,7 +88,7 @@ const deselectItem = (index) => {
 const sendFilter = async () => {
   try {
     buttonClicked.value = true;
-
+    console.log(selectedEstado.value.getTime())
     const response = await fetch(`${url}/listGeneral`, {
       method: "POST",
       headers: {
@@ -76,14 +96,14 @@ const sendFilter = async () => {
         "ngrok-skip-browser-warning": true,
       },
       body: JSON.stringify({
+        ts:  selectedEstado.value.getTime(),
         arr: selectedCategories.value,
-        category: "trips",
-        filter:"ENERO"
+         category: "trips",      
       }),
     });
 
     const data = await response.json();
-
+    console.log(data);
     if (data.status === true) {
       console.log(data);
       store.dispatch("filter_list", data);
@@ -98,6 +118,9 @@ const sendFilter = async () => {
     buttonClicked.value = false;
   }
 };
+
+
+
 </script>
 <template>
   <button class="btn-filters" @click="openModal()">
@@ -189,6 +212,24 @@ const sendFilter = async () => {
                 </li>
               </TransitionGroup>
             </div>
+          </div>
+          <div>
+            <Calendar
+            v-model="selectedEstado"
+            view="month"
+            :minDate="minDate"
+            :maxDate="maxDate"
+            :manualInput="false"
+            dateFormat="mm/yy"
+            aria-placeholder="mm/yy"
+            showIcon
+            iconDisplay="input"
+            :yearNavigator="true"
+          >
+            <template #inputicon="{ clickCallback }">
+              <ICalendar />
+            </template>
+          </Calendar>
           </div>
         </div>
         <div class="mF-c-footer">

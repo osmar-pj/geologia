@@ -17,9 +17,9 @@ const menuItems = [
   { name: 'analysis', label: 'Análisis', icon: IDash, route: 'analysis' },
   { name: 'oreControl', label: 'Ore Control', icon: IControl, route: 'oreControl' },
   { name: 'controlCalidad', label: 'Control de Calidad', icon: CQuality, route: 'controlCalidad' },
-  { name: 'list', label: 'Lista de viajes', icon: IList, route: 'list' },
-  { name: 'planta', label: 'Lista de Planta', icon: CQuality, route: 'planta' },
-  { name: 'pila', label: 'Lista de Pilas', icon: CQuality, route: 'pila' },
+  { name: 'list', label: 'Viajes de Cancha', icon: IList, route: 'list' },
+  { name: 'planta', label: 'Viajes de Planta', icon: CQuality, route: 'planta' },
+  { name: 'pila', label: 'Pilas de cancha', icon: CQuality, route: 'pila' },
 ];
 const goToPage = (page) => {
   router.push(page);

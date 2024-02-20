@@ -81,7 +81,7 @@ const formatColumnValue = (value, fn, field, row) => {
       <span>| Dia terminado en Mina </span>
     </div>
   </div>
-  <div class="tableContainer">
+  <div class="tableContainer" >
     <DataTable
       :value="data.data"
       tableStyle="width: 100%"
@@ -169,7 +169,9 @@ const formatColumnValue = (value, fn, field, row) => {
                 v-if="
                   slotProps.data[header.field] !== '' &&
                   slotProps.data[header.field] !== null &&
-                  slotProps.data[header.field] !== undefined
+                  slotProps.data[header.field] !== undefined &&
+                  (!Array.isArray(slotProps.data[header.field]) ||
+                    slotProps.data[header.field].length > 0)
                 "
               >
                 <h4 :class="{ 't-turn': header.field === 'turn' }">
@@ -184,7 +186,9 @@ const formatColumnValue = (value, fn, field, row) => {
                 </h4>
               </template>
               <template v-else>
-                <h5 class="t-complet"><img src="../assets/img/i-square.svg" alt="" />Completar</h5>
+                <h5 class="t-complet">
+                  <img src="../assets/img/i-square.svg" alt="" />Completar
+                </h5>
               </template>
             </template>
           </template>

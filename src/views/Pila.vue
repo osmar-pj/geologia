@@ -12,7 +12,10 @@ const store = useStore();
 const socket = inject("socket");
 // const pilas = ref([]);
 const pilas = computed(() => store.state.pilaList);
-
+const dt = ref();
+const exportCSV = () => {
+    dt.value.exportCSV();
+};
 onMounted(async () => {
   await store.dispatch("pila_list");
 });
@@ -62,13 +65,14 @@ const statusClassMapping = {
   waitBeginDespacho: "waitBeginDespacho",
 };
 const getStatusClass = (status) => statusClassMapping[status] || "";
+
 </script>
 
 <template>
   <div class="c-global-header">
     <div class="global-h-title">
       <div class="g-h-t-primary">
-        <h1>Lista de Pilas</h1>
+        <h1>Pilas de Cancha</h1>
         <span>{{ pilas.data ? pilas.data.length : 0 }}</span>
       </div>
       <span>| Dia terminado en Mina </span>
@@ -79,6 +83,7 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
     <DataTable
       v-model:filters="filters"
       :value="pilas.data"
+      ref="dt"
       tableStyle="width: 100%; border-collapse: collapse;"
       paginator
       :rows="20"
@@ -100,7 +105,7 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
           />
         </div>
         <div>
-          <button class="btn-success">Exportar ahora</button>
+          <button class="btn-success" @click="exportCSV($event)">Exportar ahora</button>
         </div>
       </template>
       <Column header="#" headerStyle="width: 2.5rem">
@@ -124,25 +129,7 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
             </h5>
           </div>
         </template>
-      </Column>
-      <!-- <Column header="Nombre" headerStyle="text-align: center;">
-        <template #body="slotProps">
-          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
-          <div v-else class="t-name">
-            <h4>
-              {{ slotProps.data.pila }}
-            </h4>
-            <h5>
-              {{
-                slotProps.data.travels && Array.isArray(slotProps.data.travels)
-                  ? slotProps.data.travels.length
-                  : 0
-              }}
-              viajes
-            </h5>
-          </div>
-        </template>
-      </Column> -->
+      </Column>      
       <Column header="Pila" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
@@ -160,8 +147,7 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
               }}</strong> viajes
             </h5>            
           </div>
-            <div
-            
+            <div            
             :class="[
               'porcent-status',
               {
@@ -175,7 +161,6 @@ const getStatusClass = (status) => statusClassMapping[status] || "";
               },
             ]"
           >
-            <!-- {{ slotProps.data.statusPila }}   -->
           </div>
           </div>
         </template>

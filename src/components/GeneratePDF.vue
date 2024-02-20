@@ -7,8 +7,8 @@ import ComplianceGraf from "./ComplianceGraf.vue";
 const store = useStore();
 const url = import.meta.env.VITE_API_URL;
 
-const trips = ref([])
-const tripsY = ref([])
+const trips = ref([]);
+const tripsY = ref([]);
 const generatingPDF = ref(true);
 // Función para enviar el filtro y obtener los datos
 const sendFilter = async () => {
@@ -114,20 +114,8 @@ setInterval(() => {
 }, 1000);
 </script>
 <template>
-  <!-- <Button class="btn-success btn-GP" @click="generatePDF">Generate PDF</Button> -->
-  <div>
-    <!-- <div class="caratula">
-       <div class="contenido-caratula">
-         <h3>{{ formattedDate  }}</h3>
-         <h1>REPORTE</h1>
-         <h2>Área/ Geología</h2>
-         <h4>{{ storedUser.name }}</h4>
-       </div>
-     </div>
-     -->
-  </div>
   <button class="btn-success btn-GP" @click="generatePDF">Exportar PDF</button>
-  <div class="pdf-content" v-show="generatingPDF">
+  <div class="pdf-content" v-show="!generatingPDF">
     <div id="app" ref="document" style="width: 297mm; height: 210mm">
       <div id="pdf-content">
         <!-- Contenido de la caratula hoja -->
@@ -143,7 +131,7 @@ setInterval(() => {
 
         <!-- Contenido de la primera hoja -->
         <div class="pdf-c-table" id="first-page">
-          <h3 class="pdf-title">Stock de canchas / Yumpag </h3>
+          <h3 class="pdf-title">Stock de canchas / Yumpag</h3>
           <div class="N-datatable">
             <table>
               <thead>
@@ -171,8 +159,12 @@ setInterval(() => {
                   <td>{{ item.ley_pb.toFixed(2) }}</td>
                   <td>{{ item.ley_zn.toFixed(2) }}</td>
                 </tr>
-                <tr v-for="item in trips.footer" :key="item.id" class="tbl-bold">
-                  <td> Total </td>
+                <tr
+                  v-for="item in trips.footer"
+                  :key="item.id"
+                  class="tbl-bold"
+                >
+                  <td>Total</td>
                   <td></td>
                   <td></td>
                   <td>{{ item.tonh.toFixed(2) }}</td>
@@ -183,12 +175,12 @@ setInterval(() => {
                   <td>{{ item.ley_zn.toFixed(2) }}</td>
                 </tr>
               </tbody>
-              
             </table>
           </div>
         </div>
+        <div class="html2pdf__page-break"></div>
 
-        <div class="pdf-c-table" id="first-page">
+        <div class="pdf-c-table" id="f-page">
           <h3 class="pdf-title">Stock de canchas / Uchuccchacua</h3>
           <div class="N-datatable">
             <table>
@@ -217,8 +209,12 @@ setInterval(() => {
                   <td>{{ item.ley_pb.toFixed(2) }}</td>
                   <td>{{ item.ley_zn.toFixed(2) }}</td>
                 </tr>
-                <tr v-for="item in tripsY.footer" :key="item.id" class="tbl-bold">
-                  <td> Total </td>
+                <tr
+                  v-for="item in tripsY.footer"
+                  :key="item.id"
+                  class="tbl-bold"
+                >
+                  <td>Total</td>
                   <td></td>
                   <td></td>
                   <td>{{ item.tonh.toFixed(2) }}</td>
@@ -229,7 +225,6 @@ setInterval(() => {
                   <td>{{ item.ley_zn.toFixed(2) }}</td>
                 </tr>
               </tbody>
-              
             </table>
           </div>
         </div>
@@ -240,18 +235,18 @@ setInterval(() => {
         <div class="pdf-c-grafic" id="second-page">
           <h2 class="pdf-title">Reporte de canchas / Yumpag - Uchuccchacua</h2>
           <ComplianceGraf
-            style="width: 270mm"
+            style="width: 100%"
             stage="analysisIn"
             mining="YUMPAG"
           />
         </div>
-    
+
         <!-- Contenido de la segunda hoja -->
         <div class="pdf-c-grafic" id="t-page">
           <h3 class="pdf-title">Reporte de canchas / Yumpag - Uchuccchacua</h3>
 
           <ComplianceGraf
-            style="width: 270mm"
+            style="width: 100%"
             stage="analysisIn"
             mining="UCHUCCHACUA"
           />
@@ -322,33 +317,27 @@ setInterval(() => {
   }
 }
 
-.pdf-c-table {
+.pdf-c-table,.pdf-c-grafic  {
+  width: 297mm;
+  height: 210mm;
+  padding: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
 }
-.pdf-title{
+.pdf-title {
   padding-bottom: 1rem;
   text-align: left;
   font-weight: 550;
   width: 100%;
 }
-.pdf-c-grafic {
-  width: 297mm;
-  height: 210mm;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.tbl-bold{
-font-weight: 600;
-font-size: clamp(6px, 8vw, 14px);
-td{
-  background-color: #ffd90049;
-}
+
+.tbl-bold {
+  font-weight: 600;
+  font-size: clamp(6px, 8vw, 14px);
+  td {
+    background-color: #ffd90049;
+  }
 }
 </style>

@@ -14,7 +14,7 @@ const data = ref(props.data);
 
 <template>
   <div class="modalCreate-backg">
-    <form class="mCreate-content mCreate-3 inner">
+    <form class="mCreate-content mCreate-details inner">
       <div class="mC-c-header">
         <div class="mC-h-title">
           <div class="mC-c-title-icon">
@@ -57,20 +57,27 @@ const data = ref(props.data);
         </div> -->
         <div class="mC-b-samples">
           <div class="N-datatable">
-  <table>
-    <thead>
-      <tr>
-        <th v-for="(value, key) in data.samples[0]" v-if="key !== 'id'">{{ key }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(sample, index) in data.samples" :key="index">
-        <td v-for="(value, key) in sample" v-if="key !== 'id'">{{ value }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-</div>
+            <table>
+              <thead>
+                <tr>
+                  <th
+                    v-for="(value, key) in data.samples[0]"
+                    v-if="key !== 'id'"
+                  >
+                    {{ key }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(sample, index) in data.samples" :key="index">
+                  <td v-for="(value, key) in sample" v-if="key !== 'id'">
+                    {{ value }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <div class="mC-b-history">
           <div>
@@ -116,6 +123,9 @@ const data = ref(props.data);
         h4 {
           font-weight: 550;
         }
+        h5 {
+          padding-bottom: 15px;
+        }
       }
       .item-h-date {
       }
@@ -149,7 +159,8 @@ const data = ref(props.data);
   }
 }
 
-.mCreate-3 {
-  max-width: 650px !important;
+.mCreate-details {
+  max-width: 80% !important;
+  flex-direction: row;
 }
 </style>
