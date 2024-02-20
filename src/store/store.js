@@ -125,7 +125,6 @@ const store = createStore({
       state.loading = payload
     },
     filtroAplicado(state, payload) {
-      console.log("ingresando", state, payload)
       state.filtroAplicado = payload
     },
     // ADD to list of trips

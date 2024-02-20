@@ -132,8 +132,8 @@ const panelsSVG = () => {
     (objects, options) => {
       const obj = fabric.util.groupSVGElements(objects, options);
       obj.set({
-        left: 140,
-        top: 70,
+        left: 240,
+        top:30,
         scaleX: 1.1,
         scaleY: 1.1,
         selectable: false,
@@ -148,8 +148,8 @@ const panelsSVG = () => {
     (objects, options) => {
       const obj = fabric.util.groupSVGElements(objects, options);
       obj.set({
-        left: 950,
-        top: 450,
+        left: 1100,
+        top: 350,
         scaleX: 1.1,
         scaleY: 1.1,
         selectable: false,

@@ -85,7 +85,6 @@ const deselectItem = (index) => {
 
 const sendFilter = async () => {
   if(selectedCategories.value.length === 0  ){
-
     console.log("Los datos a actualizar están vacíos");
   }else{
     try {

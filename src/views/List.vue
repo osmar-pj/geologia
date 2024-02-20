@@ -16,7 +16,6 @@ const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 const socket = inject("socket");
 const trip$ = new Subject();
-
 const trips = ref([]);
 
 const DataView = async () => {
@@ -89,6 +88,7 @@ const updateTrips = (tripsFound, data) => {
 };
 
 const tripsFiltered = computed(() => store.state.dataFilterTable);
+console.log("tripsFiltered", tripsFiltered.value);
 
 const formatColumnValue = (value, fn, field, row) => {
   switch (fn) {
@@ -260,10 +260,10 @@ const getStatusClass = (header, data) => {
       </template>
     </DataTable>
   </div>
-  <div class="c-global-c-filtered" v-show="filtroAplicado">
-    <div class="c-item-filtered">
+  <div class="c-global-c-filtered" v-show="filtroAplicado" >
+    <div class="c-item-filtered" v-for="tripFiltered in tripsFiltered.data" :key="tripFiltered.index">
       <DataTable
-        :value="tripsFiltered.data"
+        :value="tripFiltered.body"
         tableStyle="width: 100%"
         :loading="store.state.loading"
       >
@@ -315,60 +315,6 @@ const getStatusClass = (header, data) => {
         </Column>
       </DataTable>
     </div>
-    <!-- <div class="c-item-filtered">
-      <DataTable
-        :value="tripsFiltered.data"
-        tableStyle="width: 100%"
-        :loading="store.state.loading"
-      >
-        <Column header="#" headerStyle="width: 2.5rem">
-          <template #body="slotProps">
-            <div class="td-user">
-              <div class="t-name">
-                <h5>#{{ slotProps.index + 1 }}</h5>
-              </div>
-            </div>
-          </template>
-        </Column>
-        <Column
-          v-for="(header, index) in tripsFiltered.header || []"
-          :key="index"
-          :field="header.field"
-          :header="header.title"
-        >
-          <template #body="slotProps">
-            <Skeleton v-if="store.state.loading"></Skeleton>
-            <template v-else>
-              <template
-                v-if="
-                  slotProps.data[header.field] !== '' &&
-                  slotProps.data[header.field] !== null &&
-                  slotProps.data[header.field] !== undefined
-                "
-              >
-                <h4 :class="getStatusClass(header, slotProps.data)">
-                  <template v-if="header.field !== 'statusTrip'">
-                    {{
-                      formatColumnValue(
-                        slotProps.data[header.field],
-                        header.fn,
-                        header.field,
-                        slotProps.data
-                      )
-                    }}
-                  </template>
-                </h4>
-              </template>
-              <template v-else>
-                <h5 class="t-complet">
-                  <img src="../assets/img/i-square.svg" alt="" />Compl..
-                </h5>
-              </template>
-            </template>
-          </template>
-        </Column>
-      </DataTable>
-    </div> -->
   </div>
 </template>
 
