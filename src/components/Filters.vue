@@ -86,9 +86,10 @@ const deselectItem = (index) => {
 };
 
 const sendFilter = async () => {
-  try {
+  
+    try {
     buttonClicked.value = true;
-    console.log(selectedEstado.value.getTime())
+    
     const response = await fetch(`${url}/listGeneral`, {
       method: "POST",
       headers: {
@@ -97,16 +98,15 @@ const sendFilter = async () => {
       },
       body: JSON.stringify({
         ts:  selectedEstado.value.getTime(),
-        arr: selectedCategories.value,
+        arr: ["rango","type"],
          category: "trips",      
       }),
     });
 
     const data = await response.json();
-    console.log(data);
-    if (data.status === true) {
-      console.log(data);
-      store.dispatch("filter_list", data);
+      if (data.status === true) {
+      console.log(data)
+      store.dispatch("filter_list", data.data);
       cerrarModal();
       buttonClicked.value = false;
     } else {
@@ -117,9 +117,8 @@ const sendFilter = async () => {
     console.error("Error al actualizar:", error);
     buttonClicked.value = false;
   }
+  
 };
-
-
 
 </script>
 <template>

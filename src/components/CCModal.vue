@@ -29,11 +29,11 @@ const handleFileUpload = (event) => {
   if (file) {
     const fileName = file.name;
     const underscoreIndex = fileName.indexOf("_");
-    const titleValue  =
+    const titleValue =
       underscoreIndex !== -1
         ? fileName.substring(0, underscoreIndex)
         : fileName;
-    const despachos = props.data.cod_despacho
+    const despachos = props.data.cod_despacho;
     const isTitleInDespachos = despachos.includes(titleValue);
     if (isTitleInDespachos) {
       showDocError.value = false;
@@ -78,10 +78,10 @@ const handleFileUpload = (event) => {
       });
     } else {
       console.log("codigo incorrecto");
-      showDocError.value = true;   
+      showDocError.value = true;
       setTimeout(() => {
         showDocError.value = false;
-    }, 10000);
+      }, 10000);
       return;
     }
   }
@@ -152,27 +152,25 @@ watch(selectedProducts, () => {
 });
 
 const rango = (ley) => {
-    // switch case
-    switch (true) {
-        case ley >= 0 && ley <= 3:
-            return '0-3'
-        case ley > 3 && ley <= 4:
-            return '3-4'
-        case ley > 4 && ley <= 4.5:
-            return '4-4.5'
-        case ley > 4.5 && ley <= 5:
-            return '4.5-5'
-        case ley > 5 && ley <= 10:
-            return '5-10'
-        default:
-            return '10'
-    }
-}
+  // switch case
+  switch (true) {
+    case ley >= 0 && ley <= 3:
+      return "0-3";
+    case ley > 3 && ley <= 4:
+      return "3-4";
+    case ley > 4 && ley <= 4.5:
+      return "4-4.5";
+    case ley > 4.5 && ley <= 5:
+      return "4.5-5";
+    case ley > 5 && ley <= 10:
+      return "5-10";
+    default:
+      return "10";
+  }
+};
 
 const updateTravel = async () => {
-  if (
-    csvData.value.length === 0
-  ) {
+  if (csvData.value.length === 0) {
     showError.value = true;
     setTimeout(() => {
       showError.value = false;
@@ -313,11 +311,13 @@ const updateTravel = async () => {
                 >*No debe existir cambos vacíos</span
               >
               <span class="label-error" v-if="showDocError"
-                >*El nombre del archivo ingresado no coincide con el código de despacho</span
+                >*El nombre del archivo ingresado no coincide con el código de
+                despacho</span
               >
               <div class="view-excel" v-if="csvData.length">
                 <h4 class="text-excel">
-                  Codigo de Despacho <strong>{{ props.data.cod_despacho }}</strong>
+                  Codigo de Despacho
+                  <strong>{{ props.data.cod_despacho }}</strong>
                 </h4>
                 <DataTable
                   :value="csvData"
@@ -344,18 +344,14 @@ const updateTravel = async () => {
                         {{ data[field] }}
                       </template>
                       <template #editor="{ data, field }">
-                        <component
-                          :is="
-                            typeof data[field] === 'number'
-                              ? 'InputNumber'
-                              : 'InputText'
-                          "
+                        <InputNumber
+                          v-if="typeof data[field] === 'number'"
                           v-model="data[field]"
-                          :mode="
-                            typeof data[field] === 'number' ? 'decimal' : ''
-                          "
+                          :mode="'decimal'"                          
+                          :decimal="2"
                           autofocus
                         />
+                        <InputText v-else v-model="data[field]" />
                       </template>
                       <template #footer="{ footerData }">
                         {{ calculateColumnAverage(key) }}
@@ -383,15 +379,12 @@ const updateTravel = async () => {
             type="submit"
             @click.prevent="updateTravel"
           >
-          <template v-if="buttonClicked">
-            <span class="loader"></span>Procesando...
-          </template>
-          <template v-else>
-              Guardar
+            <template v-if="buttonClicked">
+              <span class="loader"></span>Procesando...
             </template>
+            <template v-else> Guardar </template>
           </button>
         </div>
-
       </form>
     </Transition>
     <Transition name="bounce">
@@ -402,7 +395,7 @@ const updateTravel = async () => {
 
 <style lang="scss">
 .CCModal {
-  max-width: 950px !important;
+  max-width: 960px !important;
 }
 
 .disabled-row,
@@ -453,7 +446,7 @@ const updateTravel = async () => {
       height: 30px;
       border-radius: 5px;
       padding: 3px 10px;
-      font-size: clamp(6px, 8vw, 13.5px);
+      font-size: clamp(6px, 8vw, 12.5px);
       text-align: center;
     }
   }

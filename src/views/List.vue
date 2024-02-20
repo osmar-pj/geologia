@@ -12,10 +12,12 @@ import {
 } from "../libs/utils";
 import { Subject } from "rxjs";
 
+const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 const socket = inject("socket");
 const trip$ = new Subject();
-const url = import.meta.env.VITE_API_URL;
+
+const trips = ref([]);
 
 const DataView = async () => {
   try {
@@ -24,14 +26,15 @@ const DataView = async () => {
       headers: {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": true,
-      },      
+      },
     });
 
     const data = await response.json();
+
     if (data.status === true) {
-      trips.value = data.data;
-    }else{
-      console.log("error")
+      trips.value = data;
+    } else {
+      console.log("error");
     }
   } catch (error) {
     console.error("Error al actualizar:", error);
@@ -44,33 +47,38 @@ onMounted(async () => {
 socket.on("OreControl", (data) => {
   store.commit("addDataGeneralList", data);
 });
-const generatingPDF = ref(true);
+const filterView = ref(true);
 
-const excludedFields = ["year", "month", "date", "mining", "ubication","status"];
-socket.on("trips", (data) => {
-  console.log("socket Data", data);
+const excludedFields = [
+  "year",
+  "month",
+  "date",
+  "mining",
+  "ubication",
+  "status",
+];
+// socket.on("trips", (data) => {
+//   console.log("socket Data", data);
 
-  if (trips.value && trips.value.data) {
-    const tripsFound = data.map((i) => {
-      const trip = trips.value.data.find((p) => p._id === i._id);
-      return trip;
-    });
+//   if (trips.value && trips.value.data) {
+//     const tripsFound = data.map((i) => {
+//       const trip = trips.value.data.find((p) => p._id === i._id);
+//       return trip;
+//     });
 
-    tripsFound.length > 0
-      ? updateTrips(tripsFound, data)
-      : console.log("No se encontraron pilas");
-  } else {
-    console.error("La propiedad 'data' de trips.value no está definida.");
-  }
-});
+//     tripsFound.length > 0
+//       ? updateTrips(tripsFound, data)
+//       : console.log("No se encontraron pilas");
+//   } else {
+//     console.error("La propiedad 'data' de trips.value no está definida.");
+//   }
+// });
 
-socket.on("RemoveTrip", (data) => {
-  // trips.value = store.state.dataFilterTable
-  const trip = trips.value.data.find((p) => p._id === data._id);
-  trips.value.data.splice(trips.value.data.indexOf(trip), 1);
-});
-
-const trips = computed(() => store.state.dataFilterTable);
+// socket.on("RemoveTrip", (data) => {
+//   // trips.value = store.state.dataFilterTable
+//   const trip = trips.value.data.find((p) => p._id === data._id);
+//   trips.value.data.splice(trips.value.data.indexOf(trip), 1);
+// });
 
 const tripsFiltered = computed(() => store.state.dataFilterTable);
 
@@ -141,7 +149,7 @@ const getStatusClass = (header, data) => {
       <Filters />
     </div>
   </div>
-  <div class="c-global-c-content" v-show="generatingPDF">
+  <div class="c-global-c-content" v-show="!filterView">
     <DataTable
       :value="trips.data"
       tableStyle="width: 100%"
@@ -250,7 +258,9 @@ const getStatusClass = (header, data) => {
                 </h4>
               </template>
               <template v-else>
-                <h5 class="t-complet"><img src="../assets/img/i-square.svg" alt="" />Compl..</h5>
+                <h5 class="t-complet">
+                  <img src="../assets/img/i-square.svg" alt="" />Compl..
+                </h5>
               </template>
             </template>
           </template>
@@ -258,24 +268,24 @@ const getStatusClass = (header, data) => {
       </template>
     </DataTable>
   </div>
-  <div class="c-global-c-filtered" v-show="!generatingPDF">
+  <div class="c-global-c-filtered" v-show="filterView">
     <div class="c-item-filtered">
       <DataTable
-      :value="tripsFiltered.data"
-      tableStyle="width: 100%"
-      :loading="store.state.loading"
-    >
-      <Column header="#" headerStyle="width: 2.5rem">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h5>#{{ slotProps.index + 1 }}</h5>
+        :value="tripsFiltered.data"
+        tableStyle="width: 100%"
+        :loading="store.state.loading"
+      >
+        <Column header="#" headerStyle="width: 2.5rem">
+          <template #body="slotProps">
+            <div class="td-user">
+              <div class="t-name">
+                <h5>#{{ slotProps.index + 1 }}</h5>
+              </div>
             </div>
-          </div>
-        </template>
-      </Column>          
+          </template>
+        </Column>
         <Column
-        v-for="(header, index) in tripsFiltered.header || []"
+          v-for="(header, index) in tripsFiltered.header || []"
           :key="index"
           :field="header.field"
           :header="header.title"
@@ -304,30 +314,32 @@ const getStatusClass = (header, data) => {
                 </h4>
               </template>
               <template v-else>
-                <h5 class="t-complet"><img src="../assets/img/i-square.svg" alt="" />Compl..</h5>
+                <h5 class="t-complet">
+                  <img src="../assets/img/i-square.svg" alt="" />Compl..
+                </h5>
               </template>
             </template>
           </template>
-        </Column>      
-    </DataTable>
+        </Column>
+      </DataTable>
     </div>
-    <div class="c-item-filtered">
+    <!-- <div class="c-item-filtered">
       <DataTable
-      :value="tripsFiltered.data"
-      tableStyle="width: 100%"
-      :loading="store.state.loading"
-    >
-      <Column header="#" headerStyle="width: 2.5rem">
-        <template #body="slotProps">
-          <div class="td-user">
-            <div class="t-name">
-              <h5>#{{ slotProps.index + 1 }}</h5>
+        :value="tripsFiltered.data"
+        tableStyle="width: 100%"
+        :loading="store.state.loading"
+      >
+        <Column header="#" headerStyle="width: 2.5rem">
+          <template #body="slotProps">
+            <div class="td-user">
+              <div class="t-name">
+                <h5>#{{ slotProps.index + 1 }}</h5>
+              </div>
             </div>
-          </div>
-        </template>
-      </Column>          
+          </template>
+        </Column>
         <Column
-        v-for="(header, index) in tripsFiltered.header || []"
+          v-for="(header, index) in tripsFiltered.header || []"
           :key="index"
           :field="header.field"
           :header="header.title"
@@ -356,13 +368,15 @@ const getStatusClass = (header, data) => {
                 </h4>
               </template>
               <template v-else>
-                <h5 class="t-complet"><img src="../assets/img/i-square.svg" alt="" />Compl..</h5>
+                <h5 class="t-complet">
+                  <img src="../assets/img/i-square.svg" alt="" />Compl..
+                </h5>
               </template>
             </template>
           </template>
-        </Column>      
-    </DataTable>
-    </div>
+        </Column>
+      </DataTable>
+    </div> -->
   </div>
 </template>
 
@@ -451,12 +465,11 @@ const getStatusClass = (header, data) => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  flex:  1 1;
+  flex: 1 1;
   overflow: hidden;
-  .c-item-filtered{
+  .c-item-filtered {
     display: flex;
-      height: 50%;
-    
+    height: 50%;
   }
 }
 </style>

@@ -55,13 +55,14 @@ const data = ref(props.data);
             <h4 v-else>{{ value }}</h4>
           </div>
         </div> -->
+        {{ data.travels }}
         <div class="mC-b-samples">
           <div class="N-datatable">
             <table>
               <thead>
                 <tr>
                   <th
-                    v-for="(value, key) in data.samples[0]"
+                    v-for="(value, key) in data.travels[0]"
                     v-if="key !== 'id'"
                   >
                     {{ key }}
@@ -69,7 +70,7 @@ const data = ref(props.data);
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(sample, index) in data.samples" :key="index">
+                <tr v-for="(sample, index) in data.travels" :key="index">
                   <td v-for="(value, key) in sample" v-if="key !== 'id'">
                     {{ value }}
                   </td>
@@ -95,6 +96,30 @@ const data = ref(props.data);
               </div>
               <h4 class="item-h-date">{{ formatDate(value.date) }}</h4>
             </div>
+          </div>
+        </div>
+
+        <div class="mC-b-samples">
+          <div class="N-datatable">
+            <table>
+              <thead>
+                <tr>
+                  <th
+                    v-for="(value, key) in data.samples[0]"
+                    v-if="key !== 'id'"
+                  >
+                    {{ key }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(sample, index) in data.samples" :key="index">
+                  <td v-for="(value, key) in sample" v-if="key !== 'id'">
+                    {{ value }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
