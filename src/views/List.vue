@@ -285,13 +285,7 @@ const getStatusClass = (header, data) => {
           <template #body="slotProps">
             <Skeleton v-if="store.state.loading"></Skeleton>
             <template v-else>
-              <template
-                v-if="
-                  slotProps.data[header.field] !== '' &&
-                  slotProps.data[header.field] !== null &&
-                  slotProps.data[header.field] !== undefined
-                "
-              >
+             
                 <h4 :class="getStatusClass(header, slotProps.data)">
                   <template v-if="header.field !== 'statusTrip'">
                     {{
@@ -304,12 +298,7 @@ const getStatusClass = (header, data) => {
                     }}
                   </template>
                 </h4>
-              </template>
-              <template v-else>
-                <h5 class="t-complet">
-                  <img src="../assets/img/i-square.svg" alt="" />Compl..
-                </h5>
-              </template>
+              
             </template>
           </template>
         </Column>

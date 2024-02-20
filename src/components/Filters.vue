@@ -85,7 +85,10 @@ const deselectItem = (index) => {
 
 const sendFilter = async () => {
   if(selectedCategories.value.length === 0  ){
-    console.log("Los datos a actualizar están vacíos");
+    showError.value = true;
+    setTimeout(() => {
+      showError.value = false;
+    }, 5000);
   }else{
     try {
     console.log("Ingresando")
@@ -173,10 +176,10 @@ const sendFilter = async () => {
                 <label :for="category.key">{{ category.name }}</label>
               </div>
             </div>
-            <span class="label-error" v-if="showError"
-              >*Selecciona al menos un item</span
-            >
           </div>
+          <span class="label-error" v-if="showError"
+            >*Selecciona al menos un item</span
+          >
           <div class="mF-b-categories">
             <div class="categories-title">
               <IItem /><span>
@@ -479,5 +482,11 @@ const sendFilter = async () => {
       color: var(--red);
     }
   }
+}
+
+.label-error{
+  font-size: clamp(7px, 8vw, 12.5px);
+    line-height: 1rem;
+    color: var(--red);
 }
 </style>

@@ -18,11 +18,11 @@ const oreControl = computed(() => store.state.dataList)
 
 <template>
   <div class="Container-totals">
-    <div class="H-left-totals">
-      <div class="Item-w-total">
+    <div class="C-totals-items">
+      <div class="Item-w-total primary-color">
         <h5 class="w-w-title">Total de Stock</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
+          <div class="w-w-cont-icon"> <img src="../assets/img/i-totalP.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
               <!-- <h1> {{ (totalWeights.stock.total).toFixed(2) }} </h1> -->
@@ -35,7 +35,7 @@ const oreControl = computed(() => store.state.dataList)
           <!-- <h5>de un total de 13 pilas</h5> -->
         </div>
       </div>
-      <div class="Item-w-total">
+      <div class="Item-w-total one-color">
         <h5 class="w-w-title">Total Mineral Ingresado Dia</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
@@ -51,7 +51,7 @@ const oreControl = computed(() => store.state.dataList)
           <!-- <h5>+ 3 leyes nuevas</h5> -->
         </div>
       </div>
-      <div class="Item-w-total">
+      <div class="Item-w-total two-color">
         <h5 class="w-w-title">Total Mineral Enviado a Planta</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
@@ -66,9 +66,7 @@ const oreControl = computed(() => store.state.dataList)
           <h5>+ 4 leyes nuevas</h5>
         </div>
       </div>
-    </div>
-    <div class="H-right-totals">
-      <div class="Item-w-total">
+      <div class="Item-w-total three-color">
         <h5 class="w-w-title">Ore Control</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon">
@@ -93,7 +91,7 @@ const oreControl = computed(() => store.state.dataList)
           </div>
         </div>
       </div>
-      <div class="Item-w-total">
+      <div class="Item-w-total fouth-color">
         <h5 class="w-w-title">Analisis</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total2.svg" alt=""></div>
@@ -114,7 +112,7 @@ const oreControl = computed(() => store.state.dataList)
           </div>
         </div>
       </div>
-      <div class="Item-w-total">
+      <div class="Item-w-total five-color">
         <h5 class="w-w-title">Abastecimiento</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total3.svg" alt=""></div>
@@ -136,6 +134,7 @@ const oreControl = computed(() => store.state.dataList)
         </div>
       </div>
     </div>
+    
   </div>
 </template>
 
@@ -146,24 +145,25 @@ const oreControl = computed(() => store.state.dataList)
   flex-wrap: wrap;
   padding-bottom: 1rem;
   gap: 1rem;
-  .H-left-totals {
+  .C-totals-items {
     flex: 1 1 200px;
     width: 100%;
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
     .Item-w-total {
       flex: 1 1 200px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 0.8rem;
-      background-color: var(--white);
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+      gap: 0.5rem;
       border-radius: var(--br-xxl);
       padding: 1rem 1.5rem;
       position: relative;
       .w-w-title {
-        color: var(--grey-light-3);
+        color: var(--grey-2);
+        font-size: clamp(5px, 8vw, 11px);
+        font-weight: 500;
       }
       .w-w-brech {
         position: absolute;
@@ -184,12 +184,12 @@ const oreControl = computed(() => store.state.dataList)
           display: grid;
           place-items: center;
           svg {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 2.2rem;
+            height: 2.2rem;
           }
           img {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 2.2rem;
+            height: 2.2rem;
           }
         }
         .w-w-cont-content {
@@ -229,7 +229,7 @@ const oreControl = computed(() => store.state.dataList)
             height: 1.3rem;
           }
           span {
-            font-size: clamp(5px, 8vw, 13px);
+            font-size: clamp(5px, 8vw, 12px);
 
             font-weight: 500;
           }
@@ -237,97 +237,97 @@ const oreControl = computed(() => store.state.dataList)
       }
     }
   }
-  .H-right-totals {
-    width: 100%;
-    display: flex;
-    gap: 1rem;
-    flex: 1 1 200px;
-    .Item-w-total {
-      flex: 1 1 100px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.8rem;
-      background-color: var(--white);
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-      border-radius: var(--br-xxl);
-      padding: 1rem 1.5rem;
-      position: relative;
-      .w-w-title {
-        color: var(--grey-light-3);
-      }
-      .w-w-brech {
-        position: absolute;
-        top: 12px;
-        right: 15px;
-        font-size: clamp(5px, 8vw, 12px);
-        font-weight: 600;
-        background: var(--secondary);
-        color: var(--black);
-        border-radius: var(--br-s);
-        padding: 2px 8px;
-      }
-      .w-w-body {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        .w-w-cont-icon {
-          display: grid;
-          place-items: center;
-          svg {
-            width: 2.5rem;
-            height: 2.5rem;
-          }
-          img {
-            width: 2.5rem;
-            height: 2.5rem;
-          }
-        }
-        .w-w-cont-content {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          .w-w-value {
-            display: flex;
-            align-items: flex-end;
-            gap: 0.3rem;
-            h1 {
-              color: var(--black);
-              line-height: 1.2rem;
-            }
-            span {
-              font-size: clamp(5px, 8vw, 14px);
-              color: var(--grey);
-            }
-          }
-        }
-      }
-      .w-w-calc {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        .calc-item {
-          display: flex;
-          align-items: center;
-          gap: 0.3rem;
+  // .H-right-totals {
+  //   width: 100%;
+  //   display: flex;
+  //   gap: 1rem;
+  //   flex: 1 1 200px;
+  //   .Item-w-total {
+  //     flex: 1 1 100px;
+  //     display: flex;
+  //     flex-direction: column;
+  //     justify-content: center;
+  //     gap: 0.8rem;
+  //     background-color: var(--white);
+  //     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  //     border-radius: var(--br-xxl);
+  //     padding: 1rem 1.5rem;
+  //     position: relative;
+  //     .w-w-title {
+  //       color: var(--grey-light-3);
+  //     }
+  //     .w-w-brech {
+  //       position: absolute;
+  //       top: 12px;
+  //       right: 15px;
+  //       font-size: clamp(5px, 8vw, 12px);
+  //       font-weight: 600;
+  //       background: var(--secondary);
+  //       color: var(--black);
+  //       border-radius: var(--br-s);
+  //       padding: 2px 8px;
+  //     }
+  //     .w-w-body {
+  //       display: flex;
+  //       align-items: center;
+  //       gap: 0.5rem;
+  //       .w-w-cont-icon {
+  //         display: grid;
+  //         place-items: center;
+  //         svg {
+  //           width: 2.5rem;
+  //           height: 2.5rem;
+  //         }
+  //         img {
+  //           width: 2.5rem;
+  //           height: 2.5rem;
+  //         }
+  //       }
+  //       .w-w-cont-content {
+  //         display: flex;
+  //         flex-direction: column;
+  //         gap: 0.5rem;
+  //         .w-w-value {
+  //           display: flex;
+  //           align-items: flex-end;
+  //           gap: 0.3rem;
+  //           h1 {
+  //             color: var(--black);
+  //             line-height: 1.2rem;
+  //           }
+  //           span {
+  //             font-size: clamp(5px, 8vw, 14px);
+  //             color: var(--grey);
+  //           }
+  //         }
+  //       }
+  //     }
+  //     .w-w-calc {
+  //       display: flex;
+  //       align-items: center;
+  //       gap: 1rem;
+  //       .calc-item {
+  //         display: flex;
+  //         align-items: center;
+  //         gap: 0.3rem;
 
-          .t-icon {
-            display: grid;
-            place-items: center;
-          }
-          img {
-            width: 1.3rem;
-            height: 1.3rem;
-          }
-          span {
-            font-size: clamp(5px, 8vw, 13px);
+  //         .t-icon {
+  //           display: grid;
+  //           place-items: center;
+  //         }
+  //         img {
+  //           width: 1.3rem;
+  //           height: 1.3rem;
+  //         }
+  //         span {
+  //           font-size: clamp(5px, 8vw, 13px);
 
-            font-weight: 500;
-          }
-        }
-      }
-    }
-  }
+  //           font-weight: 500;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 }
 
 .t-min {
@@ -335,5 +335,33 @@ const oreControl = computed(() => store.state.dataList)
 }
 .t-max {
   color: #ff172a;
+}
+.primary-color{
+  background-color: #0f1217;
+  .w-w-title{
+    color: var(--grey-light-2) !important;
+  }
+  .w-w-value{
+    color: var(--grey-light-3) !important;
+    h1{
+      color: var(--white) !important;
+    }
+  }
+}
+
+.one-color{
+  background-color: #E5F6F6;
+}
+.two-color{
+  background-color: #E1DAF9;
+}
+.three-color{
+  background-color: #E0EFFF;
+}
+.fouth-color{
+  background-color: #FFF7D0;
+}
+.five-color{
+  background-color: #D7F2DD;
 }
 </style>
