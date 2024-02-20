@@ -20,7 +20,6 @@ const oreControl = computed(() => store.state.dataList)
   <div class="Container-totals">
     <div class="H-left-totals">
       <div class="Item-w-total">
-      <IPila/>
         <h5 class="w-w-title">Total de Stock</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>

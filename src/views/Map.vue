@@ -10,12 +10,12 @@ import CEdit from "../icons/CEdit.vue";
 import Delete from "../icons/Delete.vue";
 import ISave from "../icons/ISave.vue";
 import Totals from "../components/Totals.vue";
-import IPila from "../maps/IPila.vue";
-import IGiba from "../maps/IGiba.vue";
+import IPila from "../prueba/IPila.vue";
+import IGiba from "../prueba/IGiba.vue";
 import IDesmonte from "../maps/IDesmonte.vue";
-import ICC from "../maps/ICC.vue";
-import IC1 from "../maps/IC1.vue";
-import IC2 from "../maps/IC2.vue";
+import ICC from "../prueba/ICC.vue";
+import IC1 from "../prueba/IC1.vue";
+import IC2 from "../prueba/IC2.vue";
 import ICalendar from "../icons/ICalendar.vue";
 import GeneratePDF from "../components/GeneratePDF.vue";
 import CanchaModal from "../components/CanchaModal.vue";
@@ -45,9 +45,17 @@ const thereAreSameDominio = ref(false);
 const access = ref(true);
 const mergeAvailable = ref(false);
 const pilasSelected = ref([]);
+
 const colquicocha_stock = computed(() => store.state.colquicocha_stock);
+// const cc_nsr = computed(() => store.state.cc_nsr);
+// const cc_ag_eq = computed(() => store.state.cc_ag_eq);
 const cancha1_stock = computed(() => store.state.cancha1_stock);
+// const c1_nsr = computed(() => store.state.c1_nsr);
+// const c1_ag_eq = computed(() => store.state.c1_ag_eq);
 const cancha2_stock = computed(() => store.state.cancha2_stock);
+// const c2_nsr = computed(() => store.state.c2_nsr);
+// const c2_ag_eq = computed(() => store.state.c2_ag_eq);
+
 const openCalendar = ref(false);
 const dataModalCalendar = ref(null);
 const colquicocha = ref();
@@ -66,6 +74,7 @@ class CustomRect extends fabric.Rect {
 const handleCreated = async (fabricCanvas) => {
   console.log("Canvas Created");
   await store.dispatch("pila_total");
+  console.log("Pilas", pilas.value);
   canvas.value = fabricCanvas;
   await createSVGRect(fabricCanvas);
   pilas.value
@@ -79,8 +88,8 @@ const handleCreated = async (fabricCanvas) => {
           obj.set({
             left: i.x,
             top: i.y,
-            scaleX: 0.3,
-            scaleY: 0.3,
+            scaleX: .25,
+            scaleY: .25,
             selectable: true,
           });
           obj.type = i._id;
@@ -100,8 +109,8 @@ const handleCreated = async (fabricCanvas) => {
           obj.set({
             left: i.x,
             top: i.y,
-            scaleX: 0.3,
-            scaleY: 0.3,
+            scaleX: .25,
+            scaleY: .25,
             selectable: true,
           });
           obj.type = i._id;
@@ -125,8 +134,8 @@ const panelsSVG = () => {
       obj.set({
         left: 140,
         top: 70,
-        scaleX: 2,
-        scaleY: 2,
+        scaleX: 1.1,
+        scaleY: 1.1,
         selectable: false,
       });
       obj.type = "panel_colquicocha";
@@ -141,8 +150,8 @@ const panelsSVG = () => {
       obj.set({
         left: 950,
         top: 450,
-        scaleX: 2,
-        scaleY: 2,
+        scaleX: 1.1,
+        scaleY: 1.1,
         selectable: false,
       });
       obj.type = "panel_cancha2";
@@ -157,8 +166,8 @@ const panelsSVG = () => {
       obj.set({
         left: 1550,
         top: 50,
-        scaleX: 2,
-        scaleY: 2,
+        scaleX: 1.1,
+        scaleY: 1.1,
         selectable: false,
       });
       obj.type = "panel_cancha1";
@@ -203,7 +212,6 @@ const handleSelect = (e) => {
       o.hasBorders = false;
     });
   pilasSelected.value = objectsSelected;
-  console.log("Pilas Seleccionadas", pilasSelected.value);
   nonePilaSelected.value = pilasSelected.value.length === 0;
   unlessOnePilaSelected.value = pilasSelected.value.length > 0;
   thereAreUnlessTwoPilasSelected.value = pilasSelected.value.length > 1;
@@ -762,7 +770,7 @@ const getDataCalendar = (data) => {
     <div class="global-map-search">
       <input type="text" placeholder="Buscar" >
     </div>
-    <MapInfo/>
+    <MapInfo v-if="unlessOnePilaSelected" :data="pilasSelected"/>
     <FabricCanvas
       @canvas-created="handleCreated"
       @click:selected="handleSelect"

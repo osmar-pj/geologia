@@ -57,46 +57,34 @@ const excludedFields = [
   "ubication",
   "status",
 ];
-// socket.on("trips", (data) => {
-//   console.log("socket Data", data);
-
-//   if (trips.value && trips.value.data) {
-//     const tripsFound = data.map((i) => {
-//       const trip = trips.value.data.find((p) => p._id === i._id);
-//       return trip;
-//     });
-
-//     tripsFound.length > 0
-//       ? updateTrips(tripsFound, data)
-//       : console.log("No se encontraron pilas");
-//   } else {
-//     console.error("La propiedad 'data' de trips.value no está definida.");
-//   }
-// });
-
-// socket.on("RemoveTrip", (data) => {
-//   // trips.value = store.state.dataFilterTable
-//   const trip = trips.value.data.find((p) => p._id === data._id);
-//   trips.value.data.splice(trips.value.data.indexOf(trip), 1);
-// });
-
-const tripsFiltered = computed(() => store.state.dataFilterTable);
+socket.on("trips", (data) => {
+  console.log("socket Data", data);
+  const tripsFound = data.map((trip) => {
+    return trips.value.data.find((p) => p._id === trip._id);
+  });
+  tripsFound.length > 0 ?
+    updateTrips(tripsFound, data) :
+    console.log("No se encontraron viajes");
+});
 
 const updateTrips = (tripsFound, data) => {
   tripsFound.forEach((trip, index) => {
-    trip.statusTrip = data[index].statusTrip;
-    trip.history = data[index].history;
-    trip.level = data[index].level;
-    trip.type = data[index].type;
-    trip.veta = data[index].veta;
-    trip.tajo = data[index].tajo;
-    trip.cod_tableta = data[index].cod_tableta;
-    trip.dominio = data[index].dominio;
-    trip.pila = data[index].pila;
+    trip.ley_ag = data[index].ley_ag;
+    trip_ley_fe = data[index].ley_fe;
+    trip.ley_mn = data[index].ley_mn;
+    trip.ley_pb = data[index].ley_pb;
+    trip.ley_zn = data[index].ley_zn;
+    trip.tmh_ag = data[index].tmh_ag;
+    trip.tmh_fe = data[index].tmh_fe;
+    trip.tmh_mn = data[index].tmh_mn;
+    trip.tmh_pb = data[index].tmh_pb;
+    trip.tmh_zn = data[index].tmh_zn;
     trip.rango = data[index].rango;
     trip$.next(trip);
   });
 };
+
+const tripsFiltered = computed(() => store.state.dataFilterTable);
 
 const formatColumnValue = (value, fn, field, row) => {
   switch (fn) {

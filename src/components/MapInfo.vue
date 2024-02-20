@@ -1,9 +1,33 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted, computed, defineProps } from "vue";
+// define props data
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
+console.log(props.data);
+const pilas = ref(null)
+pilas.value = props.data
+const isSelectedOnePila = ref(false)
+isSelectedOnePila.value = pilas.value.length === 1
+const isSelectedMoreThanOnePila = ref(false)
+isSelectedMoreThanOnePila.value = pilas.value.length > 1
+</script>
 
 <template>
   <div class="map-info">
     <h2>Información detalla</h2>
     <p>30toneladas</p>
+    <p v-if="isSelectedOnePila">
+      <span> SOLO INFO DE LA PILA </span>
+      {{ pilas }}
+    </p>
+    <p v-if="isSelectedMoreThanOnePila">
+      <span> CALCULATE LEY PONDERADA, TON TOTAL y NSR </span>
+      {{ pilas }}
+    </p>
   </div>
 </template>
 

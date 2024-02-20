@@ -140,6 +140,8 @@ const store = createStore({
       state.colquicocha_stock = payload.filter(i => i.ubication === "Cancha Colquicocha").reduce((acc, i) => acc + i.stock, 0)
       state.cancha1_stock = payload.filter(i => i.ubication === "Cancha 1").reduce((acc, i) => acc + i.stock, 0)
       state.cancha2_stock = payload.filter(i => i.ubication === "Cancha 2").reduce((acc, i) => acc + i.stock, 0)
+      // Calcular el NSR y Ag Equivalente
+      
     },
     // ADD to general list of pilas
     addDataPilaList(state, payload) {
