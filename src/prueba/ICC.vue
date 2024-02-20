@@ -26,7 +26,7 @@ viewBox="0 0 152.16 144.08"
    <path fill="#C20E0E" d="M29.49 6.85c0.32,0.23 4.47,-0.11 5.5,-0.26 1.08,-0.76 0.01,-2.41 -0.13,-4.39l-1.57 0.26c-2.01,0.64 -3.32,1.99 -3.8,4.39z"/>
    <path fill="#C8762B" d="M4.23 85.04c0.51,0.63 -0.8,0.34 1.34,0.88 0.98,-0.82 1.51,-1.67 2.8,-2.38 0.75,-1.44 0.02,1.23 0.41,-1.3l-0.24 -4.77c-0.65,0.65 -3.54,6.39 -4.32,7.57z"/>
    <path fill="#C8762B" d="M143.75 30.38l-0.36 5.72c0.78,-0.48 0.59,0.01 1.35,-1.13 0.24,-0.35 0.71,-1.58 0.83,-1.86 0.68,-1.66 0.39,-1.9 1.99,-2.67l-0.27 -1.5c-0.39,-0.96 1.2,-0.09 -0.61,-0.5l-2.92 1.94z"/>
-   <text x="44.42" y="13.35"  fill="#FEFEFC" font-weight="normal" font-size="8.53px" font-family="Lilita One">C. COLQUICOCHA</text>
+   <text x="44.42" y="13.35"  fill="#FEFEFC" font-weight="normal" font-size="8.53px" font-family="Lilita One"> {{ ubication }} </text>
    <g>
     <g>
      <g>
@@ -112,6 +112,10 @@ export default {
       type: Number,
       default: 0
     },
+    ubication: {
+      type: String,
+      default: ''
+    }
   }
 }
 </script>

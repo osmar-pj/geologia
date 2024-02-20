@@ -30,7 +30,6 @@ const url = import.meta.env.VITE_API_URL;
 const canvas = ref();
 const pilas = computed(() => store.state.rumaTotal);
 const trips = ref([]);
-const weights = computed(() => store.state.weights);
 const ubication = ref("");
 const ubicationId = ref("");
 const ubicationType = ref("");
@@ -46,15 +45,7 @@ const access = ref(true);
 const mergeAvailable = ref(false);
 const pilasSelected = ref([]);
 
-const colquicocha_stock = computed(() => store.state.colquicocha_stock);
-const cc_nsr = computed(() => store.state.cc_nsr);
-const cc_ag_eq = computed(() => store.state.cc_ag_eq);
-const cancha1_stock = computed(() => store.state.cancha1_stock);
-const c1_nsr = computed(() => store.state.c1_nsr);
-const c1_ag_eq = computed(() => store.state.c1_ag_eq);
-const cancha2_stock = computed(() => store.state.cancha2_stock);
-const c2_nsr = computed(() => store.state.c2_nsr);
-const c2_ag_eq = computed(() => store.state.c2_ag_eq);
+const panels = computed(() => store.state.panels);
 
 const openCalendar = ref(false);
 const dataModalCalendar = ref(null);
@@ -125,55 +116,31 @@ const handleCreated = async (fabricCanvas) => {
 };
 
 const panelsSVG = () => {
-  const colquicocha = document.getElementById("icc");
-  const svgElem = new fabric.loadSVGFromString(
-    colquicocha.outerHTML,
-    (objects, options) => {
-      const obj = fabric.util.groupSVGElements(objects, options);
-      obj.set({
-        left: 240,
-        top:30,
-        scaleX: 1.1,
-        scaleY: 1.1,
-        selectable: false,
-      });
-      obj.type = "panel_colquicocha";
-      canvas.value.add(obj);
-    }
-  );
-  const cancha2 = document.getElementById("ic2");
-  const svgElem2 = new fabric.loadSVGFromString(
-    cancha2.outerHTML,
-    (objects, options) => {
-      const obj = fabric.util.groupSVGElements(objects, options);
-      obj.set({
-        left: 1100,
-        top: 350,
-        scaleX: 1.1,
-        scaleY: 1.1,
-        selectable: false,
-      });
-      obj.type = "panel_cancha2";
-      canvas.value.add(obj);
-    }
-  );
-  const cancha1 = document.getElementById("ic1");
-  const svgElem3 = new fabric.loadSVGFromString(
-    cancha1.outerHTML,
-    (objects, options) => {
-      const obj = fabric.util.groupSVGElements(objects, options);
-      obj.set({
-        left: 1550,
-        top: 50,
-        scaleX: 1.1,
-        scaleY: 1.1,
-        selectable: false,
-      });
-      obj.type = "panel_cancha1";
-      canvas.value.add(obj);
-    }
-  );
-};
+  const positionPanels = [
+    { x: 1550, y: 50, type: "Cancha 1" },
+    { x: 1100, y: 350, type: "Cancha 2" },
+    { x: 240, y: 30, type: "Cancha Colquicocha" },
+  ];
+  console.log("Panels", panels.value);
+  panels.value.forEach((p, i) => {
+    const panelSVG = document.getElementById(p.index);
+    const svgElem = new fabric.loadSVGFromString(
+      panelSVG.outerHTML,
+      (objects, options) => {
+        const obj = fabric.util.groupSVGElements(objects, options);
+        obj.set({
+          left: positionPanels[i].x,
+          top: positionPanels[i].y,
+          scaleX: 1.1,
+          scaleY: 1.1,
+          selectable: false,
+        });
+        obj.type = p.index;
+        canvas.value.add(obj);
+      }
+    )
+  })
+}
 
 const handleSelect = (e) => {
   const objectsSelected = canvas.value
@@ -698,6 +665,7 @@ const getDataCalendar = (data) => {
     :data="dataModalCalendar"
   />
   <div v-show="false">
+    <ICC :id="index" :ubication="ubication" :stock="tonh" :nsr="nsr" :ag_equiv="ag_eq" v-for="{ubication, nsr, ag_eq, tonh, index} in panels" />
     <IPila
       v-for="{
         ley_ag,
@@ -732,9 +700,9 @@ const getDataCalendar = (data) => {
       :id="_id"
     />
     <!-- <IDesmonte id="desmonte" v-for="desmonte in pilas.filter(i => i.typePila == 'Desmonte')" :pila="desmonte" :id="desmonte.cod_tableta"/> -->
-    <ICC id="icc" :stock="colquicocha_stock" :nsr="cc_nsr" :ag_equiv="cc_ag_eq" />
+    <!-- <ICC id="icc" :stock="colquicocha_stock" :nsr="cc_nsr" :ag_equiv="cc_ag_eq" />
     <IC1 id="ic1" :stock="cancha1_stock"  :nsr="c1_nsr" :ag_equiv="c1_ag_eq" />
-    <IC2 id="ic2" :stock="cancha2_stock"  :nsr="c2_nsr" :ag_equiv="c2_ag_eq" />
+    <IC2 id="ic2" :stock="cancha2_stock"  :nsr="c2_nsr" :ag_equiv="c2_ag_eq" /> -->
   </div>
   <Toast />
   <div class="c-global-container-map">

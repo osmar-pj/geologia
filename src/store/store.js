@@ -25,6 +25,8 @@ const store = createStore({
     userModal: null,
     errior: null,
     loading: false,
+
+    panels: [],
     colquicocha_stock: 0,
     cc_nsr: 0,
     cc_ag_eq: 0,
@@ -147,18 +149,7 @@ const store = createStore({
       state.dataListControl.slice(payload, 1)
     },
     setWeights(state, payload) {
-      console.log(payload)
-      state.colquicocha_stock = payload.total[2].tonh
-      state.cc_nsr = payload.total[2].nsr
-      state.cc_ag_eq = payload.total[2].ag_eq
-      state.cancha1_stock = payload.total[0].tonh
-      state.c1_nsr = payload.total[0].nsr
-      state.c1_ag_eq = payload.total[0].ag_eq
-      state.cancha2_stock = payload.total[1].tonh
-      state.c2_nsr = payload.total[1].nsr
-      state.c2_ag_eq = payload.total[1].ag_eq
-      // Calcular el NSR y Ag Equivalente
-      
+      state.panels = payload.total
     },
     // ADD to general list of pilas
     addDataPilaList(state, payload) {
@@ -213,7 +204,6 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        console.log(data)  
         commit("getList", data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
@@ -276,8 +266,7 @@ const store = createStore({
             "ngrok-skip-browser-warning": true,
           },
         })
-        const data = await response.json()
-        console.log(data)       
+        const data = await response.json()     
         commit("getPila", data)
         commit("loading", false)
       } catch (error) { commit("loading", false)}
@@ -292,6 +281,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
+        console.log('MAP',data)
         commit("getRumaTotal", data.pilasToMap)
         commit("setWeights", data.weights)
       } catch (error) {commit("loading", false)}
