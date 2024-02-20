@@ -47,14 +47,14 @@ const mergeAvailable = ref(false);
 const pilasSelected = ref([]);
 
 const colquicocha_stock = computed(() => store.state.colquicocha_stock);
-// const cc_nsr = computed(() => store.state.cc_nsr);
-// const cc_ag_eq = computed(() => store.state.cc_ag_eq);
+const cc_nsr = computed(() => store.state.cc_nsr);
+const cc_ag_eq = computed(() => store.state.cc_ag_eq);
 const cancha1_stock = computed(() => store.state.cancha1_stock);
-// const c1_nsr = computed(() => store.state.c1_nsr);
-// const c1_ag_eq = computed(() => store.state.c1_ag_eq);
+const c1_nsr = computed(() => store.state.c1_nsr);
+const c1_ag_eq = computed(() => store.state.c1_ag_eq);
 const cancha2_stock = computed(() => store.state.cancha2_stock);
-// const c2_nsr = computed(() => store.state.c2_nsr);
-// const c2_ag_eq = computed(() => store.state.c2_ag_eq);
+const c2_nsr = computed(() => store.state.c2_nsr);
+const c2_ag_eq = computed(() => store.state.c2_ag_eq);
 
 const openCalendar = ref(false);
 const dataModalCalendar = ref(null);
@@ -74,7 +74,6 @@ class CustomRect extends fabric.Rect {
 const handleCreated = async (fabricCanvas) => {
   console.log("Canvas Created");
   await store.dispatch("pila_total");
-  console.log("Pilas", pilas.value);
   canvas.value = fabricCanvas;
   await createSVGRect(fabricCanvas);
   pilas.value
@@ -733,9 +732,9 @@ const getDataCalendar = (data) => {
       :id="_id"
     />
     <!-- <IDesmonte id="desmonte" v-for="desmonte in pilas.filter(i => i.typePila == 'Desmonte')" :pila="desmonte" :id="desmonte.cod_tableta"/> -->
-    <ICC id="icc" :stock="colquicocha_stock" />
-    <IC1 id="ic1" :stock="cancha1_stock" />
-    <IC2 id="ic2" :stock="cancha2_stock" />
+    <ICC id="icc" :stock="colquicocha_stock" :nsr="cc_nsr" :ag_equiv="cc_ag_eq" />
+    <IC1 id="ic1" :stock="cancha1_stock"  :nsr="c1_nsr" :ag_equiv="c1_ag_eq" />
+    <IC2 id="ic2" :stock="cancha2_stock"  :nsr="c2_nsr" :ag_equiv="c2_ag_eq" />
   </div>
   <Toast />
   <div class="c-global-container-map">

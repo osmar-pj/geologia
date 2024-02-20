@@ -48,7 +48,7 @@ viewBox="0 0 152.16 144.08"
     </g>
     <g>
      <g transform="matrix(1.00001 0 0 1 -1959.54 1162.93)">
-      <text x="2049.18" y="-1097.26"  fill="#FDFBCA" font-weight="normal" font-size="13.96px" font-family="Lilita One"> {{ nsr ? nsr.toFIxed(2) : '-' }} </text>
+      <text x="2049.18" y="-1097.26"  fill="#FDFBCA" font-weight="normal" font-size="13.96px" font-family="Lilita One"> {{ nsr ? nsr.toFixed(2) : '-' }} </text>
       <text x="2073.22" y="-1097.26"  fill="#FDFBCA" font-weight="normal" font-size="13.96px" font-family="Lilita One">T</text>
      </g>
     </g>

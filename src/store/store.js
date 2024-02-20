@@ -26,8 +26,14 @@ const store = createStore({
     errior: null,
     loading: false,
     colquicocha_stock: 0,
+    cc_nsr: 0,
+    cc_ag_eq: 0,
     cancha1_stock: 0,
+    c1_nsr: 0,
+    c1_ag_eq: 0,
     cancha2_stock: 0,
+    c2_nsr: 0,
+    c2_ag_eq: 0,
   },
   getters: {
     get_data_analysis: (state) => {
@@ -141,9 +147,16 @@ const store = createStore({
       state.dataListControl.slice(payload, 1)
     },
     setWeights(state, payload) {
-      state.colquicocha_stock = payload.filter(i => i.ubication === "Cancha Colquicocha").reduce((acc, i) => acc + i.stock, 0)
-      state.cancha1_stock = payload.filter(i => i.ubication === "Cancha 1").reduce((acc, i) => acc + i.stock, 0)
-      state.cancha2_stock = payload.filter(i => i.ubication === "Cancha 2").reduce((acc, i) => acc + i.stock, 0)
+      console.log(payload)
+      state.colquicocha_stock = payload.total[2].tonh
+      state.cc_nsr = payload.total[2].nsr
+      state.cc_ag_eq = payload.total[2].ag_eq
+      state.cancha1_stock = payload.total[0].tonh
+      state.c1_nsr = payload.total[0].nsr
+      state.c1_ag_eq = payload.total[0].ag_eq
+      state.cancha2_stock = payload.total[1].tonh
+      state.c2_nsr = payload.total[1].nsr
+      state.c2_ag_eq = payload.total[1].ag_eq
       // Calcular el NSR y Ag Equivalente
       
     },
@@ -280,7 +293,7 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getRumaTotal", data.pilasToMap)
-        commit("setWeights", data.pilasToMap)
+        commit("setWeights", data.weights)
       } catch (error) {commit("loading", false)}
     },
     ruma_update: async ({ commit }, data) => {
