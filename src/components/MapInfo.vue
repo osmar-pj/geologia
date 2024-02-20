@@ -24,8 +24,65 @@ watch(
     isSelectedOnePila.value = pilas.value.length === 1;
     isSelectedMoreThanOnePila.value = pilas.value.length > 1;
   }
-);
+)
 
+const promWeight = (pilas) => {
+  const totalWeight = pilas.map((pila) => pila.tonh).reduce((acc, curr) => acc + curr, 0);
+  const totalLey = pilas.map((pila) => pila.tonh * pila.ley_ag).reduce((acc, curr) => acc + curr, 0);
+  return (totalLey / totalWeight).toFixed(2);
+}
+
+const nsr = (pilas) => {
+  return 0;
+}
+const calculus = (pilas) => {
+  const totalWeight = pilas.map((pila) => pila.tonh).reduce((acc, curr) => acc + curr, 0);
+  const tmh_ag = pilas.map((pila) => pila.tonh * pila.ley_ag).reduce((acc, curr) => acc + curr, 0);
+  const tmh_fe = pilas.map((pila) => pila.tonh * pila.ley_fe).reduce((acc, curr) => acc + curr, 0);
+  const tmh_mn = pilas.map((pila) => pila.tonh * pila.ley_mn).reduce((acc, curr) => acc + curr, 0);
+  const tmh_pb = pilas.map((pila) => pila.tonh * pila.ley_pb).reduce((acc, curr) => acc + curr, 0);
+  const tmh_zn = pilas.map((pila) => pila.tonh * pila.ley_zn).reduce((acc, curr) => acc + curr, 0);
+  const pointValues = {
+    vp_ag: 13,
+    vp_pb: 14.69,
+    vp_zn: 13.76
+  }
+  const pilasCalculate = {
+    ley_ag: tmh_ag / totalWeight,
+    ley_pb: tmh_pb / totalWeight,
+    ley_zn: tmh_zn / totalWeight,
+  }
+  const ag_rec = (x) => {
+    if (x < 2.8) {
+      return x * 0.28877
+    } else {
+      return 0.0422 * Math.log(x) + 0.768505
+    }
+  }
+  const pb_rec = (x) => {
+    if (x < 0.4) {
+      return x * 2.2829
+    } else {
+      return 0.0024 * x + 0.896
+    }
+  }
+  const zn_rec = (x) => {
+    if (x < 0.55) {
+      return x * 0.8564
+    } else if (x < 7.85) {
+      return 0.14627 * Math.log(x) + 0.60619
+    } else {
+      return 0.808
+    }
+  }
+  const nsr = ag_rec(pilasCalculate.ley_ag) * pointValues.vp_ag * pilasCalculate.ley_ag + pb_rec(pilasCalculate.ley_pb) * pointValues.vp_pb * pilasCalculate.ley_pb + zn_rec(pilasCalculate.ley_zn) * pointValues.vp_zn * pilasCalculate.ley_zn
+  const ag_eq = nsr / (pointValues.vp_ag * ag_rec(pilasCalculate.ley_ag))
+  return {
+    stock: totalWeight.toFixed(1),
+    nsr: nsr.toFixed(2),
+    ag_eq: ag_eq.toFixed(2)
+  }
+}
 </script>
 
 <template>
@@ -74,23 +131,23 @@ watch(
 
           <div class="b-mineral">
             <div class="b-m-item">
-              <span> {{ pila.ley_ag}} </span>
+              <span> {{ pila.ley_ag.toFixed(2) }} </span>
               <h5>Ag</h5>
             </div>
             <div class="b-m-item">
-              <span> {{ pila.ley_fe}} </span>
+              <span> {{ pila.ley_fe.toFixed(2) }} </span>
               <h5>Fe</h5>
             </div>
             <div class="b-m-item">
-              <span> {{ pila.ley_mn}} </span>
+              <span> {{ pila.ley_mn.toFixed(2) }} </span>
               <h5>Mn</h5>
             </div>
             <div class="b-m-item">
-              <span> {{ pila.ley_pb}} </span>
+              <span> {{ pila.ley_pb.toFixed(2) }} </span>
               <h5>Pb</h5>
             </div>
             <div class="b-m-item">
-              <span> {{ pila.ley_zn}} </span>
+              <span> {{ pila.ley_zn.toFixed(2) }} </span>
               <h5>Zn</h5>
             </div>
           </div>
@@ -98,20 +155,20 @@ watch(
       </div>
     </div>
     <div class="m-i-result">
-      <div class="i-r-item">
+      <!-- <div class="i-r-item">
         <span> 5 </span>
         <h5>Viajes</h5>
-      </div>
+      </div> -->
       <div class="i-r-item">
-        <span> 345.3 </span>
+        <span> {{ calculus(pilas).stock }} </span>
         <h5>TMH</h5>
       </div>
       <div class="i-r-item">
-        <span> 5.3 </span>
+        <span> {{ calculus(pilas).nsr }} </span>
         <h5>Ley</h5>
       </div>
       <div class="i-r-item">
-        <span> 45.3 </span>
+        <span> {{ calculus(pilas).ag_eq }} </span>
         <h5>NSR</h5>
       </div>
     </div>

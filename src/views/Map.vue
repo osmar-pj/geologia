@@ -120,8 +120,7 @@ const panelsSVG = () => {
     { x: 1550, y: 50, type: "Cancha 1" },
     { x: 1100, y: 350, type: "Cancha 2" },
     { x: 240, y: 30, type: "Cancha Colquicocha" },
-  ];
-  console.log("Panels", panels.value);
+  ]
   panels.value.forEach((p, i) => {
     const panelSVG = document.getElementById(p.index);
     const svgElem = new fabric.loadSVGFromString(
@@ -135,7 +134,7 @@ const panelsSVG = () => {
           scaleY: 1.1,
           selectable: false,
         });
-        obj.type = p.index;
+        obj.type = p.ubication;
         canvas.value.add(obj);
       }
     )

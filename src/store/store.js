@@ -281,7 +281,6 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        console.log('MAP',data)
         commit("getRumaTotal", data.pilasToMap)
         commit("setWeights", data.weights)
       } catch (error) {commit("loading", false)}
