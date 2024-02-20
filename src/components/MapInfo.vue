@@ -29,6 +29,7 @@ isSelectedMoreThanOnePila.value = pilas.value.length > 1
       {{ pilas }}
     </p>
   </div>
+  <transition></transition>
 </template>
 
 <style lang="scss">
@@ -46,6 +47,7 @@ isSelectedMoreThanOnePila.value = pilas.value.length > 1
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.02);
+  overflow: auto;
   h2 {
     color: var(--white);
   }

@@ -770,7 +770,9 @@ const getDataCalendar = (data) => {
     <div class="global-map-search">
       <input type="text" placeholder="Buscar" >
     </div>
-    <MapInfo v-if="unlessOnePilaSelected" :data="pilasSelected"/>
+    <Transition name="bounce">
+      <MapInfo v-if="unlessOnePilaSelected" :data="pilasSelected"/>
+  </Transition>
     <FabricCanvas
       @canvas-created="handleCreated"
       @click:selected="handleSelect"

@@ -9,6 +9,7 @@ const store = createStore({
     user: user,
     weights: [],
     // canvas: null,
+    filtroAplicado: false,
     dataList: [],
     dataListControl: [],
     dataListGeneral: [],
@@ -122,6 +123,10 @@ const store = createStore({
     },
     loading(state, payload) {
       state.loading = payload
+    },
+    filtroAplicado(state, payload) {
+      console.log("ingresando", state, payload)
+      state.filtroAplicado = payload
     },
     // ADD to list of trips
     addDataGeneralList(state, payload) {

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted,defineEmits } from "vue";
 import { useStore } from "vuex";
 import IFilter from "../icons/IFilter.vue";
 import IDrag from "../icons/IDrag.vue";
@@ -9,9 +9,10 @@ import ICategory from "../icons/ICategory.vue";
 import IItem from "../icons/IItem.vue";
 import ICalendar from "../icons/ICalendar.vue";
 
+defineEmits(['filtroAplicado']);
+
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
-
 const dataFilters = ref([]);
 const selectedCategories = ref([]);
 const draggableItem = ref([null]);
@@ -54,10 +55,7 @@ onMounted(async () => {
   dataFilters.value = store.state.dataListFilters.columns.filter(
     (i) => i.type === "object"
   );
-  await sendFilter();
 });
-
-
 
 const hideError = () => {
   showError.value = false;
@@ -86,10 +84,14 @@ const deselectItem = (index) => {
 };
 
 const sendFilter = async () => {
-  
+  if(selectedCategories.value.length === 0  ){
+
+    console.log("Los datos a actualizar están vacíos");
+  }else{
     try {
+    console.log("Ingresando")
     buttonClicked.value = true;
-    
+
     const response = await fetch(`${url}/listGeneral`, {
       method: "POST",
       headers: {
@@ -97,18 +99,19 @@ const sendFilter = async () => {
         "ngrok-skip-browser-warning": true,
       },
       body: JSON.stringify({
-        ts:  selectedEstado.value.getTime(),
-        arr: ["rango","type"],
-         category: "trips",      
+        ts: selectedEstado.value.getTime(),
+        arr: ["rango", "type"],
+        category: "trips",
       }),
     });
 
     const data = await response.json();
-      if (data.status === true) {
-      console.log(data)
+    if (data.status === true) {
+      console.log(data);
       store.dispatch("filter_list", data.data);
       cerrarModal();
       buttonClicked.value = false;
+      store.commit("filtroAplicado", true)
     } else {
       console.log("error");
       buttonClicked.value = false;
@@ -117,9 +120,8 @@ const sendFilter = async () => {
     console.error("Error al actualizar:", error);
     buttonClicked.value = false;
   }
-  
+  }
 };
-
 </script>
 <template>
   <button class="btn-filters" @click="openModal()">
@@ -214,21 +216,21 @@ const sendFilter = async () => {
           </div>
           <div>
             <Calendar
-            v-model="selectedEstado"
-            view="month"
-            :minDate="minDate"
-            :maxDate="maxDate"
-            :manualInput="false"
-            dateFormat="mm/yy"
-            aria-placeholder="mm/yy"
-            showIcon
-            iconDisplay="input"
-            :yearNavigator="true"
-          >
-            <template #inputicon="{ clickCallback }">
-              <ICalendar />
-            </template>
-          </Calendar>
+              v-model="selectedEstado"
+              view="month"
+              :minDate="minDate"
+              :maxDate="maxDate"
+              :manualInput="false"
+              dateFormat="mm/yy"
+              aria-placeholder="mm/yy"
+              showIcon
+              iconDisplay="input"
+              :yearNavigator="true"
+            >
+              <template #inputicon="{ clickCallback }">
+                <ICalendar />
+              </template>
+            </Calendar>
           </div>
         </div>
         <div class="mF-c-footer">

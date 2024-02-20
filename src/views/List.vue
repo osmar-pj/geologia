@@ -47,7 +47,11 @@ onMounted(async () => {
 socket.on("OreControl", (data) => {
   store.commit("addDataGeneralList", data);
 });
-const filterView = ref(true);
+const filtroAplicado = computed(()=> store.state.filtroAplicado);
+
+const handleFilterApplied = (value) => {
+  filtroAplicado.value = value;
+};
 
 const excludedFields = [
   "year",
@@ -137,7 +141,7 @@ const getStatusClass = (header, data) => {
       <Filters />
     </div>
   </div>
-  <div class="c-global-c-content" v-show="!filterView">
+  <div class="c-global-c-content" v-show="!filtroAplicado">
     <DataTable
       :value="trips.data"
       tableStyle="width: 100%"
@@ -256,7 +260,7 @@ const getStatusClass = (header, data) => {
       </template>
     </DataTable>
   </div>
-  <div class="c-global-c-filtered" v-show="filterView">
+  <div class="c-global-c-filtered" v-show="filtroAplicado">
     <div class="c-item-filtered">
       <DataTable
         :value="tripsFiltered.data"
