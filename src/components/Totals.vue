@@ -2,7 +2,7 @@
 import IPlus from "../icons/IPlus.vue";
 import { onMounted, ref, computed} from "vue"
 import { useStore } from "vuex"
-
+import IPila from "../maps/IPila.vue";
 const store = useStore()
 
 onMounted(async () => {
@@ -20,6 +20,7 @@ const oreControl = computed(() => store.state.dataList)
   <div class="Container-totals">
     <div class="H-left-totals">
       <div class="Item-w-total">
+      
         <h5 class="w-w-title">Total de Stock</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>

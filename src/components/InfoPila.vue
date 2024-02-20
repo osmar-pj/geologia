@@ -2,7 +2,12 @@
 import { defineEmits, defineProps, ref } from "vue";
 import Edit from "../icons/Edit.vue";
 import IHelp from "../icons/IHelp.vue";
-import { formatDate, formatFixed, formatArrayField } from "../libs/utils";
+import {
+  formatDate,
+  formatFixed,
+  formatHour,
+  formatDateAbas,
+} from "../libs/utils";
 
 const props = defineProps(["data"]);
 const emit = defineEmits();
@@ -22,7 +27,7 @@ const data = ref(props.data);
           </div>
           <div class="mC-c-title-text">
             <h2>{{ data.pila }}</h2>
-            <h4>Detalles de pila</h4>
+            <h4>Información detallada</h4>
           </div>
         </div>
         <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -31,48 +36,96 @@ const data = ref(props.data);
       </div>
 
       <div class="mC-c-body">
-        <!-- <div class="mC-b-info">
-          <div v-for="(value, key) in data" :key="key" class="item-descrip">
-            <h5>{{ key }}</h5>
-            <h4 v-if="key === 'travels'">
-              <ul>
-                <li v-for="(item, index) in value" :key="index">
-                  <strong>{{ item._id }}</strong
-                  >: {{ formatDate(item.tonh) }}
-                </li>
-              </ul>
-            </h4>
-            <h4 v-else-if="Array.isArray(value)">
-              <span v-for="(item, index) in value" :key="index">{{
-                item
-              }}</span>
-            </h4>
-            <h4 v-else-if="typeof value === 'object'">
-              <span v-for="(val, k) in value" :key="k">
-                <strong>{{ k }}:</strong> {{ val }}
-              </span>
-            </h4>
-            <h4 v-else>{{ value }}</h4>
-          </div>
-        </div> -->
-        {{ data.travels }}
         <div class="mC-b-samples">
+          <h2 class="mC-b-title">Lista de viajes </h2>
           <div class="N-datatable">
             <table>
               <thead>
                 <tr>
-                  <th
-                    v-for="(value, key) in data.travels[0]"
-                    v-if="key !== 'id'"
-                  >
-                    {{ key }}
-                  </th>
+                  <th>#</th>
+                  <th>Fecha</th>
+                  <th>Mina</th>
+                  <th>Vehículo</th>
+                  <th>Turno</th>
+                  <th>Id</th>
+                  <th>Tajo</th>
+                  <th>Dominio</th>
+                  <th>Toneladas</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(sample, index) in data.travels" :key="index">
-                  <td v-for="(value, key) in sample" v-if="key !== 'id'">
-                    {{ value }}
+                <tr v-for="(travel, rowIndex) in data.travels" :key="rowIndex">
+                  <td>
+                    <div class="td-user">
+                      <div class="t-name">
+                        <h5>#{{ rowIndex + 1 }}</h5>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="t-name">
+                      <h4>
+                        {{ formatDateAbas(travel.date) }}
+                      </h4>
+                      <div class="t-hour">
+                        <img src="../assets/img/i-time.svg" alt="" />
+                        <h5 class="text-hour">
+                          {{ formatHour(travel.date) }}
+                        </h5>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="t-name">
+                      <h4>
+                        {{ travel.mining }}
+                      </h4>
+                      <h5>
+                        {{ travel.ubication }}
+                      </h5>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div class="t-vehiculo">
+                      <img
+                        :src="
+                          travel.carriage === 'Vagones'
+                            ? 'src/assets/img/i-wagon.svg'
+                            : 'src/assets/img/i-truck.svg'
+                        "
+                        alt=""
+                      />
+                      <div class="t-name">
+                        <h4>
+                          {{ travel.tag }}
+                        </h4>
+                        <h5 v-if="travel.vagones">
+                          {{ travel.vagones }} vagones
+                        </h5>
+                        <h5 class="t-2" v-else>---</h5>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <h4>{{ travel.turn }}</h4>
+                  </td>
+                  <td>
+                    <h4>{{ travel.id_trip }}</h4>
+                  </td>
+                  <td>
+                    <h4>{{ travel.tajo }}</h4>
+                  </td>
+                  <td>
+                    <h4>{{ travel.dominio }}</h4>
+                  </td>
+                  <td>
+                    <div class="t-name">
+                      <h4>
+                        {{ travel.tonh.toFixed(2) }}
+                      </h4>
+                      <h5>toneladas</h5>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -81,9 +134,7 @@ const data = ref(props.data);
         </div>
 
         <div class="mC-b-history">
-          <div>
-            <h3>History</h3>
-          </div>
+          <h2 class="mC-b-title">Historial</h2>
           <div
             v-for="(value, key) in data.history"
             :key="key"
@@ -99,29 +150,29 @@ const data = ref(props.data);
           </div>
         </div>
 
-        <div class="mC-b-samples">
+        <!-- <div class="mC-b-samples">
           <div class="N-datatable">
             <table>
               <thead>
                 <tr>
                   <th
-                    v-for="(value, key) in data.samples[0]"
-                    v-if="key !== 'id'"
+                    v-for="(value, samp) in data.samples[0]"
+                    v-if="samp !== 'id'"
                   >
-                    {{ key }}
+                    {{ samp }}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(sample, index) in data.samples" :key="index">
-                  <td v-for="(value, key) in sample" v-if="key !== 'id'">
+                <tr v-for="(sample, index) in data.samples" :samp="index">
+                  <td v-for="(value, samp) in sample" v-if="key !== 'id'">
                     {{ value }}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="mC-c-footer">
         <!-- <button @click="cerrarModal" class="btn-cancel" type="button">
@@ -135,6 +186,7 @@ const data = ref(props.data);
 
 <style lang="scss">
 .mC-b-history {
+  padding-top: 1rem;
   .mC-h-container {
     display: flex;
     flex-direction: column;
@@ -185,7 +237,10 @@ const data = ref(props.data);
 }
 
 .mCreate-details {
-  max-width: 80% !important;
+  max-width: 1100px !important;
   flex-direction: row;
+}
+.mC-b-title{
+  padding-bottom: 1rem;
 }
 </style>
