@@ -10,12 +10,11 @@ import CEdit from "../icons/CEdit.vue";
 import Delete from "../icons/Delete.vue";
 import ISave from "../icons/ISave.vue";
 import Totals from "../components/Totals.vue";
+import IMap from "../prueba/IMap.vue";
 import IPila from "../prueba/IPila.vue";
 import IGiba from "../prueba/IGiba.vue";
 import IDesmonte from "../maps/IDesmonte.vue";
 import ICC from "../prueba/ICC.vue";
-import IC1 from "../prueba/IC1.vue";
-import IC2 from "../prueba/IC2.vue";
 import ICalendar from "../icons/ICalendar.vue";
 import GeneratePDF from "../components/GeneratePDF.vue";
 import CanchaModal from "../components/CanchaModal.vue";
@@ -49,9 +48,6 @@ const panels = computed(() => store.state.panels);
 
 const openCalendar = ref(false);
 const dataModalCalendar = ref(null);
-const colquicocha = ref();
-const cancha1 = ref();
-const cancha2 = ref();
 
 class CustomRect extends fabric.Rect {
   constructor(options) {
@@ -67,6 +63,42 @@ const handleCreated = async (fabricCanvas) => {
   await store.dispatch("pila_total");
   canvas.value = fabricCanvas;
   await createSVGRect(fabricCanvas);
+  // const map = document.getElementById("map")
+  // const svgMap = new fabric.loadSVGFromString(map.outerHTML, (objects, options) => {
+  //   const obj = fabric.util.groupSVGElements(objects, options);
+  //   obj.set({
+  //     left: 10,
+  //     top: 10,
+  //     scaleX: 1,
+  //     scaleY: 1,
+  //     selectable: false
+  //   });
+  //   canvas.value.add(obj);
+  // });
+  // import png image in prueba
+  // const mapImg = new Image();
+  // mapImg.src = "../prueba/map.png";
+  // console.log("Map", mapImg);
+  // mapImg.onload = function () {
+  //   const map = new fabric.Image(mapImg, {
+  //     left: 0,
+  //     top: 0,
+  //     scaleX: 1,
+  //     scaleY: 1,
+  //     selectable: false,
+  //   });
+  //   canvas.value.add(map);
+  // }
+  const imgMap = document.getElementById("map");
+  const svgMap = new fabric.Image(imgMap, {
+    left: 0,
+    top: 0,
+    scaleX: .3,
+    scaleY: .3,
+    selectable: false,
+  });
+  svgMap.type = "map";
+  canvas.value.add(svgMap);
   pilas.value
     .filter((i) => i.typePila == "Pila")
     .forEach((i) => {
@@ -78,8 +110,8 @@ const handleCreated = async (fabricCanvas) => {
           obj.set({
             left: i.x,
             top: i.y,
-            scaleX: .25,
-            scaleY: .25,
+            scaleX: .15,
+            scaleY: .15,
             selectable: true,
           });
           obj.type = i._id;
@@ -99,8 +131,8 @@ const handleCreated = async (fabricCanvas) => {
           obj.set({
             left: i.x,
             top: i.y,
-            scaleX: .25,
-            scaleY: .25,
+            scaleX: .15,
+            scaleY: .15,
             selectable: true,
           });
           obj.type = i._id;
@@ -149,9 +181,10 @@ const handleSelect = (e) => {
         o.type !== "colquicocha" &&
         o.type !== "cancha2" &&
         o.type !== "cancha1" &&
-        o.type !== "panel_colquicocha" &&
-        o.type !== "panel_cancha2" &&
-        o.type !== "panel_cancha1"
+        o.type !== "Cancha Colquicocha" &&
+        o.type !== "Cancha 2" &&
+        o.type !== "Cancha 1" &&
+        o.type !== "map"
     );
   canvas.value.forEachObject((o) => {
     o.hasBorders = true;
@@ -167,9 +200,10 @@ const handleSelect = (e) => {
         o.type === "colquicocha" ||
         o.type === "cancha2" ||
         o.type === "cancha1" ||
-        o.type === "panel_colquicocha" ||
-        o.type === "panel_cancha2" ||
-        o.type === "panel_cancha1"
+        o.type === "Cancha Colquicocha" ||
+        o.type === "Cancha 2" ||
+        o.type === "Cancha 1" ||
+        o.type === "map"
     )
     .forEach((o) => {
       o.selectable = false;
@@ -382,8 +416,8 @@ socket.on("pilas", async (data) => {
           obj.set({
             left: pila.x,
             top: pila.y,
-            scaleX: 0.3,
-            scaleY: 0.3,
+            scaleX: .15,
+            scaleY: .15,
             selectable: true,
           });
           obj.type = pila._id;
@@ -439,8 +473,8 @@ socket.on("newPila", async (data) => {
       obj.set({
         left: pila.x,
         top: pila.y,
-        scaleX: 0.3,
-        scaleY: 0.3,
+        scaleX: .15,
+        scaleY: .15,
         selectable: true,
       });
       obj.type = pila._id;
@@ -652,18 +686,30 @@ const save = () => {
 const getDataCalendar = (data) => {
   openCalendar.value = true;
   dataModalCalendar.value = data;
-};
+}
+const zoom = (e) => {
+  let delta = e.deltaY;
+  let zoom = canvas.value.getZoom();
+  zoom = zoom + delta / 200;
+  if (zoom > 20) zoom = 20;
+  if (zoom < 0.01) zoom = 0.01;
+  canvas.value.setZoom(zoom);
+  e.preventDefault();
+  e.stopPropagation();
+}
 </script>
 
 <template>
   <Totals />
   <GeneratePDF />
   <CanchaModal
-    v-if="openCalendar"
-    @cerrarModal="openCalendar = false"
-    :data="dataModalCalendar"
+  v-if="openCalendar"
+  @cerrarModal="openCalendar = false"
+  :data="dataModalCalendar"
   />
   <div v-show="false">
+    <img src="../prueba/map.png" alt="" id="map">
+    <!-- <IMap id="map" /> -->
     <ICC :id="index" :ubication="ubication" :stock="tonh" :nsr="nsr" :ag_equiv="ag_eq" v-for="{ubication, nsr, ag_eq, tonh, index} in panels" />
     <IPila
       v-for="{
@@ -800,7 +846,7 @@ const getDataCalendar = (data) => {
   flex: 1 1;
   position: relative;
   background-image: url("../assets/img/map-ruma.svg");
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
   // background-position: center;
 }
