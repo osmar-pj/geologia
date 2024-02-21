@@ -165,11 +165,11 @@ const calculus = (pilas) => {
       </div>
       <div class="i-r-item">
         <span> {{ calculus(pilas).nsr }} </span>
-        <h5>Ley</h5>
+        <h5>NSR</h5>
       </div>
       <div class="i-r-item">
         <span> {{ calculus(pilas).ag_eq }} </span>
-        <h5>NSR</h5>
+        <h5>Ag_Eq</h5>
       </div>
     </div>
   </div>

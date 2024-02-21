@@ -89,7 +89,7 @@ const sendFilter = async () => {
     setTimeout(() => {
       showError.value = false;
     }, 5000);
-  }else{
+  } else {
     try {
     console.log("Ingresando")
     buttonClicked.value = true;
