@@ -46,15 +46,13 @@ const cerrarModal = () => {
 
 const cleanFilter = () => {
   selectedCategories.value = [];
-  sendFilter();
+  store.commit("filtroAplicado", false)
   cerrarModal();
 };
 
 onMounted(async () => {
-  await store.dispatch("get_listFilters");
-  dataFilters.value = store.state.dataListFilters.columns.filter(
-    (i) => i.type === "object"
-  );
+  await store.dispatch("get_listCancha");
+  dataFilters.value = store.state.dataListCancha.grouped;
 });
 
 const hideError = () => {
@@ -89,7 +87,7 @@ const sendFilter = async () => {
     setTimeout(() => {
       showError.value = false;
     }, 5000);
-  } else {
+  }else{
     try {
     console.log("Ingresando")
     buttonClicked.value = true;
@@ -155,6 +153,31 @@ const sendFilter = async () => {
           <div class="mF-b-categories">
             <div class="categories-title">
               <ICategory /><span>
+                Fecha </span
+              >
+            </div>
+            <div class="categories-contenedor">
+              <Calendar
+              v-model="selectedEstado"
+              view="month"
+              :minDate="minDate"
+              :maxDate="maxDate"
+              :manualInput="false"
+              dateFormat="mm/yy"
+              aria-placeholder="mm/yy"
+              showIcon
+              iconDisplay="input"
+              :yearNavigator="true"
+            >
+              <template #inputicon="{ clickCallback }">
+                <ICalendar />
+              </template>
+            </Calendar>
+            </div>
+          </div>
+          <div class="mF-b-categories">
+            <div class="categories-title">
+              <ICategory /><span>
                 Categorias ({{ selectedCategories.length }})</span
               >
             </div>
@@ -164,22 +187,22 @@ const sendFilter = async () => {
               </div>
               <div
                 v-for="category of dataFilters"
-                :key="category.key"
+                :key="category.title"
                 class="mF-imputs-item"
               >
                 <Checkbox
                   v-model="selectedCategories"
-                  :inputId="category.key"
+                  :inputId="category.title"
                   name="category"
-                  :value="category.name"
+                  :value="category.title"
                 />
-                <label :for="category.key">{{ category.name }}</label>
+                <label :for="category.title">{{ category.title }}</label>
               </div>
             </div>
           </div>
           <span class="label-error" v-if="showError"
             >*Selecciona al menos un item</span
-          >
+          >          
           <div class="mF-b-categories">
             <div class="categories-title">
               <IItem /><span>
@@ -217,22 +240,7 @@ const sendFilter = async () => {
             </div>
           </div>
           <div>
-            <Calendar
-              v-model="selectedEstado"
-              view="month"
-              :minDate="minDate"
-              :maxDate="maxDate"
-              :manualInput="false"
-              dateFormat="mm/yy"
-              aria-placeholder="mm/yy"
-              showIcon
-              iconDisplay="input"
-              :yearNavigator="true"
-            >
-              <template #inputicon="{ clickCallback }">
-                <ICalendar />
-              </template>
-            </Calendar>
+            
           </div>
         </div>
         <div class="mF-c-footer">

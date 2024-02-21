@@ -10,13 +10,6 @@ const store = useStore();
 const buttonClicked = ref(false);
 const selectedEstado = ref(new Date());
 
-// Obtener la fecha del mes anterior
-const fechaMesAnterior = new Date();
-fechaMesAnterior.setMonth(fechaMesAnterior.getMonth() - 1);
-
-// Asignar la fecha del mes anterior a selectedEstado
-selectedEstado.value = fechaMesAnterior;
-
 const analysisData = ref(null);
 const graficData = ref(null);
 
@@ -49,12 +42,14 @@ onMounted(async () => {
 });
 
  const handleGraphic = async () => {
-   try {
+
+  console.log("Feeding",selectedEstado.value.getTime())
+   try {  
      buttonClicked.value = true;
      const response = await fetch(
        `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
          props.mining
-       }&stage=${props.stage}`,
+       }&stage=${props.stage}&now=${new Date().getTime()}`,
        {
          method: "GET",
          headers: {

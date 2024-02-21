@@ -19,7 +19,7 @@ const menuItems = [
   { name: 'controlCalidad', label: 'Control de Calidad', icon: CQuality, route: 'controlCalidad' },
   { name: 'list', label: 'Viajes de Cancha', icon: IList, route: 'list' },
   { name: 'planta', label: 'Viajes de Planta', icon: CQuality, route: 'planta' },
-  { name: 'pila', label: 'Pilas de cancha', icon: CQuality, route: 'pila' },
+  { name: 'pila', label: 'Stock Piles de cancha', icon: CQuality, route: 'pila' },
 ];
 const goToPage = (page) => {
   router.push(page);

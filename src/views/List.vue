@@ -3,6 +3,7 @@ import { computed, ref, onMounted, inject } from "vue";
 import { useStore } from "vuex";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import Filters from "../components/filters.vue";
+import { FilterMatchMode } from "primevue/api";
 import {
   formatDate,
   formatFixed,
@@ -18,39 +19,17 @@ const socket = inject("socket");
 const trip$ = new Subject();
 const trips = ref([]);
 
-const DataView = async () => {
-  try {
-    const response = await fetch(`${url}/listGeneral`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": true,
-      },
-    });
-
-    const data = await response.json();
-
-    if (data.status === true) {
-      trips.value = data;
-    } else {
-      console.log("error");
-    }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
-  }
-};
-
 onMounted(async () => {
-  await DataView();
+  await store.dispatch("get_listCancha");
+  trips.value = store.state.dataListCancha;
+  console.log(trips.value);
 });
+
 socket.on("OreControl", (data) => {
   store.commit("addDataGeneralList", data);
 });
 const filtroAplicado = computed(()=> store.state.filtroAplicado);
 
-const handleFilterApplied = (value) => {
-  filtroAplicado.value = value;
-};
 
 const excludedFields = [
   "year",
@@ -117,15 +96,21 @@ const getStatusClass = (header, data) => {
   if (header.field === "statusTrip") {
     return {
       "travel-status": true,
-      "T-Analizando": data[header.field] === "Analizando",
-      "T-waitBeginAnalysis": data[header.field] === "waitBeginAnalysis",
       "T-waitComplete": data[header.field] === "waitComplete",
       "T-waitSplit": data[header.field] === "waitSplit",
+      "T-Analizando": data[header.field] === "Analizando",
+      "T-waitCodeTableta": data[header.field] === "waitCodeTableta",
       "T-waitDateAbastecimiento":
         data[header.field] === "waitDateAbastecimiento",
+      "T-waitBeginAbastecimiento": data[header.field] === "waitBeginAbastecimiento",
+      "T-waitBeginDespacho": data[header.field] === "waitBeginDespacho",
+      "T-Finalizado": data[header.field] === "Finalizado",
     };
   }
 };
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 </script>
 
 <template>
@@ -143,6 +128,7 @@ const getStatusClass = (header, data) => {
   </div>
   <div class="c-global-c-content" v-show="!filtroAplicado">
     <DataTable
+      v-model:filters="filters"
       :value="trips.data"
       tableStyle="width: 100%"
       paginator
@@ -154,7 +140,23 @@ const getStatusClass = (header, data) => {
       sortField="year"
       :sortOrder="1"
       :loading="store.state.loading"
+      :globalFilterFields="['tajo']"
+      dataKey="id"
     >
+    <template #header>
+        <div>
+          <!-- <InputIcon>
+              <img src="../assets/img/i-search.svg" alt="" />
+            </InputIcon> -->
+          <InputText
+            v-model="filters['global'].value"
+            placeholder="Buscar por nombre..."
+          />
+        </div>
+        <div>
+          <button class="btn-success">Exportar ahora</button>
+        </div>
+      </template>
       <Column header="#" headerStyle="width: 2.5rem">
         <template #body="slotProps">
           <div class="td-user">
@@ -349,29 +351,33 @@ const getStatusClass = (header, data) => {
   }
 }
 
+.T-waitComplete::after, .T-waitSplit::after {
+  --porcentaje-finalizado: 0%;
+}
 .T-Analizando::after {
   background-color: #ff694f;
   --porcentaje-finalizado: 20%;
 }
-
-.T-waitBeginAnalysis::after {
-  background-color: #ffbc58;
+.T-waitCodeTableta::after {
+  background-color: #b964ff;
   --porcentaje-finalizado: 40%;
 }
-.T-waitComplete::after {
-  background-color: #5d95ff;
+.T-waitDateAbastecimiento::after {
+  background-color: #64e0ff;
   --porcentaje-finalizado: 60%;
 }
 
-.T-waitSplit::after {
-  background-color: #b964ff;
+.T-waitBeginAbastecimiento::after {
+  background-color: #5d95ff;
   --porcentaje-finalizado: 80%;
 }
-.T-waitDateAbastecimiento::after {
-  background-color: #fff064;
-  --porcentaje-finalizado: 90%;
+
+.T-waitBeginDespacho::after {
+  background-color: #ffbc58;
+  --porcentaje-finalizado: 40%;
 }
-.T-Muestreado::after {
+
+.T-Finalizado::after {
   background-color: #6cff67;
   --porcentaje-finalizado: 100%;
 }

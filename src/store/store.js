@@ -13,12 +13,11 @@ const store = createStore({
     dataList: [],
     dataListControl: [],
     dataListGeneral: [],
-    dataListFilters: [],
+    dataListCancha: [],
     dataFilterPlanta: [],
     dataFilterTable: [],
     dataSelectedFilters: [],
     dataAnalysis: [],
-   
     tajoList: [],
     pilaList: [],
     rumaTotal: [],
@@ -114,8 +113,8 @@ const store = createStore({
     getRumaTotal(state, payload) {
       state.rumaTotal = payload
     },
-    getListFilters(state, payload) {
-      state.dataListFilters = payload
+    getListCancha(state, payload) {
+      state.dataListCancha = payload
     },
     getFilterTable(state, payload) {
       state.dataFilterTable = payload
@@ -240,10 +239,10 @@ const store = createStore({
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
-    get_listFilters: async ({ commit }) => {
+    get_listCancha: async ({ commit }) => {
       try {
         commit("loading", true)
-        const response = await fetch(`${url}/listgeology`, {
+        const response = await fetch(`${url}/listGeneral`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -251,7 +250,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        commit("getListFilters", data)
+        commit("getListCancha", data)
           // console.log(data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}

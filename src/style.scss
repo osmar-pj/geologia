@@ -786,6 +786,16 @@ input[type="checkbox"] {
     //   @include md {
     //     font-size: clamp(6px, 8vw, 12px);
     //   }
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    svg{
+      fill: transparent;
+      color: var(--grey-2);
+      width: 1rem;
+      height: 1rem;
+      stroke-width: 1.5;
+    }
   }
   h4 {
     font-weight: 550;
@@ -839,19 +849,23 @@ input[type="checkbox"] {
   }
 }
 
+.t-ley{
+  font-weight: 550;
+  text-align: center;
+}
 
 .t-textCort{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 80px;
 }
 
 .t-container{
   display: flex;
   flex-direction: column;
   gap: .3rem;
-  width: 180px;
+  width: 100px;
   .t-c-title{
     display: flex;
     justify-content: space-between;
@@ -873,62 +887,6 @@ input[type="checkbox"] {
     }
   }
 }
-
-.porcent-status {
-  position: relative;
-  margin: 0 auto;
-  width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background-color: var(--grey-light-22);
-  // &::before{
-  //   --porcentaje-finalizado: 10%; 
-  //   content: "10%";
-  // }
-  &::after{  
-    content: "";
-  animation: porc1 1.5s ease-in-out forwards;
-  position: absolute;
-  height: 100%;  
-  border-radius: 5px;}
-}
-
-
-.P-Acumulando::after{
-  background-color: #ff694f;
-  --porcentaje-finalizado: 20%; 
-}
-
-.P-Analizando::after{
-  background-color: #ffbc58;
-  --porcentaje-finalizado: 40%; 
-}
-.P-waitDateAbastecimiento::after{
-  background-color: #5d95ff;
-  --porcentaje-finalizado: 60%; 
-}
-
-.P-waitBeginDespacho::after{
-  background-color: #b964ff;
-  --porcentaje-finalizado: 80%; 
-}
-.P-Finalizado::after {
-  background-color: #6cff67;
-  --porcentaje-finalizado: 100%; 
-}
-
-@keyframes porc1 {
-  0% {
-    width: 0%;
-  }
-  55% {
-    width: 75%;
-  }  
-  100% {
-    width: var(--porcentaje-finalizado); 
-  }
-}
-
 
 
 
