@@ -224,13 +224,23 @@ const formatColumnValue = (value, fn) => {
       <Column header="Mina" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
-          <div v-else class="t-name">
-            <h4>
-              {{ slotProps.data.mining }}
-            </h4>
-            <h5>
-              {{ slotProps.data.ubication }}
-            </h5>
+          <div v-else class="t-mining">
+            <img
+              :src="
+                slotProps.data.mining === 'YUMPAG'
+                  ? 'src/assets/img/i-YUMPAG.svg'
+                  : 'src/assets/img/i-UCHU.svg'
+              "
+              alt=""
+            />
+            <div class="t-name">
+              <h4>
+                {{ slotProps.data.mining ? slotProps.data.mining : '--' }}
+              </h4>
+              <h5>
+                {{ slotProps.data.ubication }}
+              </h5>
+            </div>
           </div>
         </template>
       </Column>

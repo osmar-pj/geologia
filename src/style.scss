@@ -73,8 +73,8 @@ pre {
 
 // COLORS
 :root {
-  --primary: #26d452;
-  --secondary: #338849;
+  --primary: #44b678;
+  --secondary: #3b9e62;
   --red: #f35959;
   --red-black: #c33636;
   --tertiary: #fafafa;
@@ -818,6 +818,15 @@ input[type="checkbox"] {
   img {
     width: 1.6rem;
     height: 1.6rem;
+  }
+}
+.t-mining {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  img {
+    width: 2rem;
+    height: 2rem;
   }
 }
 

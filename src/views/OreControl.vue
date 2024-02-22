@@ -33,6 +33,8 @@ const excludedFields = [
   "statusPila",
   "vagones",
   "tonh",
+  "turn",
+  "id_trip",
 ];
 
 const data = computed(() => {
@@ -81,7 +83,7 @@ const formatColumnValue = (value, fn, field, row) => {
       <span>| Dia terminado en Mina </span>
     </div>
   </div>
-  <div class="tableContainer" >
+  <div class="tableContainer">
     <DataTable
       :value="data.data"
       tableStyle="width: 100%"
@@ -119,13 +121,23 @@ const formatColumnValue = (value, fn, field, row) => {
       <Column header="Mina" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
-          <div v-else class="t-name">
-            <h4>
-              {{ slotProps.data.mining }}
-            </h4>
-            <h5>
-              {{ slotProps.data.ubication }}
-            </h5>
+          <div v-else class="t-mining">
+            <img
+              :src="
+                slotProps.data.mining === 'YUMPAG'
+                  ? 'src/assets/img/i-YUMPAG.svg'
+                  : 'src/assets/img/i-UCHU.svg'
+              "
+              alt=""
+            />
+            <div class="t-name">
+              <h4>
+                {{ slotProps.data.mining }}
+              </h4>
+              <h5>
+                {{ slotProps.data.ubication }}
+              </h5>
+            </div>
           </div>
         </template>
       </Column>
@@ -150,6 +162,21 @@ const formatColumnValue = (value, fn, field, row) => {
               </h5>
               <h5 class="t-2" v-else>---</h5>
             </div>
+          </div>
+        </template>
+      </Column>
+      <Column header="Turno" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-vehiculo">
+            <img
+              :src="
+                slotProps.data.turn === 'DIA'
+                  ? 'src/assets/img/i-day.svg'
+                  : 'src/assets/img/i-night.svg'
+              "
+              alt=""
+            />
           </div>
         </template>
       </Column>
