@@ -6,6 +6,7 @@ import CCModal from "../components/CCModal.vue";
 import MuestraModal from "../components/MuestraModal.vue";
 import Edit from "../icons/Edit.vue";
 import { formatDate, formatFixed } from "../libs/utils";
+import IList from "../icons/IList.vue";
 
 const store = useStore();
 const socket = inject("socket");
@@ -221,7 +222,7 @@ const formatColumnValue = (value, fn) => {
           </div>
         </template>
       </Column>
-      <Column header="Pila" headerStyle="text-align: center;">
+      <Column header="Stock Piles" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
           <div v-else class="t-name">
@@ -229,11 +230,14 @@ const formatColumnValue = (value, fn) => {
               {{ slotProps.data.pila }}
             </h4>
             <h5>
+              <IList />
+              <strong>
               {{
                 slotProps.data.travels && Array.isArray(slotProps.data.travels)
                   ? slotProps.data.travels.length
                   : 0
-              }} viajes
+              }} 
+              </strong>viajes
             </h5>
           </div>
         </template>

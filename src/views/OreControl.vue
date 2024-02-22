@@ -187,7 +187,7 @@ const formatColumnValue = (value, fn, field, row) => {
               </template>
               <template v-else>
                 <h5 class="t-complet">
-                  <img src="../assets/img/i-square.svg" alt="" />Completar
+                  <img src="../assets/img/i-square.svg" alt="" />Comp..
                 </h5>
               </template>
             </template>

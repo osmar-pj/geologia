@@ -336,7 +336,7 @@ const columns = ref([
   position: relative;
   margin: 0 auto;
   width: 100%;
-  height: 10px;
+  height: 20px;
   border-radius: 5px;
   background-color: var(--grey-light-22);
   // &::before{
@@ -349,40 +349,88 @@ const columns = ref([
     position: absolute;
     height: 100%;
     border-radius: 5px;
+    left: 0;
+  }
+  &::before{   
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    color: var(--white);
+    font-size: 11px;
+    line-height: .8rem;
   }
 }
 
-.P-Acumulando::after {
+.P-Acumulando::after{
   background-color: #ff694f;
-  --porcentaje-finalizado: 20%;
+  --porcentaje-finalizado: 25%;
+}
+ .P-Acumulando::before{
+  content:"20%";
+  left: 5px;
+  font-size: 8px;
 }
 
 .P-Analizando::after {
   background-color: #ffbc58;
   --porcentaje-finalizado: 40%;
 }
+.P-Analizando::before{
+  content:"40%";
+}
 .P-waitCodeTableta::after {
   background-color: #64e0ff;
   --porcentaje-finalizado: 50%;
+}
+.P-waitCodeTableta::before{
+  content:"50%";
 }
 
 .P-waitDateAbastecimiento::after {
   background-color: #5d95ff;
   --porcentaje-finalizado: 60%;
 }
+.P-waitDateAbastecimiento::before{
+  content:"60%";
+}
 
 .P-waitBeginDespacho::after {
   background-color: #b964ff;
   --porcentaje-finalizado: 80%;
 }
+.P-waitBeginDespacho::before{
+  content:"80%";
+  
+}
 .P-Despachando::after {
   background-color: #00b670;
   --porcentaje-finalizado: 90%;
 }
+.P-Despachando::before{
+  content:"100%";
+ ;
+}
 .P-Finalizado::after {
   background-color: #6cff67;
+  background: repeating-linear-gradient(
+    -45deg,
+    #00b670,
+    #00b670 5px,
+    rgba(0, 0, 0, 0.3) 5px,
+    rgba(0, 0, 0, 0.3) 10px
+  );
+
   --porcentaje-finalizado: 100%;
 }
+
+.P-Finalizado::before{
+  content:"100%";
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 
 @keyframes porc1 {
   0% {

@@ -38,6 +38,12 @@ const excludedFields = [
   "mining",
   "ubication",
   "status",
+  "ley_ag",
+  "ley_pb",
+  "ley_fe",
+  "ley_mn",
+  "ley_zn",
+  "tonh",
 ];
 socket.on("trips", (data) => {
   console.log("socket Data", data);
@@ -111,6 +117,13 @@ const getStatusClass = (header, data) => {
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+const columns = ref([
+  { header: "Ley Ag", field: "ley_ag" },
+  { header: "Ley Fe", field: "ley_fe" },
+  { header: "Ley Mn", field: "ley_mn" },
+  { header: "Ley Pb", field: "ley_pb" },
+  { header: "Ley Zn", field: "ley_zn" },
+]);
 </script>
 
 <template>
@@ -253,13 +266,64 @@ const filters = ref({
               </template>
               <template v-else>
                 <h5 class="t-complet">
-                  <img src="../assets/img/i-square.svg" alt="" />Compl..
+                  <img src="../assets/img/i-square.svg" alt="" />Comp..
                 </h5>
               </template>
             </template>
           </template>
         </Column>
       </template>
+      <Column header="Ton. Total" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ formatFixed(slotProps.data.tonh) }}
+            </h4>
+            <h5>TMH</h5>
+          </div>
+        </template>
+      </Column>
+      <Column
+        v-for="(column, index) in columns"
+        :key="index"
+        :header="column.header"
+        headerStyle="text-align: center;"
+      >
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <template v-else>
+            <template
+              v-if="
+                slotProps.data[column.field] !== '' &&
+                slotProps.data[column.field] !== null &&
+                slotProps.data[column.field] !== undefined &&
+                (!Array.isArray(slotProps.data[column.field]) ||
+                  slotProps.data[column.field].length > 0)
+              "
+            >
+              <h4
+                class="t-ley"
+                :style="{
+                  color: ((value) =>
+                    value < 3
+                      ? '#00B050'
+                      : value >= 3 && value < 10
+                      ? '#FF9900'
+                      : '#FF0000')(slotProps.data[column.field]),
+                }"
+              >
+                {{ formatFixed(slotProps.data[column.field]) }}
+              </h4>
+            </template>
+            <template v-else>
+              <h5 class="t-complet">
+                <img src="../assets/img/i-square.svg" alt="" />Comp..
+              </h5>
+            </template>
+          </template>
+        </template>
+      </Column>
     </DataTable>
   </div>
   <div class="c-global-c-filtered" v-show="filtroAplicado" >
@@ -338,7 +402,7 @@ const filters = ref({
   position: relative;
   margin: 0 auto;
   width: 100%;
-  height: 10px;
+  height: 20px;
   border-radius: 5px;
   background-color: var(--grey-light-22);
   width: 100px;
@@ -349,6 +413,16 @@ const filters = ref({
     height: 100%;
     border-radius: 5px;
   }
+  &::before{   
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    color: var(--white);
+    font-size: 11px;
+    line-height: .8rem;
+  }
 }
 
 .T-waitComplete::after, .T-waitSplit::after {
@@ -356,32 +430,50 @@ const filters = ref({
 }
 .T-Analizando::after {
   background-color: #ff694f;
-  --porcentaje-finalizado: 20%;
+  --porcentaje-finalizado: 25%;
+}
+.T-Analizando::before{
+  content:"20%";
+  left: 5px;
+  font-size: 8px;
 }
 .T-waitCodeTableta::after {
   background-color: #b964ff;
   --porcentaje-finalizado: 40%;
 }
+.T-waitCodeTableta::before{
+  content:"40%";
+}
 .T-waitDateAbastecimiento::after {
-  background-color: #64e0ff;
+  background-color: #00d382;
   --porcentaje-finalizado: 60%;
 }
-
+.T-waitDateAbastecimiento::before{
+  content:"60%";
+}
 .T-waitBeginAbastecimiento::after {
   background-color: #5d95ff;
   --porcentaje-finalizado: 80%;
 }
-
+.T-waitBeginAbastecimiento::before{
+  content:"80%";
+}
 .T-waitBeginDespacho::after {
   background-color: #ffbc58;
-  --porcentaje-finalizado: 40%;
+  --porcentaje-finalizado: 90%;
 }
-
+.T-waitBeginDespacho::before{
+  content:"90%";
+}
 .T-Finalizado::after {
   background-color: #6cff67;
   --porcentaje-finalizado: 100%;
 }
-
+.T-Finalizado::before{
+  content:"100%";
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
 @keyframes porc2 {
   0% {
     width: 0%;
