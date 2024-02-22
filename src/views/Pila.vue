@@ -10,9 +10,8 @@ import IList from "../icons/IList.vue";
 
 const store = useStore();
 const socket = inject("socket");
-// const pilas = ref([]);
+const pila$ = new Subject();
 const pilas = computed(() => store.state.pilaList);
-console.log(pilas.value);
 const dt = ref();
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -45,6 +44,52 @@ const openModal = (data) => {
   modalData.value = data;
   showOCModal.value = true;
 };
+
+socket.on("pilas", (data) => {
+  const pilasFound = data.map((i) => {
+    const pila = pilas.value.data.find((p) => p._id === i._id);
+    return pila;
+  });
+  pilasFound.length > 0
+    ? updatePilas(pilasFound, data)
+    : console.log("No se encontraron pilas");
+});
+
+const updatePilas = (pilasFound, data) => {
+  pilasFound.forEach((pila, index) => {
+    if (data[index]) {
+      pila.stock = data[index].stock;
+      pila.tonh = data[index].tonh;
+      pila.ton = data[index].tonh * 0.94;
+      pila.travels = data[index].travels;
+      pila.tajo = data[index].tajo;
+      pila.cod_despacho = data[index].cod_despacho;
+      pila.statusPila = data[index].statusPila;
+      pila.history = data[index].history;
+      pila.date_abastecimiento = data[index].date_abastecimiento;
+      pila.ubication = data[index].ubication;
+      pila.ley_ag = data[index].ley_ag
+      pila.ley_fe = data[index].ley_fe
+      pila.ley_mn = data[index].ley_mn
+      pila.ley_pb = data[index].ley_pb
+      pila.ley_zn = data[index].ley_zn
+      pila.tmh_ag = data[index].tmh_ag
+      pila.tmh_fe = data[index].tmh_fe
+      pila.tmh_mn = data[index].tmh_mn
+      pila.tmh_pb = data[index].tmh_pb
+      pila.tmh_zn = data[index].tmh_zn
+      pila.x = data[index].x
+      pila.y = data[index].y
+      pila.mining = data[index].mining
+      pila.dominio = data[index].dominio
+      pila$.next(pila);
+    } else {
+      console.error(
+        `No se pudo encontrar el elemento correspondiente en data para el índice ${index}.`
+      );
+    }
+  })
+}
 
 socket.on("newPila", (data) => {
   store.commit("addDataPilaList", data);

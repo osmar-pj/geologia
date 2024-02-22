@@ -56,16 +56,18 @@ class CustomRect extends fabric.Rect {
   }
 }
 
+const scaleXOfPila = .15
+const scaleYOfPila = .18
+
 const handleCreated = async (fabricCanvas) => {
   console.log("Canvas Created")
   await store.dispatch("pila_total")
   canvas.value = fabricCanvas
-  await createZones()
-  // await createSVGRect(fabricCanvas)
+  await createSVGRect()
   const imgMap = document.getElementById("map")
   const svgMap = new fabric.Image(imgMap, {
-    left: 0,
-    top: 0,
+    left: 35,
+    top: 110,
     scaleX: .7,
     scaleY: .9,
     selectable: false,
@@ -73,58 +75,60 @@ const handleCreated = async (fabricCanvas) => {
   svgMap.type = "map"
   canvas.value.add(svgMap)
   pilas.value
-    .filter((i) => i.typePila == "Pila")
-    .forEach((i) => {
-      const pilaSVG = document.getElementById(i._id)
-      const svgElem = new fabric.loadSVGFromString(
-        pilaSVG.outerHTML,
-        (objects, options) => {
-          const obj = fabric.util.groupSVGElements(objects, options)
-          obj.set({
-            left: i.x,
-            top: i.y,
-            scaleX: .15,
-            scaleY: .18,
-            selectable: true,
+  .filter((i) => i.typePila == "Pila")
+  .forEach((i) => {
+    const pilaSVG = document.getElementById(i._id)
+    const svgElem = new fabric.loadSVGFromString(
+      pilaSVG.outerHTML,
+      (objects, options) => {
+        const obj = fabric.util.groupSVGElements(objects, options)
+        obj.set({
+          left: i.x,
+          top: i.y,
+          scaleX: scaleXOfPila,
+            scaleY: scaleYOfPila,
+            selectable: true
           })
           obj.type = i._id
           obj.pila = i
           canvas.value.add(obj)
         }
-      )
-    })
-  pilas.value
-    .filter((i) => i.typePila == "Giba")
-    .forEach((i) => {
-      const gibaSVG = document.getElementById(i._id)
-      const svgElem = new fabric.loadSVGFromString(
-        gibaSVG.outerHTML,
-        (objects, options) => {
-          const obj = fabric.util.groupSVGElements(objects, options)
-          obj.set({
-            left: i.x,
-            top: i.y,
-            scaleX: .15,
-            scaleY: .18,
-            selectable: true,
-          })
-          obj.type = i._id
-          obj.pila = i
-          canvas.value.add(obj)
-        }
-      )
-    })
-  await panelsSVG()
-  // canvas.value.hasControls = false
-  // canvas.value.hasBorders = true
-  canvas.value.renderAll()
-}
-
+        )
+      })
+      pilas.value
+      .filter((i) => i.typePila == "Giba")
+      .forEach((i) => {
+        const gibaSVG = document.getElementById(i._id)
+        const svgElem = new fabric.loadSVGFromString(
+          gibaSVG.outerHTML,
+          (objects, options) => {
+            const obj = fabric.util.groupSVGElements(objects, options)
+            obj.set({
+              left: i.x,
+              top: i.y,
+              scaleX: .15,
+              scaleY: .18,
+              selectable: true,
+            })
+            obj.type = i._id
+            obj.pila = i
+            canvas.value.add(obj)
+          }
+          )
+        })
+        await panelsSVG()
+        // canvas.value.hasControls = false
+        // canvas.value.hasBorders = true
+        // await createSVGRect()
+        canvas.value.renderAll()
+      }
+      
 const panelsSVG = () => {
+  console.log("Panels", panels.value)
   const positionPanels = [
-    { x: 1550, y: 50, type: "Cancha 1" },
-    { x: 1100, y: 350, type: "Cancha 2" },
-    { x: 240, y: 30, type: "Cancha Colquicocha" },
+    { x: 1600, y: 170, type: "Cancha 1" },
+    { x: 1100, y: 520, type: "Cancha 2" },
+    { x: 240, y: 130, type: "Cancha Colquicocha" },
   ]
   panels.value.forEach((p, i) => {
     const panelSVG = document.getElementById(p.index)
@@ -142,11 +146,11 @@ const panelsSVG = () => {
         obj.type = p.ubication
         canvas.value.add(obj)
       }
-    )
+      )
   })
 }
-
-const handleSelect = (e) => {
+  
+  const handleSelect = (e) => {
   const objectsSelected = canvas.value
     .getActiveObjects()
     .filter(
@@ -364,6 +368,7 @@ socket.on("pilas", async (data) => {
     const pila = pilas.value.find((p) => p._id === i._id)
     return pila
   })
+  // Limpia canvas de las viejas pilas
   pilasFound.forEach((pila) => {
     const oldPila = canvas.value.getObjects().find((o) => o.type === pila._id)
     if (oldPila) {
@@ -378,7 +383,7 @@ socket.on("pilas", async (data) => {
     ? await updatePilas(pilasFound, data)
     : console.log("No se encontraron pilas")
   await store.commit("getRumaTotal", pilas.value)
-  await store.commit("setWeights", pilas.value)
+  // await store.commit("setWeights", {total: panels.value})
   if (!isPilasFinalized) {
     pilasFound.forEach((pila) => {
       const pilaSVG = document.getElementById(pila._id)
@@ -389,8 +394,8 @@ socket.on("pilas", async (data) => {
           obj.set({
             left: pila.x,
             top: pila.y,
-            scaleX: .15,
-            scaleY: .15,
+            scaleX: scaleXOfPila,
+            scaleY: scaleYOfPila,
             selectable: true,
           })
           obj.type = pila._id
@@ -402,9 +407,8 @@ socket.on("pilas", async (data) => {
   }
   const panels = canvas.value
     .getObjects()
-    .filter((o) => o.type.includes("panel"))
+    .filter((o) => o.type.includes("Cancha"))
   panels.forEach((p) => {
-    //
     canvas.value.remove(p)
   })
   await panelsSVG()
@@ -414,9 +418,16 @@ const updatePilas = async (pilasFound, data) => {
     pila.stock = data[index].stock
     pila.tonh = data[index].tonh
     pila.ton = data[index].tonh * 0.94
+    pila.travels = data[index].travels
+    pila.tajo = data[index].tajo
+    pila.cod_despacho = data[index].cod_despacho
+    pila.statusPila = data[index].statusPila;
+    pila.history = data[index].history;
+    pila.date_abastecimiento = data[index].date_abastecimiento;
+    pila.ubication = data[index].ubication
     pila.ley_ag = data[index].ley_ag
     pila.ley_fe = data[index].ley_fe
-    pila.ley_mn = data[index].ley_mn
+    pila.ley_mn = data[index].ley_mns
     pila.ley_pb = data[index].ley_pb
     pila.ley_zn = data[index].ley_zn
     pila.tmh_ag = data[index].tmh_ag
@@ -424,12 +435,8 @@ const updatePilas = async (pilasFound, data) => {
     pila.tmh_mn = data[index].tmh_mn
     pila.tmh_pb = data[index].tmh_pb
     pila.tmh_zn = data[index].tmh_zn
-    pila.travels = data[index].travels
-    pila.tajo = data[index].tajo
-    pila.cod_despacho = data[index].cod_despacho
     pila.x = data[index].x
     pila.y = data[index].y
-    pila.ubication = data[index].ubication
     pila.mining = data[index].mining
     pila.dominio = data[index].dominio
     pila$.next(pila)
@@ -446,8 +453,8 @@ socket.on("newPila", async (data) => {
       obj.set({
         left: pila.x,
         top: pila.y,
-        scaleX: .15,
-        scaleY: .15,
+        scaleX: scaleXOfPila,
+        scaleY: scaleYOfPila,
         selectable: true,
       })
       obj.type = pila._id
@@ -457,58 +464,58 @@ socket.on("newPila", async (data) => {
   )
 })
 
-const createZones = () => {
-  const cc = document.getElementById("cc")
-  const svgElem = new fabric.loadSVGFromString(
-    cc.outerHTML,
-    (objects, options) => {
-      const obj = fabric.util.groupSVGElements(objects, options)
-      obj.set({
-        left: 0,
-        top: 208,
-        scaleX: 1.74,
-        scaleY: 2.24,
-        opacity: 0.5,
-        selectable: false,
-      })
-      obj.type = "cc"
-      canvas.value.add(obj)
-    }
-  )
-  const c1 = document.getElementById("c1")
-  const svgElem1 = new fabric.loadSVGFromString(
-    c1.outerHTML,
-    (objects, options) => {
-      const obj = fabric.util.groupSVGElements(objects, options)
-      obj.set({
-        left: 1660,
-        top: 200,
-        scaleX: 9,
-        scaleY: 11.3,
-        opacity: 0.5,
-        selectable: false,
-      })
-      obj.type = "c1"
-      canvas.value.add(obj)
-    }
-  )
-  const c2 = document.getElementById("c2")
-  const svgElem2 = new fabric.loadSVGFromString(
-    c2.outerHTML,
-    (objects, options) => {
-      const obj = fabric.util.groupSVGElements(objects, options)
-      obj.set({
-        left: 999,
-        top: 497,
-        scaleX: 2.39,
-        scaleY: 3.14,
-        opacity: 0.5,
-        selectable: false,
-      })
-      obj.type = "c2"
-      canvas.value.add(obj)
-    }
-  )
+const createSVGRect = () => {
+  const colquicocha1 = new CustomRect({
+    left: 20 + 35,
+    top: 225 + 110,
+    width: 530,
+    height: 290,
+    fill: "transparent",
+    stroke: "black",
+    strokeWidth: 2,
+    selectable: false,
+    angle: 0,
+  });
+  colquicocha1.type = "cc1";
+  canvas.value.add(colquicocha1);
+  const colquicocha2 = new CustomRect({
+    left: 210 + 35,
+    top: 420 + 110,
+    width: 790,
+    height: 280,
+    fill: "transparent",
+    stroke: "black",
+    strokeWidth: 2,
+    selectable: false,
+    angle: 12,
+  });
+  colquicocha2.type = "cc2";
+  canvas.value.add(colquicocha2);
+  const cancha2 = new CustomRect({
+    left: 1000 + 35,
+    top: 690 + 110,
+    width: 600,
+    height: 160,
+    fill: "transparent",
+    stroke: "black",
+    strokeWidth: 2,
+    selectable: false,
+    angle: -18,
+  });
+  cancha2.type = "c2";
+  canvas.value.add(cancha2);
+  const cancha1 = new CustomRect({
+    left: 1670 + 35,
+    top: 220 + 110,
+    width: 130,
+    height: 260,
+    fill: "transparent",
+    stroke: "black",
+    strokeWidth: 2,
+    selectable: false,
+  });
+  cancha1.type = "c1";
+  canvas.value.add(cancha1);
 }
 
 const modaData = (data) => {
@@ -588,7 +595,7 @@ const handleMoveUpdatePosition = async () => {
     }
     await store.dispatch("ruma_update", p)
   })
-  await store.dispatch("pila_total")
+  // await store.dispatch("pila_total")
 }
 const moving = async (e) => {
   // console.log("Moving")
@@ -605,12 +612,20 @@ const moving = async (e) => {
   const objectSelected = canvas.value.getActiveObject()
   if (objectSelected) {
     objectSelected.setCoords()
-    const colquicocha = canvas.value.getObjects().find((o) => o.type === "cc")
-    if (colquicocha && objectSelected.intersectsWithObject(colquicocha)) {
+    const colquicocha1 = canvas.value.getObjects().find((o) => o.type === "cc1")
+    if (colquicocha1 && objectSelected.intersectsWithObject(colquicocha1)) {
       console.log("Colquicocha")
       ubication.value = "Cancha Colquicocha"
       ubicationId.value = "icc"
-      ubicationType.value = "panel_colquicocha"
+      ubicationType.value = "cc1"
+      return
+    }
+    const colquicocha2 = canvas.value.getObjects().find((o) => o.type === "cc2")
+    if (colquicocha2 && objectSelected.intersectsWithObject(colquicocha2)) {
+      console.log("Colquicocha")
+      ubication.value = "Cancha Colquicocha"
+      ubicationId.value = "icc"
+      ubicationType.value = "cc2"
       return
     }
     const cancha2 = canvas.value.getObjects().find((o) => o.type === "c2")
@@ -618,7 +633,7 @@ const moving = async (e) => {
       console.log("Cancha2")
       ubication.value = "Cancha 2"
       ubicationId.value = "ic2"
-      ubicationType.value = "panel_cancha2"
+      ubicationType.value = "c2"
       return
     }
     const cancha1 = canvas.value.getObjects().find((o) => o.type === "c1")
@@ -626,7 +641,7 @@ const moving = async (e) => {
       console.log("Cancha1")
       ubication.value = "Cancha 1"
       ubicationId.value = "ic1"
-      ubicationType.value = "panel_cancha1"
+      ubicationType.value = "c1"
       return
     }
   }
@@ -683,6 +698,7 @@ const getDataCalendar = (data) => {
 </script>
 
 <template>
+  <h1> Pilas: {{ pilas.length }} </h1>
   <Totals />
   <GeneratePDF />
   <CanchaModal
@@ -731,9 +747,6 @@ const getDataCalendar = (data) => {
       :id="_id"
     />
     <!-- <IDesmonte id="desmonte" v-for="desmonte in pilas.filter(i => i.typePila == 'Desmonte')" :pila="desmonte" :id="desmonte.cod_tableta"/> -->
-    <!-- <ICC id="icc" :stock="colquicocha_stock" :nsr="cc_nsr" :ag_equiv="cc_ag_eq" />
-    <IC1 id="ic1" :stock="cancha1_stock"  :nsr="c1_nsr" :ag_equiv="c1_ag_eq" />
-    <IC2 id="ic2" :stock="cancha2_stock"  :nsr="c2_nsr" :ag_equiv="c2_ag_eq" /> -->
   </div>
   <Toast />
   <div class="c-global-container-map">
