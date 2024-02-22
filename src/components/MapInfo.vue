@@ -160,7 +160,7 @@ const calculus = (pilas) => {
                       : '#FF0000')(pila.ley_ag),
                 }"
               >
-                {{ pila.ley_ag.toFixed(2) }}
+                {{ pila.ley_ag ? pila.ley_ag.toFixed(2) : '' }}
               </span>
               <h5>Ag</h5>
             </div>
@@ -172,7 +172,7 @@ const calculus = (pilas) => {
                       : value >= 3 && value < 10
                       ? '#FF9900'
                       : '#FF0000')(pila.ley_fe),
-                }"> {{ pila.ley_fe.toFixed(2) }} </span>
+                }"> {{ pila.ley_fe ? pila.ley_fe.toFixed(2) : '' }} </span>
               <h5>Fe</h5>
             </div>
             <div class="b-m-item">
@@ -183,7 +183,7 @@ const calculus = (pilas) => {
                       : value >= 3 && value < 10
                       ? '#FF9900'
                       : '#FF0000')(pila.ley_mn),
-                }"> {{ pila.ley_mn.toFixed(2) }} </span>
+                }"> {{ pila.ley_mn ? pila.ley_mn.toFixed(2) : '' }} </span>
               <h5>Mn</h5>
             </div>
             <div class="b-m-item">
@@ -194,7 +194,7 @@ const calculus = (pilas) => {
                       : value >= 3 && value < 10
                       ? '#FF9900'
                       : '#FF0000')(pila.ley_pb),
-                }"> {{ pila.ley_pb.toFixed(2) }} </span>
+                }"> {{ pila.ley_pb ? pila.ley_pb.toFixed(2) : '' }} </span>
               <h5>Pb</h5>
             </div>
             <div class="b-m-item">
@@ -205,7 +205,7 @@ const calculus = (pilas) => {
                       : value >= 3 && value < 10
                       ? '#FF9900'
                       : '#FF0000')(pila.ley_zn),
-                }"> {{ pila.ley_zn.toFixed(2) }} </span>
+                }"> {{ pila.ley_zn ? pila.ley_zn.toFixed(2) : '' }} </span>
               <h5>Zn</h5>
             </div>
           </div>

@@ -50,6 +50,7 @@ const handleGraphic = async () => {
     );
 
     const result = await response.json();
+    console.log('COMPLIANCE',result)
     if (result.status === true) {
       buttonClicked.value = false;
     } else {
