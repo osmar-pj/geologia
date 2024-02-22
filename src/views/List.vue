@@ -44,6 +44,8 @@ const excludedFields = [
   "ley_mn",
   "ley_zn",
   "tonh",
+  "turn",
+  "id_trip"
 ];
 socket.on("trips", (data) => {
   console.log("socket Data", data);
@@ -229,6 +231,21 @@ const columns = ref([
               </h5>
               <h5 class="t-2" v-else>---</h5>
             </div>
+          </div>
+        </template>
+      </Column>
+      <Column header="Turno" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-vehiculo">
+            <img
+              :src="
+                slotProps.data.turn === 'DIA'
+                  ? 'src/assets/img/i-day.svg'
+                  : 'src/assets/img/i-night.svg'
+              "
+              alt=""
+            />            
           </div>
         </template>
       </Column>
@@ -429,7 +446,13 @@ const columns = ref([
   --porcentaje-finalizado: 0%;
 }
 .T-Analizando::after {
-  background-color: #ff694f;
+  background: repeating-linear-gradient(
+    -45deg,
+    #F05B5B,
+    #F05B5B 5px,
+    #E25556 5px,
+    #E25556 10px
+  );
   --porcentaje-finalizado: 25%;
 }
 .T-Analizando::before{
@@ -438,7 +461,13 @@ const columns = ref([
   font-size: 8px;
 }
 .T-waitCodeTableta::after {
-  background-color: #b964ff;
+  background: repeating-linear-gradient(
+    -45deg,
+    #925FFF,
+    #925FFF 5px,
+    #8657FF 5px,
+    #8657FF 10px
+  );
   --porcentaje-finalizado: 40%;
 }
 .T-waitCodeTableta::before{
@@ -452,21 +481,39 @@ const columns = ref([
   content:"60%";
 }
 .T-waitBeginAbastecimiento::after {
-  background-color: #5d95ff;
+  background: repeating-linear-gradient(
+    -45deg,
+    #5d95ff,
+    #5d95ff 5px,
+    #578CFF 5px,
+    #578CFF 10px
+  );
   --porcentaje-finalizado: 80%;
 }
 .T-waitBeginAbastecimiento::before{
   content:"80%";
 }
 .T-waitBeginDespacho::after {
-  background-color: #ffbc58;
+  background: repeating-linear-gradient(
+    -45deg,
+    #ffbc58,
+    #ffbc58 5px,
+    #F5B458 5px,
+    #F5B458 10px
+  );
   --porcentaje-finalizado: 90%;
 }
 .T-waitBeginDespacho::before{
   content:"90%";
 }
 .T-Finalizado::after {
-  background-color: #6cff67;
+  background: repeating-linear-gradient(
+    -45deg,
+    #1FD9AD,
+    #1FD9AD 5px,
+    #1DCFB9 5px,
+    #1DCFB9 10px
+  );
   --porcentaje-finalizado: 100%;
 }
 .T-Finalizado::before{
