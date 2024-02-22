@@ -236,8 +236,8 @@ const calculus = (pilas) => {
 <style lang="scss">
 .map-info {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom:20px;
+  right: 20px;
   z-index: 1;
   display: flex;
   flex-direction: column;

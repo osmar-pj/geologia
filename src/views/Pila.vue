@@ -364,7 +364,14 @@ const columns = ref([
 }
 
 .P-Acumulando::after{
-  background-color: #ff694f;
+  
+  background: repeating-linear-gradient(
+    -45deg,
+    #F05B5B,
+    #F05B5B 5px,
+    #E25556 5px,
+    #E25556 10px
+  );
   --porcentaje-finalizado: 25%;
 }
  .P-Acumulando::before{
@@ -376,6 +383,13 @@ const columns = ref([
 .P-Analizando::after {
   background-color: #ffbc58;
   --porcentaje-finalizado: 40%;
+  background: repeating-linear-gradient(
+    -45deg,
+    #ffbc58,
+    #ffbc58 5px,
+    #F5B458 5px,
+    #F5B458 10px
+  );
 }
 .P-Analizando::before{
   content:"40%";
@@ -389,7 +403,14 @@ const columns = ref([
 }
 
 .P-waitDateAbastecimiento::after {
-  background-color: #5d95ff;
+ 
+  background: repeating-linear-gradient(
+    -45deg,
+    #5d95ff,
+    #5d95ff 5px,
+    #578CFF 5px,
+    #578CFF 10px
+  );
   --porcentaje-finalizado: 60%;
 }
 .P-waitDateAbastecimiento::before{
@@ -397,7 +418,13 @@ const columns = ref([
 }
 
 .P-waitBeginDespacho::after {
-  background-color: #b964ff;
+  background: repeating-linear-gradient(
+    -45deg,
+    #925FFF,
+    #925FFF 5px,
+    #8657FF 5px,
+    #8657FF 10px
+  );
   --porcentaje-finalizado: 80%;
 }
 .P-waitBeginDespacho::before{
@@ -413,13 +440,12 @@ const columns = ref([
  ;
 }
 .P-Finalizado::after {
-  background-color: #6cff67;
   background: repeating-linear-gradient(
     -45deg,
-    #00b670,
-    #00b670 5px,
-    rgba(0, 0, 0, 0.3) 5px,
-    rgba(0, 0, 0, 0.3) 10px
+    #1FD9AD,
+    #1FD9AD 5px,
+    #1DCFB9 5px,
+    #1DCFB9 10px
   );
 
   --porcentaje-finalizado: 100%;
@@ -444,3 +470,4 @@ const columns = ref([
   }
 }
 </style>
+

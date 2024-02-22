@@ -14,7 +14,19 @@ const pila$ = new Subject();
 // const pilas = ref([])
 const selectedStatus = ref("Acumulando");
 const pilas = computed(() => store.state.dataListControl);
-const excludedFields = ["mining", "ubication", "travels", "pila","ley_ag", "ley_fe","ley_mn", "ley_pb","ley_zn"];
+const excludedFields = [
+  "mining",
+  "ubication",
+  "travels",
+  "pila",
+  "ley_ag",
+  "ley_fe",
+  "ley_mn",
+  "ley_pb",
+  "ley_zn",
+  "tonh",
+  "stock",
+];
 const countPilasSocket = reactive({
   Analizando: { count: 0, animation: false },
 });
@@ -232,12 +244,13 @@ const formatColumnValue = (value, fn) => {
             <h5>
               <IList />
               <strong>
-              {{
-                slotProps.data.travels && Array.isArray(slotProps.data.travels)
-                  ? slotProps.data.travels.length
-                  : 0
-              }} 
-              </strong>viajes
+                {{
+                  slotProps.data.travels &&
+                  Array.isArray(slotProps.data.travels)
+                    ? slotProps.data.travels.length
+                    : 0
+                }} </strong
+              >viajes
             </h5>
           </div>
         </template>
@@ -253,19 +266,63 @@ const formatColumnValue = (value, fn) => {
         >
           <template #body="slotProps">
             <Skeleton v-if="store.state.loading"></Skeleton>
-            <h4 v-else :class="{ 't-textCort': header.field === 'dominio' || header.field === 'tajo' }">
-              {{
-                formatColumnValue(
-                  slotProps.data[header.field],
-                  header.fn,
-                  header.field,
-                  slotProps.data
-                )
-              }}
-            </h4>
+            <template v-else>
+              <template
+                v-if="
+                  slotProps.data[header.field] !== '' &&
+                  slotProps.data[header.field] !== null &&
+                  slotProps.data[header.field] !== undefined &&
+                  (!Array.isArray(slotProps.data[header.field]) ||
+                    slotProps.data[header.field].length > 0)
+                "
+              >
+                <h4
+                  :class="{
+                    't-textCort':
+                      header.field === 'dominio' || header.field === 'tajo',
+                  }"
+                >
+                  {{
+                    formatColumnValue(
+                      slotProps.data[header.field],
+                      header.fn,
+                      header.field,
+                      slotProps.data
+                    )
+                  }}
+                </h4>
+              </template>
+              <template v-else>
+                <h5 class="t-complet">
+                  <img src="../assets/img/i-square.svg" alt="" />Comp..
+                </h5>
+              </template>
+            </template>
           </template>
         </Column>
       </template>
+      <Column header="Stock Mineral" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ formatFixed(slotProps.data.stock) }}
+            </h4>
+            <h5>TMH</h5>
+          </div>
+        </template>
+      </Column>
+      <Column header="Ton. Total" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-name">
+            <h4>
+              {{ formatFixed(slotProps.data.tonh) }}
+            </h4>
+            <h5>TMH</h5>
+          </div>
+        </template>
+      </Column>
       <Column field="Acciones">
         <template #body="slotProps">
           <div className="btns">

@@ -202,7 +202,7 @@ const formatColumnValue = (value, fn, field, row) => {
             <h4>
               {{ slotProps.data.tonh.toFixed(2) }}
             </h4>
-            <h5>toneladas</h5>
+            <h5>TMH</h5>
           </div>
         </template>
       </Column>
