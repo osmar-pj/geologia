@@ -334,7 +334,7 @@ const columns = ref([
                   color: ((value) =>
                     value < 3
                       ? '#00B050'
-                      : value >= 3 && value < 10
+                      : value >= 3 && value < 9.9999
                       ? '#FF9900'
                       : '#FF0000')(slotProps.data[column.field]),
                 }"
