@@ -4,6 +4,7 @@ import { useStore } from "vuex";
 import SkeletonLoader from "../components/SkeletonLoader.vue";
 import Filters from "../components/filters.vue";
 import { FilterMatchMode } from "primevue/api";
+import IExport from "../icons/IExport.vue";
 import {
   formatDate,
   formatFixed,
@@ -18,6 +19,10 @@ const store = useStore();
 const socket = inject("socket");
 const trip$ = new Subject();
 const trips = ref([]);
+const dt = ref();
+const exportCSV = () => {
+  dt.value.exportCSV();
+};
 
 onMounted(async () => {
   await store.dispatch("get_listCancha");
@@ -28,8 +33,7 @@ onMounted(async () => {
 socket.on("OreControl", (data) => {
   store.commit("addDataGeneralList", data);
 });
-const filtroAplicado = computed(()=> store.state.filtroAplicado);
-
+const filtroAplicado = computed(() => store.state.filtroAplicado);
 
 const excludedFields = [
   "year",
@@ -45,16 +49,16 @@ const excludedFields = [
   "ley_zn",
   "tonh",
   "turn",
-  "id_trip"
+  "id_trip",
 ];
 socket.on("trips", (data) => {
   console.log("socket Data", data);
   const tripsFound = data.map((trip) => {
     return trips.value.data.find((p) => p._id === trip._id);
   });
-  tripsFound.length > 0 ?
-    updateTrips(tripsFound, data) :
-    console.log("No se encontraron viajes");
+  tripsFound.length > 0
+    ? updateTrips(tripsFound, data)
+    : console.log("No se encontraron viajes");
 });
 
 const updateTrips = (tripsFound, data) => {
@@ -110,7 +114,8 @@ const getStatusClass = (header, data) => {
       "T-waitCodeTableta": data[header.field] === "waitCodeTableta",
       "T-waitDateAbastecimiento":
         data[header.field] === "waitDateAbastecimiento",
-      "T-waitBeginAbastecimiento": data[header.field] === "waitBeginAbastecimiento",
+      "T-waitBeginAbastecimiento":
+        data[header.field] === "waitBeginAbastecimiento",
       "T-waitBeginDespacho": data[header.field] === "waitBeginDespacho",
       "T-Finalizado": data[header.field] === "Finalizado",
     };
@@ -145,6 +150,7 @@ const columns = ref([
     <DataTable
       v-model:filters="filters"
       :value="trips.data"
+      ref="dt"
       tableStyle="width: 100%"
       paginator
       :rows="20"
@@ -155,10 +161,10 @@ const columns = ref([
       sortField="year"
       :sortOrder="1"
       :loading="store.state.loading"
-      :globalFilterFields="['tajo']"
+      :globalFilterFields="['pila','ubication','mining','tajo', 'dominio','turn']"
       dataKey="id"
     >
-    <template #header>
+      <template #header>
         <div>
           <!-- <InputIcon>
               <img src="../assets/img/i-search.svg" alt="" />
@@ -169,7 +175,9 @@ const columns = ref([
           />
         </div>
         <div>
-          <button class="btn-success">Exportar ahora</button>
+          <button class="btn-success" @click="exportCSV($event)">
+            <IExport /> Exportar
+          </button>
         </div>
       </template>
       <Column header="#" headerStyle="width: 2.5rem">
@@ -245,7 +253,7 @@ const columns = ref([
                   : 'src/assets/img/i-night.svg'
               "
               alt=""
-            />            
+            />
           </div>
         </template>
       </Column>
@@ -343,8 +351,12 @@ const columns = ref([
       </Column>
     </DataTable>
   </div>
-  <div class="c-global-c-filtered" v-show="filtroAplicado" >
-    <div class="c-item-filtered" v-for="tripFiltered in tripsFiltered.data" :key="tripFiltered.index">
+  <div class="c-global-c-filtered" v-show="filtroAplicado">
+    <div
+      class="c-item-filtered"
+      v-for="tripFiltered in tripsFiltered.data"
+      :key="tripFiltered.index"
+    >
       <DataTable
         :value="tripFiltered.body"
         tableStyle="width: 100%"
@@ -368,20 +380,42 @@ const columns = ref([
           <template #body="slotProps">
             <Skeleton v-if="store.state.loading"></Skeleton>
             <template v-else>
-             
-                <h4 :class="getStatusClass(header, slotProps.data)">
-                  <template v-if="header.field !== 'statusTrip'">
-                    {{
-                      formatColumnValue(
-                        slotProps.data[header.field],
-                        header.fn,
-                        header.field,
-                        slotProps.data
-                      )
-                    }}
-                  </template>
-                </h4>
-              
+              <h4 class="t-ley"
+                :style="{
+                  color: (() => {
+                    const fieldValue = slotProps.data[header.field];
+                    if (
+                      [
+                        'ley_ag',
+                        'ley_pb',
+                        'ley_mn',
+                        'ley_fe',
+                        'ley_zn',
+                      ].includes(header.field)
+                    ) {
+                      return fieldValue < 3
+                        ? '#00B050'
+                        : fieldValue >= 3 && fieldValue < 10
+                        ? '#FF9900'
+                        : '#FF0000';
+                    } else {
+                      return '';
+                    }
+                  })(),
+                }"
+                :class="getStatusClass(header, slotProps.data)"
+              >
+                <template v-if="header.field !== 'statusTrip'">
+                  {{
+                    formatColumnValue(
+                      slotProps.data[header.field],
+                      header.fn,
+                      header.field,
+                      slotProps.data
+                    )
+                  }}
+                </template>
+              </h4>
             </template>
           </template>
         </Column>
@@ -430,7 +464,7 @@ const columns = ref([
     height: 100%;
     border-radius: 5px;
   }
-  &::before{   
+  &::before {
     position: absolute;
     left: 8px;
     top: 50%;
@@ -438,86 +472,87 @@ const columns = ref([
     z-index: 2;
     color: var(--white);
     font-size: 11px;
-    line-height: .8rem;
+    line-height: 0.8rem;
   }
 }
 
-.T-waitComplete::after, .T-waitSplit::after {
+.T-waitComplete::after,
+.T-waitSplit::after {
   --porcentaje-finalizado: 0%;
 }
 .T-Analizando::after {
   background: repeating-linear-gradient(
     -45deg,
-    #F05B5B,
-    #F05B5B 5px,
-    #E25556 5px,
-    #E25556 10px
+    #f05b5b,
+    #f05b5b 5px,
+    #e25556 5px,
+    #e25556 10px
   );
   --porcentaje-finalizado: 25%;
 }
-.T-Analizando::before{
-  content:"20%";
+.T-Analizando::before {
+  content: "20%";
   left: 5px;
   font-size: 8px;
 }
 .T-waitCodeTableta::after {
   background: repeating-linear-gradient(
     -45deg,
-    #925FFF,
-    #925FFF 5px,
-    #8657FF 5px,
-    #8657FF 10px
+    #925fff,
+    #925fff 5px,
+    #8657ff 5px,
+    #8657ff 10px
   );
   --porcentaje-finalizado: 40%;
 }
-.T-waitCodeTableta::before{
-  content:"40%";
+.T-waitCodeTableta::before {
+  content: "40%";
 }
 .T-waitDateAbastecimiento::after {
   background-color: #00d382;
   --porcentaje-finalizado: 60%;
 }
-.T-waitDateAbastecimiento::before{
-  content:"60%";
+.T-waitDateAbastecimiento::before {
+  content: "60%";
 }
 .T-waitBeginAbastecimiento::after {
   background: repeating-linear-gradient(
     -45deg,
     #5d95ff,
     #5d95ff 5px,
-    #578CFF 5px,
-    #578CFF 10px
+    #578cff 5px,
+    #578cff 10px
   );
   --porcentaje-finalizado: 80%;
 }
-.T-waitBeginAbastecimiento::before{
-  content:"80%";
+.T-waitBeginAbastecimiento::before {
+  content: "80%";
 }
 .T-waitBeginDespacho::after {
   background: repeating-linear-gradient(
     -45deg,
     #ffbc58,
     #ffbc58 5px,
-    #F5B458 5px,
-    #F5B458 10px
+    #f5b458 5px,
+    #f5b458 10px
   );
   --porcentaje-finalizado: 90%;
 }
-.T-waitBeginDespacho::before{
-  content:"90%";
+.T-waitBeginDespacho::before {
+  content: "90%";
 }
 .T-Finalizado::after {
   background: repeating-linear-gradient(
     -45deg,
-    #1FD9AD,
-    #1FD9AD 5px,
-    #1DCFB9 5px,
-    #1DCFB9 10px
+    #1fd9ad,
+    #1fd9ad 5px,
+    #1dcfb9 5px,
+    #1dcfb9 10px
   );
   --porcentaje-finalizado: 100%;
 }
-.T-Finalizado::before{
-  content:"100%";
+.T-Finalizado::before {
+  content: "100%";
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
 }

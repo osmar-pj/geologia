@@ -4,6 +4,7 @@ import { useStore } from "vuex";
 import FiltersPlanta from "../components/filtersPlanta.vue";
 import { formatDate, formatFixed } from "../libs/utils";
 import { FilterMatchMode } from "primevue/api";
+import IExport from "../icons/IExport.vue";
 
 const store = useStore();
 
@@ -60,7 +61,7 @@ const excludedFields = ["year", "month"];
       sortField="year"
       :sortOrder="1"
       :loading="store.state.loading"
-      :globalFilterFields="['tajo']"
+      :globalFilterFields="['pila','ubication','mining','tajo', 'dominio','turn']"
       dataKey="id"
     >
       <template #header>
@@ -68,13 +69,14 @@ const excludedFields = ["year", "month"];
           <!-- <InputIcon>
               <img src="../assets/img/i-search.svg" alt="" />
             </InputIcon> -->
-          <InputText
-            v-model="filters['global'].value"
-            placeholder="Buscar por nombre..."
-          />
+          <!-- <InputText
+           
+          /> -->
+          <input type="text"  v-model="filters['global'].value"
+            placeholder="Buscar por nombre...">
         </div>
         <div>
-          <button class="btn-success">Exportar ahora</button>
+          <button class="btn-success"><IExport/> Exportar </button>
         </div>
       </template>
       <Column header="#" headerStyle="width: 2.5rem">

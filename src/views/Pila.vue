@@ -7,6 +7,7 @@ import Edit from "../icons/Edit.vue";
 import InfoPila from "../components/InfoPila.vue";
 import { FilterMatchMode } from "primevue/api";
 import IList from "../icons/IList.vue";
+import IExport from "../icons/IExport.vue";
 
 const store = useStore();
 const socket = inject("socket");
@@ -136,7 +137,6 @@ const columns = ref([
       <span>| Dia terminado en Mina </span>
     </div>
   </div>
-
   <div class="tableContainer">
     <DataTable
       v-model:filters="filters"
@@ -149,7 +149,7 @@ const columns = ref([
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :header="false"
       :loading="store.state.loading"
-      :globalFilterFields="['pila']"
+      :globalFilterFields="['pila','ubication','mining','tajo', 'dominio','turn']"
       dataKey="id"
     >
       <template #header>
@@ -159,12 +159,12 @@ const columns = ref([
             </InputIcon> -->
           <InputText
             v-model="filters['global'].value"
-            placeholder="Buscar por pila..."
+            placeholder="Buscar por stock pile..."
           />
         </div>
         <div>
           <button class="btn-success" @click="exportCSV($event)">
-            Exportar ahora
+             <IExport/> Exportar 
           </button>
         </div>
       </template>
