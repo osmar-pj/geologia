@@ -1,5 +1,6 @@
 import { createStore } from "vuex"
 import { getLocalUser } from "../libs/storage"
+import { calculus } from "../libs/utils"
 
 const user = getLocalUser()
 const url = import.meta.env.VITE_API_URL
@@ -148,7 +149,20 @@ const store = createStore({
       state.dataListControl.slice(payload, 1)
     },
     setWeights(state, payload) {
-      state.panels = payload.total
+      const ubications = [
+        "Cancha Colquicocha",
+        "Cancha 1",
+        "Cancha 2",
+      ]
+      const weights = ubications.map((u, index) => {
+        return {
+          ubication: u,
+          total: calculus(payload.filter(i => (i.ubication === u && (i.statusPila === "waitBeginDespacho" || i.statusPila === "waitDateAbastecimiento")))),
+          index: index
+        }
+      })
+      console.log(weights)
+      state.panels = weights
     },
     // ADD to general list of pilas
     addDataPilaList(state, payload) {
@@ -281,9 +295,9 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        console.log(data)
         commit("getRumaTotal", data.pilasToMap)
-        commit("setWeights", data.weights)
+        commit("setWeights", data.pilasToMap)
+        return data.weights
       } catch (error) {commit("loading", false)}
     },
     ruma_update: async ({ commit }, data) => {

@@ -14,8 +14,6 @@ const pilas = ref(props.data.flatMap((item) => item.pila));
 const isSelectedOnePila = ref(pilas.value.length === 1);
 const isSelectedMoreThanOnePila = ref(pilas.value.length > 1);
 
-console.log(pilas.value);
-
 // Observar cambios en props.data y actualizar las variables reactivas
 watch(
   () => props.data,

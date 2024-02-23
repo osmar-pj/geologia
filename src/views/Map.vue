@@ -10,8 +10,7 @@ import CEdit from "../icons/CEdit.vue"
 import Delete from "../icons/Delete.vue"
 import ISave from "../icons/ISave.vue"
 import Totals from "../components/Totals.vue"
-import IPila from "../prueba/IPila.vue"
-import IGiba from "../prueba/IGiba.vue"
+import IPila from "../maps/IPila.vue"
 import IDesmonte from "../maps/IDesmonte.vue"
 import ICC from "../prueba/ICC.vue"
 import ICalendar from "../icons/ICalendar.vue"
@@ -55,9 +54,9 @@ class CustomRect extends fabric.Rect {
     this.mining = options.mining
   }
 }
-
-const scaleXOfPila = .15
-const scaleYOfPila = .18
+// CORREGIR LA BD DESDE UN INICIO EL COD TABLETA EN LOS TRIPS
+const scaleXOfPila = 5
+const scaleYOfPila = 5
 
 const handleCreated = async (fabricCanvas) => {
   console.log("Canvas Created")
@@ -71,11 +70,13 @@ const handleCreated = async (fabricCanvas) => {
     scaleX: .7,
     scaleY: .9,
     selectable: false,
+    hasBorders: false,
+    hasControls: false,
   })
   svgMap.type = "map"
   canvas.value.add(svgMap)
   pilas.value
-  .filter((i) => i.typePila == "Pila")
+  // .filter((i) => i.typePila == "Pila")
   .forEach((i) => {
     const pilaSVG = document.getElementById(i._id)
     const svgElem = new fabric.loadSVGFromString(
@@ -95,27 +96,6 @@ const handleCreated = async (fabricCanvas) => {
         }
         )
       })
-      pilas.value
-      .filter((i) => i.typePila == "Giba")
-      .forEach((i) => {
-        const gibaSVG = document.getElementById(i._id)
-        const svgElem = new fabric.loadSVGFromString(
-          gibaSVG.outerHTML,
-          (objects, options) => {
-            const obj = fabric.util.groupSVGElements(objects, options)
-            obj.set({
-              left: i.x,
-              top: i.y,
-              scaleX: .15,
-              scaleY: .18,
-              selectable: true,
-            })
-            obj.type = i._id
-            obj.pila = i
-            canvas.value.add(obj)
-          }
-          )
-        })
         await panelsSVG()
         // canvas.value.hasControls = false
         // canvas.value.hasBorders = true
@@ -124,11 +104,10 @@ const handleCreated = async (fabricCanvas) => {
       }
       
 const panelsSVG = () => {
-  console.log("Panels", panels.value)
   const positionPanels = [
+    { x: 240, y: 130, type: "Cancha Colquicocha" },
     { x: 1600, y: 170, type: "Cancha 1" },
     { x: 1100, y: 520, type: "Cancha 2" },
-    { x: 240, y: 130, type: "Cancha Colquicocha" },
   ]
   panels.value.forEach((p, i) => {
     const panelSVG = document.getElementById(p.index)
@@ -150,12 +129,13 @@ const panelsSVG = () => {
   })
 }
   
-  const handleSelect = (e) => {
+const handleSelect = (e) => {
   const objectsSelected = canvas.value
     .getActiveObjects()
     .filter(
       (o) =>
-        o.type !== "cc" &&
+        o.type !== "cc1" &&
+        o.type !== "cc2" &&
         o.type !== "c2" &&
         o.type !== "c1" &&
         o.type !== "Cancha Colquicocha" &&
@@ -174,7 +154,8 @@ const panelsSVG = () => {
     .getObjects()
     .filter(
       (o) =>
-        o.type === "cc" ||
+        o.type === "cc1" ||
+        o.type === "cc2" ||
         o.type === "c2" ||
         o.type === "c1" ||
         o.type === "Cancha Colquicocha" ||
@@ -364,6 +345,7 @@ const mergePilas = async () => {
 }
 
 socket.on("pilas", async (data) => {
+  console.log('SOCKET', data)
   const pilasFound = data.map((i) => {
     const pila = pilas.value.find((p) => p._id === i._id)
     return pila
@@ -383,7 +365,6 @@ socket.on("pilas", async (data) => {
     ? await updatePilas(pilasFound, data)
     : console.log("No se encontraron pilas")
   await store.commit("getRumaTotal", pilas.value)
-  // await store.commit("setWeights", {total: panels.value})
   if (!isPilasFinalized) {
     pilasFound.forEach((pila) => {
       const pilaSVG = document.getElementById(pila._id)
@@ -401,10 +382,10 @@ socket.on("pilas", async (data) => {
           obj.type = pila._id
           obj.pila = pila
           canvas.value.add(obj)
-        }
-      )
+        })
     })
   }
+  await store.commit('setWeights', pilas.value)
   const panels = canvas.value
     .getObjects()
     .filter((o) => o.type.includes("Cancha"))
@@ -471,9 +452,11 @@ const createSVGRect = () => {
     width: 530,
     height: 290,
     fill: "transparent",
-    stroke: "black",
-    strokeWidth: 2,
+    // stroke: "black",
+    // strokeWidth: 2,
     selectable: false,
+    hasBorders: false,
+    hasControls: false,
     angle: 0,
   });
   colquicocha1.type = "cc1";
@@ -484,9 +467,11 @@ const createSVGRect = () => {
     width: 790,
     height: 280,
     fill: "transparent",
-    stroke: "black",
-    strokeWidth: 2,
+    // stroke: "black",
+    // strokeWidth: 2,
     selectable: false,
+    hasBorders: false,
+    hasControls: false,
     angle: 12,
   });
   colquicocha2.type = "cc2";
@@ -497,9 +482,11 @@ const createSVGRect = () => {
     width: 600,
     height: 160,
     fill: "transparent",
-    stroke: "black",
-    strokeWidth: 2,
+    // stroke: "black",
+    // strokeWidth: 2,
     selectable: false,
+    hasBorders: false,
+    hasControls: false,
     angle: -18,
   });
   cancha2.type = "c2";
@@ -510,9 +497,11 @@ const createSVGRect = () => {
     width: 130,
     height: 260,
     fill: "transparent",
-    stroke: "black",
-    strokeWidth: 2,
+    // stroke: "black",
+    // strokeWidth: 2,
     selectable: false,
+    hasBorders: false,
+    hasControls: false,
   });
   cancha1.type = "c1";
   canvas.value.add(cancha1);
@@ -614,7 +603,7 @@ const moving = async (e) => {
     objectSelected.setCoords()
     const colquicocha1 = canvas.value.getObjects().find((o) => o.type === "cc1")
     if (colquicocha1 && objectSelected.intersectsWithObject(colquicocha1)) {
-      console.log("Colquicocha")
+      // console.log("Colquicocha")
       ubication.value = "Cancha Colquicocha"
       ubicationId.value = "icc"
       ubicationType.value = "cc1"
@@ -622,7 +611,7 @@ const moving = async (e) => {
     }
     const colquicocha2 = canvas.value.getObjects().find((o) => o.type === "cc2")
     if (colquicocha2 && objectSelected.intersectsWithObject(colquicocha2)) {
-      console.log("Colquicocha")
+      // console.log("Colquicocha")
       ubication.value = "Cancha Colquicocha"
       ubicationId.value = "icc"
       ubicationType.value = "cc2"
@@ -630,7 +619,7 @@ const moving = async (e) => {
     }
     const cancha2 = canvas.value.getObjects().find((o) => o.type === "c2")
     if (cancha2 && objectSelected.intersectsWithObject(cancha2)) {
-      console.log("Cancha2")
+      // console.log("Cancha2")
       ubication.value = "Cancha 2"
       ubicationId.value = "ic2"
       ubicationType.value = "c2"
@@ -638,7 +627,7 @@ const moving = async (e) => {
     }
     const cancha1 = canvas.value.getObjects().find((o) => o.type === "c1")
     if (cancha1 && objectSelected.intersectsWithObject(cancha1)) {
-      console.log("Cancha1")
+      // console.log("Cancha1")
       ubication.value = "Cancha 1"
       ubicationId.value = "ic1"
       ubicationType.value = "c1"
@@ -707,12 +696,6 @@ const getDataCalendar = (data) => {
   :data="dataModalCalendar"
   />
   <div v-show="false">
-    <zoneCC  id="cc"/>
-    <zoneC1 id="c1"/>
-    <zoneC2 id="c2"/>
-    <img src="../prueba/canchas.png" alt="" id="map">
-    <!-- <IMap id="map" /> -->
-    <ICC :id="index" :ubication="ubication" :stock="tonh" :nsr="nsr" :ag_equiv="ag_eq" v-for="{ubication, nsr, ag_eq, tonh, index} in panels" />
     <IPila
       v-for="{
         ley_ag,
@@ -722,7 +705,7 @@ const getDataCalendar = (data) => {
         dominio,
         _id,
         pilas_merged,
-      } in pilas.filter((i) => i.typePila == 'Pila')"
+      } in pilas"
       :ley_ag="ley_ag"
       :stock="stock"
       :pila="pila"
@@ -731,21 +714,14 @@ const getDataCalendar = (data) => {
       :dominio1="chooseDominioMainColor(dominio)"
       :dominio2="chooseDominioShadeColor(dominio)"
       :id="_id"
-      :merged="pilas_merged.length > 0 ? '*' : ''"
+      :isMerged="pilas_merged.length > 0"
     />
-    <IGiba
-      v-for="{ ley_ag, stock, pila, mining, dominio, _id } in pilas.filter(
-        (i) => i.typePila == 'Giba'
-      )"
-      :ley_ag="ley_ag"
-      :stock="stock"
-      :pila="pila"
-      :mining1="chooseMiningMainColor(mining)"
-      :mining2="chooseMiningShadesColor(mining)"
-      :dominio1="chooseDominioMainColor(dominio)"
-      :dominio2="chooseDominioShadeColor(dominio)"
-      :id="_id"
-    />
+    <zoneCC  id="cc"/>
+    <zoneC1 id="c1"/>
+    <zoneC2 id="c2"/>
+    <img src="../prueba/canchas.png" alt="" id="map">
+    <!-- <IMap id="map" /> -->
+    <ICC :id="index" :ubication="ubication" :stock="total.stock" :nsr="total.nsr" :ag_equiv="total.ag_eq" v-for="{ubication, total, index} in panels" />
     <!-- <IDesmonte id="desmonte" v-for="desmonte in pilas.filter(i => i.typePila == 'Desmonte')" :pila="desmonte" :id="desmonte.cod_tableta"/> -->
   </div>
   <Toast />
