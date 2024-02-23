@@ -229,6 +229,32 @@ const updateTravel = async () => {
     }
   }
 };
+
+const stockClass = (key, data) => {
+  if (isRelevantColumn(key)) {
+    return [
+      "a",
+      {
+        "bg-green": data < 3,
+        "bg-yellow": data >= 3 && data < 9.9999,
+        "bg-red": data >= 10,
+      },
+    ];
+  } else {
+    return "a"; // Otra clase si no es una columna relevante
+  }
+};
+
+const isRelevantColumn = (key) => {
+  const relevantColumns = [
+    "Ag (ozt)",
+    "Fe (pct)",
+    "Mn (pct)",
+    "Pb (pct)",
+    "Zn (pct)",
+  ];
+  return relevantColumns.includes(key);
+};
 </script>
 
 <template>
@@ -341,20 +367,29 @@ const updateTravel = async () => {
                       :header="key"
                     >
                       <template #body="{ data, field }">
-                        {{ data[field] }}
+                        <span :class="stockClass(field, data[field])">{{
+                          data[field]
+                        }}</span>
                       </template>
                       <template #editor="{ data, field }">
                         <InputNumber
                           v-if="typeof data[field] === 'number'"
                           v-model="data[field]"
-                          :mode="'decimal'"                          
+                          :mode="'decimal'"
                           :decimal="2"
                           autofocus
+                          :class="{
+                            'bg-red': data[field] >= 10,
+                            'bg-yellow': data[field] >= 3 && data[field] < 9.9999,
+                            'bg-green': data[field] < 3,
+                          }"
                         />
                         <InputText v-else v-model="data[field]" />
                       </template>
-                      <template #footer="{ footerData }">
-                        {{ calculateColumnAverage(key) }}
+                      <template #footer="{ footerData }" >
+                        <span >
+                          {{ calculateColumnAverage(key) }}
+                        </span>
                       </template>
                     </Column>
                   </template>
@@ -394,6 +429,27 @@ const updateTravel = async () => {
 </template>
 
 <style lang="scss">
+.bg-red {
+  color: #ff0000;
+  input {
+    color: #ff0000 !important;
+  }
+}
+
+.bg-yellow {
+  color: #ff9900;
+  input {
+    color: #ff9900;
+  }
+}
+
+.bg-green {
+  color: #00b050;
+  input {
+    color: #00b050;
+  }
+}
+
 .CCModal {
   max-width: 960px !important;
 }
@@ -408,8 +464,6 @@ const updateTravel = async () => {
 
 .table-exel {
   .p-datatable-table {
-    thead {
-    }
     tr td:first-child {
       text-align: center;
     }
