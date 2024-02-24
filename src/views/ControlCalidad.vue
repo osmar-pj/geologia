@@ -13,7 +13,7 @@ const socket = inject("socket");
 const pila$ = new Subject();
 // const pilas = ref([])
 const selectedStatus = ref("Acumulando");
-const pilas = computed(() => store.state.dataListControl);
+const pilas = computed(() => store.state.dataListQControl);
 const excludedFields = [
   "mining",
   "ubication",
@@ -99,7 +99,7 @@ const updatePilas = (pilasFound, data) => {
 };
 
 onMounted(async () => {
-  await store.dispatch("get_listControl");
+  await store.dispatch("get_listQControl");
 });
 
 const filteredData = computed(() => {
@@ -235,7 +235,7 @@ const formatColumnValue = (value, fn) => {
             />
             <div class="t-name">
               <h4>
-                {{ slotProps.data.mining ? slotProps.data.mining : '--' }}
+                {{ slotProps.data.mining ? slotProps.data.mining : "--" }}
               </h4>
               <h5>
                 {{ slotProps.data.ubication }}
@@ -311,6 +311,37 @@ const formatColumnValue = (value, fn) => {
           </template>
         </Column>
       </template>
+      <Column header="Dominio" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-vehiculo">
+            <template v-if="slotProps.data.dominio && slotProps.data.dominio.length > 0">
+              <template v-for="value in new Set(slotProps.data.dominio)">
+                <img
+                  v-if="value.includes('Polimetálico')"
+                  :src="'src/assets/img/i-polimetalicoF.svg'"
+                  alt=""
+                />
+                <img
+                  v-else-if="value.includes('Carbonato')"
+                  :src="'src/assets/img/i-carbonatoF.svg'"
+                  alt=""
+                />
+                <img
+                  v-else-if="value.includes('Alabandita')"
+                  :src="'src/assets/img/i-alabanditaF.svg'"
+                  alt=""
+                />
+              </template>
+            </template>
+            <template v-else>
+                <h5 class="t-complet">
+                  <img src="../assets/img/i-square.svg" alt="" />Comp..
+                </h5>
+              </template>
+          </div>
+        </template>
+      </Column>
       <Column header="Stock Mineral" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>

@@ -49,7 +49,7 @@ onMounted(async () => {
      const response = await fetch(
        `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
          props.mining
-       }&stage=${props.stage}&now=${new Date().getTime()}`,
+       }&stage=${props.stage}`,
        {
          method: "GET",
          headers: {
@@ -100,7 +100,7 @@ onMounted(async () => {
        },
        {
          name: "Tonelaje Prog.",
-         type: "column",
+         type: "line",
          data: result.data.map((item) => {
            return {
              x: new Date(item.timestamp * 1000),
@@ -130,7 +130,7 @@ const chartOptions = {
   },
   dataLabels: {
     enabled: true,
-    enabledOnSeries: [0, 1],
+    enabledOnSeries: [3],
     formatter: (val) => {
       if (val === null) {
         return "";
@@ -139,7 +139,7 @@ const chartOptions = {
       }
     },
   },
-  colors: ["rgb(255, 69, 96)", "#00B050", "rgb(0, 143, 251)", "#66C7F4"],
+  colors: ["rgb(255, 69, 96)", "#00B050", "rgb(0, 143, 251)", "rgba(254, 176, 25, 0.85)"],
 
   stroke: {
     width: [1, 1, 1],

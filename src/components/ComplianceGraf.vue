@@ -3,6 +3,7 @@ import { onMounted, ref, watchEffect } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { useStore } from "vuex";
 import ICalendar from "../icons/ICalendar.vue";
+import { formatFixed } from "../libs/utils";
 
 const url = import.meta.env.VITE_API_URL;
 const props = defineProps(["stage", "mining"]);
@@ -23,24 +24,18 @@ const maxDate = ref(new Date());
 minDate.value.setMonth(prevMonth);
 minDate.value.setFullYear(prevYear);
 
-// const series = computed(() => {
-//   return store.getters.get_data_analysis;
-// });
-
-// console.log(graficData.series)
-
 onMounted(async () => {
   await handleGraphic();
 });
 
 const handleGraphic = async () => {
-  console.log("Compliance",selectedEstado.value.getTime())
+ 
   try {
     buttonClicked.value = true;
     const response = await fetch(
       `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
         props.mining
-      }&stage=${props.stage}&now=${new Date().getTime()}`,
+      }&stage=${props.stage}`,
       {
         method: "GET",
         headers: {
@@ -50,7 +45,7 @@ const handleGraphic = async () => {
     );
 
     const result = await response.json();
-    console.log('COMPLIANCE',result)
+   
     if (result.status === true) {
       buttonClicked.value = false;
     } else {
@@ -65,10 +60,11 @@ const handleGraphic = async () => {
         data: result.data.map((item) => {
           return {
             x: new Date(item.timestamp * 1000),
-            y: item.Ag,
+            y: item.ley_ag,
           };
         }),
       },
+
       {
         name: "Ley Ag Prog.",
         type: "line",
@@ -91,7 +87,7 @@ const handleGraphic = async () => {
       },
       {
         name: "Tonelaje Prog.",
-        type: "column",
+        type: "line",
         data: result.data.map((item) => {
           return {
             x: new Date(item.timestamp * 1000),
@@ -115,13 +111,13 @@ const chartOptions = {
     type: "line",
     id: "li",
     // stacked: false,
-    fontFamily: "Rubik",
+    fontFamily: "Sora",
     margin: 0,
     padding: 0,
   },
   dataLabels: {
     enabled: true,
-    enabledOnSeries: [0, 1],
+    enabledOnSeries: [0, 1, 3],
     formatter: (val) => {
       if (val === null) {
         return "";
@@ -130,7 +126,12 @@ const chartOptions = {
       }
     },
   },
-  colors: ["rgb(255, 69, 96)", "#00B050", "rgb(0, 143, 251)", "#66C7F4"],
+  colors: [
+    "rgb(255, 69, 96)",
+    "#00B050",
+    "rgb(0, 143, 251)",
+    "rgba(254, 176, 25, 0.85)",
+  ],
 
   stroke: {
     width: [1, 1, 1],
@@ -254,15 +255,6 @@ const chartOptions = {
     strokeWidth: 1,
   },
 };
-
-const DataToday = ref({
-  NOCHE: {
-    percent: 20, // Porcentaje de algo durante la noche
-  },
-  DIA: {
-    percent: 40, // Porcentaje de algo durante el día
-  },
-});
 </script>
 
 <template>
@@ -295,66 +287,136 @@ const DataToday = ref({
           </Calendar>
         </div>
       </div>
-      <div class="g-d-header-totales">
-        <div>
+    </div>
+    <div class="g-dash-body">
+      <div class="g-d-body-bar">
+        <template v-if="buttonClicked">
+          <Skeleton height="270px"></Skeleton>
+        </template>
+        <template v-else>
+          <div id="chart">
+            <VueApexCharts
+              height="100%"
+              :options="chartOptions"
+              :series="graficData"
+            />
+          </div>
+        </template>
+      </div>
+      <div class="g-d-body-totales">
+        <div class="g-b-totals-item">
           <div class="circular-graf">
-            <span class="donut-title">Tonelada</span>
-            <span class="donut-total"
-              >{{ analysisData ? analysisData.total_ton.toFixed(2) : 0 }}
+            <!-- <span class="donut-title"></span> -->
+            <span class="donut-total">
+              {{
+                analysisData && analysisData.percent_ejec
+                  ? analysisData.percent_ejec.toFixed(1)
+                  : 0
+              }}
+              <small>%</small>
             </span>
             <div
               class="semi-donut margin semi-tonelada"
               :style="{
                 '--percentage':
-                  DataToday && DataToday.NOCHE ? DataToday.NOCHE.percent : 0,
+                  analysisData && analysisData.percent_ejec
+                    ? analysisData.percent_ejec.toFixed(2)
+                    : 0,
                 '--fill': '#FF3D00',
               }"
             ></div>
-          </div>
-          <div class="values-donut">
-            <span class="hour-left">0,00</span>
-            <span class="hour-right">{{
-              analysisData ? analysisData.total_ton_prog.toFixed(2) : 0
-            }}</span>
-          </div>
-        </div>
-        <div>
-          <div class="circular-graf">
-            <span class="donut-title"> Ley</span>
-            <span class="donut-total"
-              >{{ analysisData ? analysisData.aver_ley.toFixed(2) : 0 }}
-            </span>
             <div
-              class="semi-donut semi-ley"
+              class="needle"
               :style="{
-                '--percentage':
-                  DataToday && DataToday.NOCHE ? DataToday.NOCHE.percent : 0,
-                '--fill': '#FF3D00',
+                transform:
+                  'rotate(calc(((' +
+                  (analysisData && analysisData.percent_prog
+                    ? analysisData.percent_prog.toFixed(2)
+                    : 0) +
+                  ' - 50) * 1.8deg))',
               }"
             ></div>
           </div>
           <div class="values-donut">
             <span class="hour-left">0,00</span>
-            <span class="hour-right">{{
-              analysisData ? analysisData.aver_ley_prog.toFixed(2) : 0
-            }}</span>
+            <span class="hour-right">
+              {{
+                formatFixed(
+                  analysisData && analysisData.total_ton_prog
+                    ? analysisData.total_ton_prog
+                    : 0
+                )
+              }}
+            </span>
           </div>
-        </div>        
-      </div>
-    </div>
-    <div class="g-dash-body">
-      <template v-if="buttonClicked">
-        <Skeleton height="270px"></Skeleton>
-      </template>
-      <template v-else>
-        <div id="chart">
-          <VueApexCharts
-            height="100%"
-            :options="chartOptions"
-            :series="graficData"
-          />
+          <div class="ton-total">
+            <span
+              >{{
+                formatFixed(
+                  analysisData && analysisData.total_ton_ejec_cumm
+                    ? analysisData.total_ton_ejec_cumm
+                    : 0
+                )
+              }}
+            </span>
+            <small> ton</small>
+          </div>
         </div>
-      </template>
+        <div class="g-totals-item-bar">
+          <div class="bar-container">
+            <span class="bar-title">Zn %</span>
+            <div
+              class="bar-ley L-ag"
+              :style="{
+                '--percentage-total': 89,
+                '--percentage-prog': 97,
+                '--fill': '#FF3D00',
+              }"
+            >
+              <span class="b-value">5.69</span>
+            </div>
+          </div>
+          <div class="bar-container">
+            <span class="bar-title">Ag %</span>
+            <div
+              class="bar-ley L-ag"
+              :style="{
+                '--percentage-total': 76,
+                '--percentage-prog': 95,
+                '--fill': '#FF3D00',
+              }"
+            >
+              <span class="b-value">5.69</span>
+            </div>
+          </div>
+          <div class="bar-container">
+            <span class="bar-title">Pb %</span>
+            <div
+              class="bar-ley L-ag"
+              :style="{
+                '--percentage-total': 34,
+                '--percentage-prog': 98,
+                '--fill': '#FF3D00',
+              }"
+            >
+              <span class="b-value">5.69</span>
+            </div>
+          </div>
+          <div class="bar-container">
+            <span class="bar-title">Cu %</span>
+            <div
+              class="bar-ley L-ag"
+              :style="{
+                '--percentage-total': 20,
+                '--percentage-prog': 98,
+                '--fill': '#FF3D00',
+              }"
+            >
+              <span class="b-value">5.69</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -388,9 +450,9 @@ const DataToday = ref({
   border: 1px solid var(--grey-light-22);
   padding: 2rem 2rem 2rem 2rem;
   background-color: var(--white);
-flex: 1 1;
- display: flex;
- flex-direction: column;
+  flex: 1 1;
+  display: flex;
+  flex-direction: column;
   .g-dash-header {
     display: flex;
     justify-content: space-between;
@@ -439,6 +501,24 @@ flex: 1 1;
   .g-dash-body {
     flex: 1 1;
     display: flex;
+    align-items: stretch;
+    .g-d-body-bar{
+      flex: 1 1;
+      display: flex;
+    
+    }
+  }
+  .g-d-body-totales{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    .g-totals-item-bar{
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
   }
 }
 
@@ -457,8 +537,8 @@ flex: 1 1;
   align-items: center;
   .donut-total {
     position: absolute;
-    z-index: 9;
-    bottom: 5px;
+    z-index: 3;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     font-size: clamp(6px, 8vw, 14px);
@@ -478,6 +558,16 @@ flex: 1 1;
     color: var(--grey-1);
   }
 }
+.ton-total {
+  text-align: center;
+  padding-top: 1rem;
+  span {
+    font-size: clamp(6px, 8vw, 14px);
+    line-height: 0.6rem;
+    font-weight: 550;
+    color: var(--black);
+  }
+}
 
 .semi-donut {
   --percentage: 0;
@@ -495,7 +585,7 @@ flex: 1 1;
     content: "";
     width: 130px;
     height: 130px;
-    border: 17px solid;
+    border: 25px solid;
     position: absolute;
     border-radius: 50%;
     left: 0;
@@ -503,7 +593,20 @@ flex: 1 1;
     box-sizing: border-box;
     transform: rotate(calc(1deg * (-45 + var(--percentage) * 1.8)));
     animation: fillAnimation 1s ease-in;
+    z-index: 3;
   }
+}
+
+.needle {
+  width: 2px;
+  height: 65px; /* Ajusta la longitud de la línea según sea necesario */
+  background-color: #ff3d00; /* Ajusta el color según sea necesario */
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform-origin: bottom;
+  z-index: 2;
+  background-color: white;
 }
 
 .semi-ley {
@@ -541,7 +644,83 @@ flex: 1 1;
   }
 }
 
-#chart{
-flex: 1 1;
+#chart {
+  flex: 1 1;
 }
+
+.bar-container {
+  display: flex;
+  flex-direction: column;
+
+  .bar-title {
+    padding-bottom: 0.3rem;
+    text-align: center;
+    font-size: clamp(6px, 8vw, 11px);
+    line-height: 0.6rem;
+    font-weight: 550;
+    width: 100%;
+  }
+}
+.bar-ley {
+  --percentage-total: 0;
+  --percentage-prog: 0;
+  position: relative;
+  margin: 0 auto;
+  width: 130px;
+  height: 20px;
+  border-radius: 5px;
+  background-color: var(--grey-light-22);
+  &::after {
+    content: "";
+    animation: porc3 1.5s ease-in-out forwards;
+    position: absolute;
+    height: 100%;
+    border-radius: 5px;
+    width: calc(var(--percentage-total) * 1%);
+    background: #5d95ff;
+  }
+  &::before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 2px;
+    height: 25px;
+    z-index: 4;
+    left: calc(var(--percentage-prog) * 1%);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--black);
+  }
+  .b-value {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    z-index: 3;
+    transform: translateY(-50%);
+    font-size: clamp(6px, 8vw, 11px);
+    line-height: 0.8rem;
+    font-weight: 550;
+  }
+}
+
+// .L-ag::after {
+
+//   --porcentaje-finalizado: 80%;
+// }
+// .L-ag::before {
+
+//   --porcentaje-finalizado: 80%;
+// }
+
+// @keyframes porc3 {
+//   0% {
+//     width: 0%;
+//   }
+//   55% {
+//     width: 75%;
+//   }
+//   100% {
+//     width: var(--porcentaje-finalizado);
+//   }
+// }
 </style>

@@ -38,7 +38,7 @@ const excludedFields = ["year", "month"];
   <div class="c-global-header">
     <div class="global-h-title">
       <div class="g-h-t-primary">
-        <h1>Viajes de Planta, tiempo real</h1>
+        <h1>Viajes a Planta, tiempo real</h1>
         <span>{{ trips.data ? trips.data.length : 0 }}</span>
       </div>
       <span>| Dia terminado en Mina </span>

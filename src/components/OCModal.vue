@@ -140,8 +140,8 @@ const updateTravel = async () => {
 
       if (result.status === true) {
         console.log("Correcto");
-        await store.dispatch("get_list");
-        // await store.commit("addDataListControlCalidad", result.data)
+        
+        await store.dispatch("get_listOControl");
         cerrarModal();
       } else {
         console.log("error");
@@ -311,7 +311,7 @@ const updateTravel = async () => {
                   <Dropdown
                     class="p-dropdown"
                     v-model="item.pila"
-                    :options="dataPila.pilasToOreControl"
+                    :options="dataPila"
                     optionLabel="pila"
                     optionValue="pila"
                     placeholder="Seleccionar"
