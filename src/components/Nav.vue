@@ -15,6 +15,7 @@ const active = ref("/");
 const menuItems = [
   { name: '/', label: 'Mapa de Pilas', icon: CRuma, route: '/' },
   { name: 'analysis', label: 'Análisis', icon: IDash, route: 'analysis' },
+  { name: 'analysisP', label: 'Análisis Planta', icon: IDash, route: 'analysisP' },
   { name: 'oreControl', label: 'Ore Control', icon: IControl, route: 'oreControl' },
   { name: 'controlCalidad', label: 'Control de Calidad', icon: CQuality, route: 'controlCalidad' },
   { name: 'list', label: 'Viajes de Cancha', icon: IList, route: 'list' },

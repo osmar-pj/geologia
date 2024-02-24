@@ -44,7 +44,7 @@ const updateTravel = async () => {
         const result = await response.json();
         if (result.status === true) {
           console.log("correcto");
-          await store.dispatch("get_listControl");
+          await store.dispatch("get_listQControl");
           showForm.value = false;
           setTimeout(() => {
             showSuccessModal.value = true;

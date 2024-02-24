@@ -14,6 +14,8 @@ const router = createRouter({
             { path: '/pila', name: 'Pila', component: () => import('../views/Pila.vue'), meta: { requireAuth: true } },
             { path: '/', name: 'Map', component: () => import('../views/Map.vue'), meta: { requireAuth: true } },
             { path: '/planta', name: 'Planta', component: () => import('../views/planta.vue'), meta: { requireAuth: true } },
+            { path: '/setting', name: 'Configuracion', component: () => import('../views/setting.vue'), meta: { requireAuth: true } },
+            { path: '/analysisP', name: 'Analisis Planta', component: () => import('../views/analysisP.vue'), meta: { requireAuth: true } },
         ] },
     ]
 })

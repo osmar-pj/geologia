@@ -23,12 +23,6 @@ const maxDate = ref(new Date());
 minDate.value.setMonth(prevMonth);
 minDate.value.setFullYear(prevYear);
 
-// const series = computed(() => {
-//   return store.getters.get_data_analysis;
-// });
-
-// console.log(graficData.series)
-
 onMounted(async () => {
   await handleGraphic();
 });
@@ -40,7 +34,7 @@ const handleGraphic = async () => {
     const response = await fetch(
       `${url}/analysis?ts=${selectedEstado.value.getTime()}&mining=${
         props.mining
-      }&stage=${props.stage}&now=${new Date().getTime()}`,
+      }&stage=${props.stage}`,
       {
         method: "GET",
         headers: {
@@ -295,7 +289,7 @@ const DataToday = ref({
           </Calendar>
         </div>
       </div>
-      <div class="g-d-header-totales">
+      <!-- <div class="g-d-header-totales">
         <div>
           <div class="circular-graf">
             <span class="donut-title">Tonelada</span>
@@ -340,7 +334,7 @@ const DataToday = ref({
             }}</span>
           </div>
         </div>        
-      </div>
+      </div> -->
     </div>
     <div class="g-dash-body">
       <template v-if="buttonClicked">

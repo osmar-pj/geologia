@@ -11,8 +11,8 @@ const store = createStore({
     weights: [],
     // canvas: null,
     filtroAplicado: false,
-    dataList: [],
-    dataListControl: [],
+    dataListOControl: [],
+    dataListQControl: [],
     dataListGeneral: [],
     dataListCancha: [],
     dataFilterPlanta: [],
@@ -37,57 +37,57 @@ const store = createStore({
     c2_nsr: 0,
     c2_ag_eq: 0,
   },
-  getters: {
-    get_data_analysis: (state) => {
-      const dataAg = state.dataAnalysis.map((i) => {
-        return {
-          x: new Date(i.timestamp * 1000),
-          y: i.Ag,
-        }
-      })
-      const dataLey_prog = state.dataAnalysis.map((i) => {
-        return {
-          x: new Date(i.timestamp * 1000),
-          y: i.ley_prog,
-        }
-      })
-      const tonh = state.dataAnalysis.map((i) => {
-        return {
-          x: new Date(i.timestamp * 1000),
-          y: i.tonh,
-        }
-      })
-      const ton_prog = state.dataAnalysis.map((i) => {
-        return {
-          x: new Date(i.timestamp * 1000),
-          y: i.ton_prog,
-        }
-      })
-      const series = [
-        {
-          name: "Ley de Ag",
-          type: "line",
-          data: dataAg,
-        },
-        {
-          name: "Ley de Ag Prog.",
-          type: "line",
-          data: dataLey_prog,
-        },
-        {
-          name: "Tonelada",
-          type: "column",
-          data: tonh,
-        },
-        {
-          name: "Tonelada Prog",
-          type: "column",
-          data: ton_prog,
-        },
-      ]
-      return series
-    },
-  },
+  // getters: {
+  //   get_data_analysis: (state) => {
+  //     const dataAg = state.dataAnalysis.map((i) => {
+  //       return {
+  //         x: new Date(i.timestamp * 1000),
+  //         y: i.Ag,
+  //       }
+  //     })
+  //     const dataLey_prog = state.dataAnalysis.map((i) => {
+  //       return {
+  //         x: new Date(i.timestamp * 1000),
+  //         y: i.ley_prog,
+  //       }
+  //     })
+  //     const tonh = state.dataAnalysis.map((i) => {
+  //       return {
+  //         x: new Date(i.timestamp * 1000),
+  //         y: i.tonh,
+  //       }
+  //     })
+  //     const ton_prog = state.dataAnalysis.map((i) => {
+  //       return {
+  //         x: new Date(i.timestamp * 1000),
+  //         y: i.ton_prog,
+  //       }
+  //     })
+  //     const series = [
+  //       {
+  //         name: "Ley de Ag",
+  //         type: "line",
+  //         data: dataAg,
+  //       },
+  //       {
+  //         name: "Ley de Ag Prog.",
+  //         type: "line",
+  //         data: dataLey_prog,
+  //       },
+  //       {
+  //         name: "Tonelada",
+  //         type: "column",
+  //         data: tonh,
+  //       },
+  //       {
+  //         name: "Tonelada Prog",
+  //         type: "column",
+  //         data: ton_prog,
+  //       },
+  //     ]
+  //     return series
+  //   },
+  // },
   mutations: {
     authLogin(state, payload) {
       state.user = payload
@@ -95,13 +95,12 @@ const store = createStore({
     authLogout(state) {
       state.user = null
     },
-    getList(state, payload) {
-      state.dataList = payload
+    getOreControl(state, payload) {
+      state.dataListOControl = payload
     },
-    getListControl(state, payload) {
-      state.dataListControl = payload
-    },
-    
+    getQualityControl(state, payload) {
+      state.dataListQControl = payload
+    },    
     getListGeneral(state, payload) {
       state.dataListGeneral = payload
     },
@@ -140,13 +139,13 @@ const store = createStore({
       state.dataFilterTable.data.unshift(payload)
     },
     addDataListOreControl(state, payload) {
-      state.dataList.data.push(payload)
+      state.dataListOControl.data.push(payload)
     },
     addDataListControlCalidad(state, payload) {
-      state.dataListControl.push(payload)
+      state.dataListQControl.push(payload)
     },
     lesstDataListControlCalidad(state, payload) {
-      state.dataListControl.slice(payload, 1)
+      state.dataListQControl.slice(payload, 1)
     },
     setWeights(state, payload) {
       const ubications = [
@@ -206,7 +205,7 @@ const store = createStore({
       localStorage.removeItem("user")
       commit("authLogout")
     },
-    get_list: async ({ commit }) => {
+    get_listOControl: async ({ commit }) => {
       try {
         commit("loading", true)
         const response = await fetch(`${url}/OreControl`, {
@@ -217,12 +216,12 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        commit("getList", data)
-        console.log(data)
+        commit("getOreControl", data)
+       
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
-    get_listControl: async ({ commit }) => {
+    get_listQControl: async ({ commit }) => {
       try {
         commit("loading", true)
         const response = await fetch(`${url}/QualityControl`, {
@@ -234,7 +233,7 @@ const store = createStore({
         })
         const data = await response.json()
         console.log(data)       
-        commit("getListControl", data)
+        commit("getQualityControl", data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
@@ -280,8 +279,9 @@ const store = createStore({
             "ngrok-skip-browser-warning": true,
           },
         })
-        const data = await response.json()     
-        commit("getPila", data)
+        const data = await response.json()   
+        commit("getPila", data.pilasToOreControl)
+        
         commit("loading", false)
       } catch (error) { commit("loading", false)}
     },
@@ -323,6 +323,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
+        
         commit("getTajo", data)
       } catch (error) {commit("loading", false)}
     },

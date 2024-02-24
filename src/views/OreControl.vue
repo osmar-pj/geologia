@@ -17,14 +17,17 @@ socket.on("OreControl", (data) => {
   store.commit("addDataListOreControl", data);
 });
 
-onMounted(async () => {
-  await store.dispatch("get_list");
-});
-
 onBeforeUnmount(() => {
   // Desconectar el socket al desmontar el componente
   socket.off("OreControl");
 });
+
+onMounted(async () => {
+  await store.dispatch("get_listOControl");
+});
+
+const data = computed(() => store.state.dataListOControl);
+
 const excludedFields = [
   "mining",
   "ubication",
@@ -35,11 +38,8 @@ const excludedFields = [
   "tonh",
   "turn",
   "id_trip",
+  "dominio"
 ];
-
-const data = computed(() => {
-  return store.state.dataList;
-});
 
 const modalData = ref(null);
 const showOCModal = ref(false);
@@ -91,6 +91,7 @@ const formatColumnValue = (value, fn, field, row) => {
       :rows="20"
       paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
+      :header="false"
       :loading="store.state.loading"
     >
       <Column header="#" headerStyle="width: 2.5rem">
@@ -99,6 +100,21 @@ const formatColumnValue = (value, fn, field, row) => {
             <div class="t-name">
               <h5>#{{ slotProps.index + 1 }}</h5>
             </div>
+          </div>
+        </template>
+      </Column>
+      <Column header="Turno" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-vehiculo">
+            <img
+              :src="
+                slotProps.data.turn === 'DIA'
+                  ? 'src/assets/img/i-day.svg'
+                  : 'src/assets/img/i-night.svg'
+              "
+              alt=""
+            />
           </div>
         </template>
       </Column>
@@ -165,21 +181,7 @@ const formatColumnValue = (value, fn, field, row) => {
           </div>
         </template>
       </Column>
-      <Column header="Turno" headerStyle="text-align: center;">
-        <template #body="slotProps">
-          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
-          <div v-else class="t-vehiculo">
-            <img
-              :src="
-                slotProps.data.turn === 'DIA'
-                  ? 'src/assets/img/i-day.svg'
-                  : 'src/assets/img/i-night.svg'
-              "
-              alt=""
-            />
-          </div>
-        </template>
-      </Column>
+
       <template v-for="(header, index) in data.header || []">
         <Column
           v-if="
@@ -221,7 +223,25 @@ const formatColumnValue = (value, fn, field, row) => {
           </template>
         </Column>
       </template>
-
+      <Column header="Dominio" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-vehiculo">
+            <img
+              :src="
+                slotProps.data.dominio === 'Polimetálico'
+                  ? 'src/assets/img/i-polimetalicoF.svg'
+                  : slotProps.data.dominio === 'Ag/Carbonatos'
+                  ? 'src/assets/img/i-carbonatoF.svg'
+                  : slotProps.data.dominio === 'Ag/Alabandita'
+                  ? 'src/assets/img/i-alabanditaF.svg'
+                  : ''
+              "
+              alt=""
+            />
+          </div>
+        </template>
+      </Column>
       <Column header="Tonelada" headerStyle="text-align: center;">
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>

@@ -21,7 +21,7 @@ import ComplianceGraf from "../components/ComplianceGraf.vue";
     <div>
     <h2>Alimentación de Planta</h2>
   </div>
-      <FeedingGraf stage="analysisOut" mining="YUMPAG" />   
+      <FeedingGraf stage="analysisOut" mining="YUMPAG" />    
   </div>
 </template>
 

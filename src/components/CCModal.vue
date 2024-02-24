@@ -212,7 +212,7 @@ const updateTravel = async () => {
       if (result.status === true) {
         console.log("correcto");
 
-        await store.dispatch("get_listControl");
+        await store.dispatch("get_listQControl");
         showForm.value = false;
         setTimeout(() => {
           showSuccessM.value = true;
@@ -380,15 +380,25 @@ const isRelevantColumn = (key) => {
                           autofocus
                           :class="{
                             'bg-red': data[field] >= 10,
-                            'bg-yellow': data[field] >= 3 && data[field] < 9.9999,
+                            'bg-yellow':
+                              data[field] >= 3 && data[field] < 9.9999,
                             'bg-green': data[field] < 3,
                           }"
                         />
                         <InputText v-else v-model="data[field]" />
                       </template>
-                      <template #footer="{ footerData }" >
-                        <span >
-                          {{ calculateColumnAverage(key) }}
+                      <template #footer="{ footerData }">
+                        <span
+                          :style="{
+                            color:
+                              footerData[column.field] < 3
+                                ? '#00B050'
+                                : footerData[column.field] < 10
+                                ? '#FF9900'
+                                : '#FF0000',
+                          }"
+                        >
+                          {{ footerData[column.field] }}
                         </span>
                       </template>
                     </Column>
