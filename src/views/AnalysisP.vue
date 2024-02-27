@@ -13,7 +13,14 @@ import FeedingGraf from "../components/FeedingGraf.vue";
     <div class="global-h-button"></div>
   </div>
   <div class="c-global-c-analysis">
-    <FeedingGraf stage="analysisOut" mining="YUMPAG" />
+    <div class="c-analysis-items">
+      <ComplianceGraf stage="analysisIn" mining="YUMPAG"/>
+      <ComplianceGraf stage="analysisIn" mining="UCHUCCHACUA"/>
+    </div>
+    <div>
+    <h2>Alimentación de Planta</h2>
+  </div>
+      <FeedingGraf stage="analysisOut" mining="YUMPAG" />    
   </div>
 </template>
 

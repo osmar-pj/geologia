@@ -287,6 +287,7 @@ const chartOptions = {
           </Calendar>
         </div>
       </div>
+<<<<<<< HEAD
     </div>
     <div class="g-dash-body">
       <div class="g-d-body-bar">
@@ -305,6 +306,10 @@ const chartOptions = {
       </div>
       <div class="g-d-body-totales">
         <div class="g-b-totals-item">
+=======
+      <!-- <div class="g-d-header-totales">
+        <div>
+>>>>>>> 61f70cc17694a785ab201f0f07a6ac9aeec192ca
           <div class="circular-graf">
             <!-- <span class="donut-title"></span> -->
             <span class="donut-total">
