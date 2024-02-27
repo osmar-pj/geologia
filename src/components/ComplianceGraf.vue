@@ -51,8 +51,8 @@ const handleGraphic = async () => {
     } else {
       buttonClicked.value = false;
     }
-
     analysisData.value = result.meta;
+    console.log(analysisData.value)
     graficData.value = [
       {
         name: "Ley Ag Ejec.",
@@ -309,8 +309,8 @@ const chartOptions = {
             <!-- <span class="donut-title"></span> -->
             <span class="donut-total">
               {{
-                analysisData && analysisData.percent_ejec
-                  ? analysisData.percent_ejec.toFixed(1)
+                analysisData && analysisData.ton.percent_ejec
+                  ? analysisData.ton.percent_ejec.toFixed(1)
                   : 0
               }}
               <small>%</small>
@@ -319,8 +319,8 @@ const chartOptions = {
               class="semi-donut margin semi-tonelada"
               :style="{
                 '--percentage':
-                  analysisData && analysisData.percent_ejec
-                    ? analysisData.percent_ejec.toFixed(2)
+                  analysisData && analysisData.ton.percent_ejec
+                    ? analysisData.ton.percent_ejec.toFixed(2)
                     : 0,
                 '--fill': '#FF3D00',
               }"
@@ -330,8 +330,8 @@ const chartOptions = {
               :style="{
                 transform:
                   'rotate(calc(((' +
-                  (analysisData && analysisData.percent_prog
-                    ? analysisData.percent_prog.toFixed(2)
+                  (analysisData && analysisData.ton.percent_prog
+                    ? analysisData.ton.percent_prog.toFixed(2)
                     : 0) +
                   ' - 50) * 1.8deg))',
               }"
@@ -342,8 +342,8 @@ const chartOptions = {
             <span class="hour-right">
               {{
                 formatFixed(
-                  analysisData && analysisData.total_ton_prog
-                    ? analysisData.total_ton_prog
+                  analysisData && analysisData.ton.total_ton_prog
+                    ? analysisData.ton.total_ton_prog
                     : 0
                 )
               }}
@@ -353,8 +353,8 @@ const chartOptions = {
             <span
               >{{
                 formatFixed(
-                  analysisData && analysisData.total_ton_ejec_cumm
-                    ? analysisData.total_ton_ejec_cumm
+                  analysisData && analysisData.ton.total_ton_ejec_cumm
+                    ? analysisData.ton.total_ton_ejec_cumm
                     : 0
                 )
               }}
@@ -364,29 +364,16 @@ const chartOptions = {
         </div>
         <div class="g-totals-item-bar">
           <div class="bar-container">
-            <span class="bar-title">Zn %</span>
+            <span class="bar-title">5.69 <small>Ag %</small> </span>           
             <div
               class="bar-ley L-ag"
               :style="{
                 '--percentage-total': 89,
                 '--percentage-prog': 97,
-                '--fill': '#FF3D00',
+                '--background': 'rgb(255, 69, 96)',
               }"
             >
-              <span class="b-value">5.69</span>
-            </div>
-          </div>
-          <div class="bar-container">
-            <span class="bar-title">Ag %</span>
-            <div
-              class="bar-ley L-ag"
-              :style="{
-                '--percentage-total': 76,
-                '--percentage-prog': 95,
-                '--fill': '#FF3D00',
-              }"
-            >
-              <span class="b-value">5.69</span>
+            
             </div>
           </div>
           <div class="bar-container">
@@ -394,12 +381,11 @@ const chartOptions = {
             <div
               class="bar-ley L-ag"
               :style="{
-                '--percentage-total': 34,
-                '--percentage-prog': 98,
-                '--fill': '#FF3D00',
+                '--percentage-total': 76,
+                '--percentage-prog': 95,
+                '--background': 'rgb(119, 93, 208)',
               }"
-            >
-              <span class="b-value">5.69</span>
+            >              
             </div>
           </div>
           <div class="bar-container">
@@ -407,12 +393,25 @@ const chartOptions = {
             <div
               class="bar-ley L-ag"
               :style="{
-                '--percentage-total': 20,
+                '--percentage-total': 34,
                 '--percentage-prog': 98,
-                '--fill': '#FF3D00',
+                '--background': 'rgba(27, 153, 139, 0.85)',
               }"
             >
-              <span class="b-value">5.69</span>
+              
+            </div>
+          </div>
+          <div class="bar-container">
+            <span class="bar-title">Zn %</span>
+            <div
+              class="bar-ley L-ag"
+              :style="{
+                '--percentage-total': 20,
+                '--percentage-prog': 98,
+                '--background': 'rgba(254, 176, 25, 0.85)',
+              }"
+            >
+              
             </div>
           </div>
         </div>
@@ -512,7 +511,7 @@ const chartOptions = {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     gap: 1rem;
     .g-totals-item-bar{
       display: flex;
@@ -598,15 +597,23 @@ const chartOptions = {
 }
 
 .needle {
-  width: 2px;
+  width: 0;
   height: 65px; /* Ajusta la longitud de la línea según sea necesario */
-  background-color: #ff3d00; /* Ajusta el color según sea necesario */
   position: absolute;
   bottom: 0;
   left: 50%;
   transform-origin: bottom;
-  z-index: 2;
-  background-color: white;
+  z-index: 3;
+  background-color: transparent; /* Ajusta el color según sea necesario */
+  &::after{
+    content: "";
+    width: 1px;
+    height: 25px;
+    background-color: black;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
 }
 
 .semi-ley {
@@ -653,7 +660,7 @@ const chartOptions = {
   flex-direction: column;
 
   .bar-title {
-    padding-bottom: 0.3rem;
+    padding-bottom: 0.2rem;
     text-align: center;
     font-size: clamp(6px, 8vw, 11px);
     line-height: 0.6rem;
@@ -664,27 +671,28 @@ const chartOptions = {
 .bar-ley {
   --percentage-total: 0;
   --percentage-prog: 0;
+  --background:#000;
   position: relative;
   margin: 0 auto;
   width: 130px;
-  height: 20px;
-  border-radius: 5px;
+  height: 10px;
+  border-radius: 2px;
   background-color: var(--grey-light-22);
   &::after {
     content: "";
     animation: porc3 1.5s ease-in-out forwards;
     position: absolute;
     height: 100%;
-    border-radius: 5px;
+    border-radius: 2px;
     width: calc(var(--percentage-total) * 1%);
-    background: #5d95ff;
+    background: var(--background);
   }
   &::before {
     content: "";
     position: absolute;
     height: 100%;
-    width: 2px;
-    height: 25px;
+    width: 1px;
+    height: 13px;
     z-index: 4;
     left: calc(var(--percentage-prog) * 1%);
     top: 50%;

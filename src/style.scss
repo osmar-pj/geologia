@@ -910,7 +910,7 @@ input[type="checkbox"] {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2px solid var(--white);
+  border: 2px solid var(--primary);
   border-right-color: transparent;
   animation: rot1 2s linear infinite;
 }
@@ -2075,45 +2075,73 @@ input[type="checkbox"] {
   padding-top: 2rem;
   .p-panelmenu-panel {
     .p-panelmenu-header-content {
-     
-      .s-content-menu {       
-          border-radius: 10px;
-          padding: 0.7rem 1rem;
-          width: 100%;
-          cursor: pointer;
-          transition: all 0.5s ease-in-out;
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-          height: 40px;
-          .nav-select {
-            display: grid;
-            place-items: center;
-            color: var(--secundary);
-            svg {
-              width: 1.4rem;
-              height: 1.4rem;
-              color: var(--grey-light-3);
-              fill: transparent;
-              stroke-width: 1.7;
-            }
-          }
-  
-          span {
+      .s-content-menu {
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.5s ease-in-out;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        height: 40px;
+        .nav-select {
+          display: grid;
+          place-items: center;
+          color: var(--secundary);
+          svg {
+            width: 1.4rem;
+            height: 1.4rem;
             color: var(--grey-light-3);
-            font-size: clamp(5px, 8vw, 13px);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 160px;
-            font-weight: 400;
+            fill: transparent;
+            stroke-width: 1.7;
           }
-          &:hover {
-            opacity: 1;
-            background-color: var(--secondary);
-          }
-        
+        }
+
+        span {
+          color: var(--grey-light-3);
+          font-size: clamp(5px, 8vw, 13px);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 160px;
+          font-weight: 400;
+        }
+        &:hover {
+          opacity: 1;
+          background-color: var(--secondary);
+        }
       }
+    }
+  }
+}
+
+.p-tabview {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  .p-tabview-nav-container{
+    .p-tabview-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      .p-highlight {
+        color: var(--black) !important;
+        font-weight: 600;
+      }
+      .p-tabview-header {
+        color: var(--grey-2);
+        font-size: clamp(7.5px, 8vw, 13.5px);
+        line-height: 1rem;
+      }
+    }
+  }
+  .p-tabview-panels{
+    width: 80%;
+    display: flex;
+    .p-tabview-panel{
+    flex: 1 1;
+    display: flex;
     }
   }
 }

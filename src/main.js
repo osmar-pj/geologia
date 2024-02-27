@@ -32,7 +32,8 @@ import ColumnGroup from 'primevue/columngroup'
 import Toast from 'primevue/toast'
 import Dock from 'primevue/dock';
 import PanelMenu from 'primevue/panelmenu';
-
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
 import ToastService from 'primevue/toastservice'
 
@@ -62,4 +63,6 @@ app.component('ColumnGroup', ColumnGroup)
 app.component('Toast', Toast)
 app.component('Dock', Dock)
 app.component('PanelMenu', PanelMenu)
+app.component('TabView', TabView)
+app.component('TabPanel', TabPanel)
 app.mount('#app')

@@ -20,16 +20,16 @@ const router = createRouter({
     ]
 })
 
-// router.beforeEach((to, from, next) => {
-//     const requireAuth = to.matched.some(record => record.meta.requireAuth)
-//     const user = store.state.user
-//     if (requireAuth && !user) {
-//         next('/login')
-//     } else if (to.path == '/login' && user) {
-//         next('/')
-//     } else {
-//         next()
-//     }
-// })
+ router.beforeEach((to, from, next) => {
+     const requireAuth = to.matched.some(record => record.meta.requireAuth)
+     const user = store.state.user
+     if (requireAuth && !user) {
+         next('/login')
+     } else if (to.path == '/login' && user) {
+         next('/')
+     } else {
+         next()
+     }
+ })
 
 export default router

@@ -11,6 +11,8 @@ import Delete from "../icons/Delete.vue"
 import ISave from "../icons/ISave.vue"
 import Totals from "../components/Totals.vue"
 import IPila from "../maps/IPila.vue"
+import ICenter from "../icons/ICenter.vue"
+import IResample from "../icons/IResample.vue"
 import IDesmonte from "../maps/IDesmonte.vue"
 import ICC from "../prueba/ICC.vue"
 import ICalendar from "../icons/ICalendar.vue"
@@ -29,6 +31,7 @@ const url = import.meta.env.VITE_API_URL
 
 const canvas = ref()
 const pilas = computed(() => store.state.rumaTotal)
+const config = computed(() => store.state.config)
 const ubication = ref("")
 const ubicationId = ref("")
 const ubicationType = ref("")
@@ -61,6 +64,7 @@ const scaleYOfPila = 5
 const handleCreated = async (fabricCanvas) => {
   console.log("Canvas Created")
   await store.dispatch("pila_total")
+  await store.dispatch("get_config")
   canvas.value = fabricCanvas
   await createSVGRect()
   const imgMap = document.getElementById("map")
@@ -726,7 +730,10 @@ const move = () => {
   <div class="c-global-container-map">
     <div class="global-map-button">
       <Button outlined class="btn-map" @click=""
-        ><CEdit /><span> Remut. </span>
+        ><IResample /><span> Remut. </span>
+      </Button>
+      <Button outlined class="btn-map" @click=""
+        ><ICenter /><span> Restab. </span>
       </Button>
       <Button outlined class="btn-map" @click="edit"
         ><CEdit /><span> Editar </span>
@@ -767,6 +774,9 @@ const move = () => {
       @mouse:wheel=""
       @mouse:move=""
     />
+    <div>
+      <span class="loader"></span>
+    </div>
   </div>
 </template>
 

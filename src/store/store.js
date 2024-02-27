@@ -26,7 +26,7 @@ const store = createStore({
     userModal: null,
     error: null,
     loading: false,
-    config: [],
+    config: {},
     panels: [],
   },
   mutations: {
@@ -88,6 +88,9 @@ const store = createStore({
     lesstDataListControlCalidad(state, payload) {
       state.dataListQControl.slice(payload, 1)
     },
+    config(state, payload) {
+      state.config = payload
+    },
     setWeights(state, payload) {
       const ubications = [
         "Cancha Colquicocha",
@@ -130,7 +133,6 @@ const store = createStore({
           body: JSON.stringify({ code: payload }),
         })
         const data = await response.json()
-        console.log("Ingreso")
         if (data.status === true) {
           const user = Object.assign({}, data)
           localStorage.setItem("user", JSON.stringify(user))
@@ -157,8 +159,6 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        console.log(data)
-        localStorage.setItem("config", JSON.stringify(data[0]))
         commit("config", data[0])
       } catch (error) {commit("loading", false)}
     },
@@ -174,7 +174,6 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getOreControl", data)
-       console.log(data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
@@ -189,7 +188,6 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        console.log(data)       
         commit("getQualityControl", data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
@@ -205,7 +203,6 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        console.log(data)      
         commit("getListGeneral", data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
@@ -222,7 +219,6 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getListCancha", data)
-          // console.log(data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
@@ -244,6 +240,7 @@ const store = createStore({
     },
     pila_total: async ({ commit }) => {
       try {
+        commit("loading", true)
         const response = await fetch(`${url}/pila`, {
           method: "GET",
           headers: {
@@ -254,7 +251,9 @@ const store = createStore({
         const data = await response.json()
         commit("getRumaTotal", data.pilasToMap)
         commit("setWeights", data.pilasToMap)
+        commit("loading", true)
         return data.weights
+        
       } catch (error) {commit("loading", false)}
     },
     ruma_update: async ({ commit }, data) => {

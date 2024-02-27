@@ -13,44 +13,76 @@ import ISetting from "../icons/ISetting.vue";
 const router = useRouter();
 const route = useRoute();
 const isRouteActive = (routePath) => {
-  console.log("Ruta actual:", route.path);
-  console.log("Ruta comparada:", routePath);
+  // console.log("Ruta actual:", route.path);
+  // console.log("Ruta comparada:", routePath);
   return route.path === routePath;
 };
 
 const store = useStore();
 const active = ref("/");
- const menuItems = [
-   { name: "/", label: "Mapa de Stock Piles", icon: CRuma, route: "/" },
-   { name: "analysis", label: "Análisis", icon: IDash, route: "analysis" },
-   {
-     name: "analysisP",
-     label: "Análisis Planta",
-     icon: IDash,
-     route: "analysisP",
-   },
-   {
-     name: "oreControl",
-     label: "Ore Control",
-     icon: IControl,
-     route: "oreControl",
-   },
-   {
-     name: "controlCalidad",
-     label: "Control de Calidad",
-     icon: CQuality,
-     route: "controlCalidad",
-   },
-   { name: "list", label: "Viajes a Cancha", icon: IList, route: "list" },
-   { name: "planta", label: "Viajes a Planta", icon: CQuality, route: "planta" },
-   {
-     name: "pila",
-     label: "Stock Piles de cancha",
-     icon: CQuality,
-     route: "pila",
-   },
-   { name: "setting", label: "Configuración", icon: ISetting, route: "setting" },
- ];
+const menuItems = [
+  {
+    name: "/",
+    label: "Mapa de Stock Piles",
+    icon: CRuma,
+    route: "/",
+  },
+  {
+    name: "analysis",
+    label: "Análisis",
+    icon: IDash,
+    route: "analysis",
+    items: [
+      {
+        name: "analysis",
+        label: "Análisis",
+        route: "analysis",
+      },
+      {
+        name: "analysisP",
+        label: "Análisis Planta",
+        route: "analysisP",
+      },
+    ],
+  },
+  {
+    name: "oreControl",
+    label: "Ore Control",
+    icon: IControl,
+    route: "oreControl",
+  },
+  {
+    name: "controlCalidad",
+    label: "Control de Calidad",
+    icon: CQuality,
+    route: "controlCalidad",
+  },
+  {
+    name: "list",
+    label: "Viajes a Cancha",
+    icon: IList,
+    route: "list",
+  },
+  {
+    name: "planta",
+    label: "Viajes a Planta",
+    icon: CQuality,
+    route: "planta",
+  },
+  {
+    name: "pila",
+    label: "Stock Piles de Cancha",
+    icon: CQuality,
+    route: "pila",
+  },
+  {
+    name: "setting",
+    label: "Configuración",
+    icon: ISetting,
+    route: "setting",
+  },
+];
+
 const items = ref([
   {
     label: "Mapa de Stock Piles",
@@ -120,10 +152,10 @@ const items = ref([
     },
   },
 ]);
- const goToPage = (page) => {
-   router.push(page);
-   active.value = page;
- };
+const goToPage = (page) => {
+  router.push(page);
+  active.value = page;
+};
 const name = ref("");
 name.value = store.state.name;
 const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -141,12 +173,12 @@ const logout = async () => {
   <div class="c-sidebar">
     <div class="sidebar-header">
       <div className="s-header-avatar">
-        <!-- {{
+        {{
           storedUser.name ? storedUser.name.trim().match(/\b\w/g).join("") : ""
-        }} -->
+        }}
       </div>
       <div className="s-header-name">
-        <!-- <h4>{{ storedUser.name }}</h4> -->
+        <h4>{{ storedUser.name }}</h4>
         <span>Bienvenido, a GUNJOP</span>
       </div>
     </div>
@@ -164,22 +196,36 @@ const logout = async () => {
         </div>
         <div class="s-c-t-info">
           <span>
-            <!-- <strong>{{ menuItems.length }}</strong> items -->
+            <strong>{{ items.length }}</strong> items
           </span>
           <span> <strong>• 3</strong> principales </span>
         </div>
       </div>
-       <ul class="s-content-menu">
-        <li
-          v-for="menuItem in menuItems"
-          :key="menuItem.name"
-          @click.prevent="goToPage(menuItem.route)"
-          :class="active === menuItem.route ? 'active' : ''"
-        >
-          <div class="nav-select"><component :is="menuItem.icon" /></div>
-          <span>{{ menuItem.label }}</span>
+
+      <ul class="s-content-menu">
+        <li v-for="menuItem in menuItems" :key="menuItem.name">
+          <router-link v-if="!menuItem.items" :to="menuItem.route">
+            <div class="nav-select">
+              <component :is="menuItem.icon" />
+            </div>
+            <span>{{ menuItem.label }}</span>
+          </router-link>
+          <div v-else>
+            <div class="nav-select">
+              <component :is="menuItem.icon" />
+            </div>
+            <span>{{ menuItem.label }}</span>
+            <ul>
+              <li v-for="subItem in menuItem.items" :key="subItem.name">
+                <router-link :to="subItem.route">
+                  {{ subItem.label }}
+                </router-link>
+              </li>
+            </ul>
+          </div>
         </li>
-      </ul> 
+      </ul>
+
       <!-- <PanelMenu :model="items">
         <template #item="{ item }">
           <router-link
@@ -489,49 +535,49 @@ const logout = async () => {
   opacity: 0.4;
 }
 
- .s-content-menu {
-   flex: 1 1;
-   display: flex;
-   flex-direction: column;
-   align-items: flex-start;
-   gap: 0.3rem;
-   padding-top: 2rem;
-   li {
-     border-radius: 10px;
-     padding: 0.7rem 1.2rem;
-     width: 100%;
-     cursor: pointer;
-     transition: all 0.5s ease-in-out;
-     display: flex;
-     align-items: center;
-     gap: 0.8rem;
-     height: 40px;
-     .nav-select {
-       display: grid;
-       place-items: center;
-       color: var(--secundary);
-       svg {
-         width: 1.4rem;
-         height: 1.4rem;
-         color: var(--grey-light-3);
-         fill: transparent;
-         stroke-width: 1.7;
-       }
-     }
+.s-content-menu {
+  flex: 1 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding-top: 2rem;
+  li {
+    border-radius: 10px;
+    padding: 0.7rem 1.2rem;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 40px;
+    .nav-select {
+      display: grid;
+      place-items: center;
+      color: var(--secundary);
+      svg {
+        width: 1.4rem;
+        height: 1.4rem;
+        color: var(--grey-light-3);
+        fill: transparent;
+        stroke-width: 1.7;
+      }
+    }
 
-     span {
-       color: var(--grey-light-3);
-       font-size: clamp(5px, 8vw, 13px);
-       white-space: nowrap;
-       overflow: hidden;
-       text-overflow: ellipsis;
-       max-width: 160px;
-       font-weight: 400;
-     }
-     &:hover {
-       opacity: 1;
-       background-color: var(--secondary);
-     }
-   }
- }
+    span {
+      color: var(--grey-light-3);
+      font-size: clamp(5px, 8vw, 13px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
+      font-weight: 400;
+    }
+    &:hover {
+      opacity: 1;
+      background-color: var(--secondary);
+    }
+  }
+}
 </style>
