@@ -389,14 +389,7 @@ const isRelevantColumn = (key) => {
                       </template>
                       <template #footer="{ footerData }">
                         <span
-                          :style="{
-                            color:
-                              footerData[column.field] < 3
-                                ? '#00B050'
-                                : footerData[column.field] < 10
-                                ? '#FF9900'
-                                : '#FF0000',
-                          }"
+                          
                         >
                           {{ footerData[column.field] }}
                         </span>

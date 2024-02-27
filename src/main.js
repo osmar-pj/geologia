@@ -31,6 +31,8 @@ import InputNumber from 'primevue/inputnumber'
 import ColumnGroup from 'primevue/columngroup'   
 import Toast from 'primevue/toast'
 import Dock from 'primevue/dock';
+import PanelMenu from 'primevue/panelmenu';
+
 
 import ToastService from 'primevue/toastservice'
 
@@ -59,5 +61,5 @@ app.component('InputNumber', InputNumber)
 app.component('ColumnGroup', ColumnGroup)
 app.component('Toast', Toast)
 app.component('Dock', Dock)
-
+app.component('PanelMenu', PanelMenu)
 app.mount('#app')

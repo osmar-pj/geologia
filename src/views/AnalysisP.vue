@@ -1,13 +1,12 @@
 <script setup>
 import FeedingGraf from "../components/FeedingGraf.vue";
-import ComplianceGraf from "../components/ComplianceGraf.vue";
 </script>
 
 <template>
   <div class="c-global-header">
     <div class="global-h-title">
       <div class="g-h-t-primary">
-        <h1>Cumplimiento de Producción</h1>
+        <h1>Alimentación de Planta</h1>
       </div>
       <span>Hoy| Dia terminado en Mina </span>
     </div>
@@ -33,12 +32,12 @@ import ComplianceGraf from "../components/ComplianceGraf.vue";
 
 .c-global-c-analysis {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   gap: 1rem;
   flex: 1 1;
   .c-analysis-items {
     display: flex;
-    flex: 1 1 300px;    
+    flex: 1 1 300px;
     gap: 1rem;
   }
 }

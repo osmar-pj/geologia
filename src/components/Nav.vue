@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, markRaw } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import IDash from "../icons/IDash.vue";
 import IControl from "../icons/IControl.vue";
@@ -8,24 +8,122 @@ import CQuality from "../icons/CQuality.vue";
 import CRuma from "../icons/CRuma.vue";
 import IList from "../icons/IList.vue";
 import ILogout from "../icons/ILogout.vue";
+import ISetting from "../icons/ISetting.vue";
 
 const router = useRouter();
+const route = useRoute();
+const isRouteActive = (routePath) => {
+  console.log("Ruta actual:", route.path);
+  console.log("Ruta comparada:", routePath);
+  return route.path === routePath;
+};
+
 const store = useStore();
 const active = ref("/");
-const menuItems = [
-  { name: '/', label: 'Mapa de Pilas', icon: CRuma, route: '/' },
-  { name: 'analysis', label: 'Análisis', icon: IDash, route: 'analysis' },
-  { name: 'analysisP', label: 'Análisis Planta', icon: IDash, route: 'analysisP' },
-  { name: 'oreControl', label: 'Ore Control', icon: IControl, route: 'oreControl' },
-  { name: 'controlCalidad', label: 'Control de Calidad', icon: CQuality, route: 'controlCalidad' },
-  { name: 'list', label: 'Viajes de Cancha', icon: IList, route: 'list' },
-  { name: 'planta', label: 'Viajes de Planta', icon: CQuality, route: 'planta' },
-  { name: 'pila', label: 'Stock Piles de cancha', icon: CQuality, route: 'pila' },
-];
-const goToPage = (page) => {
-  router.push(page);
-  active.value = page;
-};
+ const menuItems = [
+   { name: "/", label: "Mapa de Stock Piles", icon: CRuma, route: "/" },
+   { name: "analysis", label: "Análisis", icon: IDash, route: "analysis" },
+   {
+     name: "analysisP",
+     label: "Análisis Planta",
+     icon: IDash,
+     route: "analysisP",
+   },
+   {
+     name: "oreControl",
+     label: "Ore Control",
+     icon: IControl,
+     route: "oreControl",
+   },
+   {
+     name: "controlCalidad",
+     label: "Control de Calidad",
+     icon: CQuality,
+     route: "controlCalidad",
+   },
+   { name: "list", label: "Viajes a Cancha", icon: IList, route: "list" },
+   { name: "planta", label: "Viajes a Planta", icon: CQuality, route: "planta" },
+   {
+     name: "pila",
+     label: "Stock Piles de cancha",
+     icon: CQuality,
+     route: "pila",
+   },
+   { name: "setting", label: "Configuración", icon: ISetting, route: "setting" },
+ ];
+const items = ref([
+  {
+    label: "Mapa de Stock Piles",
+    icon: markRaw(CRuma),
+    command: () => {
+      router.push("/");
+    },
+  },
+  {
+    label: "Análisis",
+    icon: markRaw(IControl),
+    items: [
+      {
+        label: "Producción",
+
+        route: "/analysis",
+      },
+      {
+        label: "Planta",
+
+        route: "/analysisP",
+      },
+    ],
+  },
+  {
+    label: "Completar",
+    icon: markRaw(IList),
+    items: [
+      {
+        label: "Ore Control",
+
+        route: "/oreControl",
+      },
+      {
+        label: "Control de Calidad",
+
+        route: "/controlCalidad",
+      },
+    ],
+  },
+  {
+    label: "Viajes",
+    icon: markRaw(IList),
+    items: [
+      {
+        label: "Cancha",
+        route: "/list",
+      },
+      {
+        label: "Planta",
+        route: "/planta",
+      },
+    ],
+  },
+  {
+    label: "Stock Piles de Cancha",
+    icon: markRaw(CQuality),
+    command: () => {
+      router.push("/pila");
+    },
+  },
+  {
+    label: "Configuración",
+    icon: markRaw(ISetting),
+    command: () => {
+      router.push("/setting");
+    },
+  },
+]);
+ const goToPage = (page) => {
+   router.push(page);
+   active.value = page;
+ };
 const name = ref("");
 name.value = store.state.name;
 const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -43,12 +141,12 @@ const logout = async () => {
   <div class="c-sidebar">
     <div class="sidebar-header">
       <div className="s-header-avatar">
-        {{
+        <!-- {{
           storedUser.name ? storedUser.name.trim().match(/\b\w/g).join("") : ""
-        }}
+        }} -->
       </div>
       <div className="s-header-name">
-        <h4>{{ storedUser.name }}</h4>
+        <!-- <h4>{{ storedUser.name }}</h4> -->
         <span>Bienvenido, a GUNJOP</span>
       </div>
     </div>
@@ -65,19 +163,59 @@ const logout = async () => {
           <span>12</span>
         </div>
         <div class="s-c-t-info">
-          <span> <strong>3</strong> items </span>
-          <span> <strong>• 1</strong> item </span>
+          <span>
+            <!-- <strong>{{ menuItems.length }}</strong> items -->
+          </span>
+          <span> <strong>• 3</strong> principales </span>
         </div>
       </div>
-      <ul class="s-content-menu">
-      <li v-for="menuItem in menuItems"
+       <ul class="s-content-menu">
+        <li
+          v-for="menuItem in menuItems"
           :key="menuItem.name"
           @click.prevent="goToPage(menuItem.route)"
-          :class="active === menuItem.route ? 'active' : ''">
-        <div class="nav-select"><component :is="menuItem.icon"/></div>
-        <span>{{ menuItem.label }}</span>
-      </li>
-    </ul>
+          :class="active === menuItem.route ? 'active' : ''"
+        >
+          <div class="nav-select"><component :is="menuItem.icon" /></div>
+          <span>{{ menuItem.label }}</span>
+        </li>
+      </ul> 
+      <!-- <PanelMenu :model="items">
+        <template #item="{ item }">
+          <router-link
+            v-if="item.route"
+            v-slot="{ href, navigate }"
+            :to="item.route"
+            custom
+          >
+            <a
+              :class="{ active: isRouteActive(item.route) }"
+              :href="href"
+              @click="navigate"
+            >
+              <span class="nav-select">{{ item.label }}</span>
+            </a>
+          </router-link>
+          <a
+            v-else
+            class="s-content-menu"
+            :href="item.url"
+            :target="item.target"
+          >
+            <span class="nav-select">
+              <component
+                :is="
+                  typeof item.icon === 'object' ? markRaw(item.icon) : 'span'
+                "
+              />
+            </span>
+
+            <span>{{ item.label }}</span>
+            <span v-if="item.items" class="hola"></span>
+          </a>
+        </template>
+      </PanelMenu> -->
+
       <div class="s-content-msg">
         <div class="s-c-msg-header"><span>Mensajes</span></div>
         <div class="s-c-msg-items">
@@ -102,7 +240,7 @@ const logout = async () => {
     <div class="sidebar-footer">
       <div className="s-footer-logout">
         <a href="" @click.prevent="logout">
-          <ILogout/>
+          <ILogout />
           <h4>Salir</h4>
         </a>
       </div>
@@ -142,10 +280,10 @@ const logout = async () => {
       font-size: clamp(5px, 8vw, 18px);
       font-weight: 500;
       text-transform: uppercase;
-       @include md {
-         font-size: clamp(7px, 8vw, 16px);
-         line-height: 1rem;
-       }
+      @include md {
+        font-size: clamp(7px, 8vw, 16px);
+        line-height: 1rem;
+      }
     }
     .s-header-name {
       display: flex;
@@ -169,9 +307,9 @@ const logout = async () => {
         text-overflow: ellipsis;
         max-width: 160px;
       }
-      // @include md {
-      //   display: block;
-      // }
+      //  @include md {
+      //    display: block;
+      //  }
     }
     .header-r-i-perfil {
       cursor: pointer;
@@ -241,52 +379,7 @@ const logout = async () => {
         }
       }
     }
-    .s-content-menu {
-      flex: 1 1;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.3rem;
-      padding-top: 2rem;
-      li {
-        
-        border-radius: 10px;
-        padding: 0.7rem 1.2rem;
-        width: 100%;
-        cursor: pointer;
-        transition: all 0.5s ease-in-out;
-        display: flex;
-        align-items: center;
-        gap: .8rem;
-        height: 45px;
-        .nav-select {
-          display: grid;
-          place-items: center;
-          color: var(--secundary);
-          svg {
-            width: 1.4rem;
-            height: 1.4rem;
-            color: var(--grey-light-3);
-            fill: transparent;
-            stroke-width:1.7;
-          }
-        }
 
-        span {
-          color: var(--grey-light-3);
-          font-size: clamp(5px, 8vw, 13px);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 160px;
-          font-weight: 400;
-        }
-        &:hover {
-          opacity: 1;
-          background-color: var(--secondary);
-        }
-      }
-    }
     .s-content-msg {
       display: none;
       .s-c-msg-header {
@@ -335,8 +428,8 @@ const logout = async () => {
         }
       }
       @include md {
-      display: block;
-  }
+        display: block;
+      }
     }
   }
   .sidebar-footer {
@@ -344,7 +437,7 @@ const logout = async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: .5rem 1.8rem .5rem 1.8rem;
+    padding: 0.5rem 1.8rem 0.5rem 1.8rem;
     .s-footer-logout {
       display: flex;
       align-items: center;
@@ -362,7 +455,7 @@ const logout = async () => {
         }
         svg {
           fill: transparent;
-          stroke-width:1.7;          
+          stroke-width: 1.7;
           width: 1.4rem;
           height: 1.4rem;
         }
@@ -379,7 +472,7 @@ const logout = async () => {
   @include md {
     display: flex;
     border-radius: 20px;
-    position:sticky;
+    position: sticky;
     height: calc(100vh - 4px);
   }
 }
@@ -388,7 +481,57 @@ const logout = async () => {
   background-color: var(--secondary);
 }
 
+.active {
+  background-color: rebeccapurple;
+}
+
 .sp-desact {
   opacity: 0.4;
 }
+
+ .s-content-menu {
+   flex: 1 1;
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 0.3rem;
+   padding-top: 2rem;
+   li {
+     border-radius: 10px;
+     padding: 0.7rem 1.2rem;
+     width: 100%;
+     cursor: pointer;
+     transition: all 0.5s ease-in-out;
+     display: flex;
+     align-items: center;
+     gap: 0.8rem;
+     height: 40px;
+     .nav-select {
+       display: grid;
+       place-items: center;
+       color: var(--secundary);
+       svg {
+         width: 1.4rem;
+         height: 1.4rem;
+         color: var(--grey-light-3);
+         fill: transparent;
+         stroke-width: 1.7;
+       }
+     }
+
+     span {
+       color: var(--grey-light-3);
+       font-size: clamp(5px, 8vw, 13px);
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;
+       max-width: 160px;
+       font-weight: 400;
+     }
+     &:hover {
+       opacity: 1;
+       background-color: var(--secondary);
+     }
+   }
+ }
 </style>

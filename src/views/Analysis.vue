@@ -14,14 +14,8 @@ import ComplianceGraf from "../components/ComplianceGraf.vue";
     <div class="global-h-button"></div>
   </div>
   <div class="c-global-c-analysis">
-    <div class="c-analysis-items">
-      <ComplianceGraf stage="analysisIn" mining="YUMPAG"/>
-      <ComplianceGraf stage="analysisIn" mining="UCHUCCHACUA"/>
-    </div>
-    <div>
-    <h2>Alimentación de Planta</h2>
-  </div>
-      <FeedingGraf stage="analysisOut" mining="YUMPAG" />    
+    <ComplianceGraf stage="analysisIn" mining="YUMPAG" />
+    <ComplianceGraf stage="analysisIn" mining="UCHUCCHACUA" />
   </div>
 </template>
 
@@ -33,12 +27,12 @@ import ComplianceGraf from "../components/ComplianceGraf.vue";
 
 .c-global-c-analysis {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   gap: 1rem;
   flex: 1 1;
   .c-analysis-items {
     display: flex;
-    flex: 1 1 300px;    
+    flex: 1 1 300px;
     gap: 1rem;
   }
 }

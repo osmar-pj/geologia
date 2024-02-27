@@ -169,7 +169,7 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getOreControl", data)
-       
+       console.log(data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },

@@ -181,7 +181,6 @@ const formatColumnValue = (value, fn, field, row) => {
           </div>
         </template>
       </Column>
-
       <template v-for="(header, index) in data.header || []">
         <Column
           v-if="

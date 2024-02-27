@@ -315,29 +315,30 @@ const formatColumnValue = (value, fn) => {
         <template #body="slotProps">
           <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
           <div v-else class="t-vehiculo">
-            
-  <div>
-    <template v-for="value in slotProps.data.dominio">
-      <img
-        v-if="value.includes('Polimetálico')"
-        :src="'src/assets/img/i-polimetalicoF.svg'"
-        alt=""
-      />
-      <img
-        v-else-if="value.includes('Carbonato')"
-        :src="'src/assets/img/i-carbonatoF.svg'"
-        alt=""
-      />
-      <img
-        v-else-if="value.includes('Alabandita')"
-        :src="'src/assets/img/i-alabanditaF.svg'"
-        alt=""
-      />
-      <!-- Aquí puedes agregar más condiciones para otros tipos de dominio -->
-    </template>
-  </div>
-
-
+            <template v-if="slotProps.data.dominio && slotProps.data.dominio.length > 0">
+              <template v-for="value in new Set(slotProps.data.dominio)">
+                <img
+                  v-if="value.includes('Polimetálico')"
+                  :src="'src/assets/img/i-polimetalicoF.svg'"
+                  alt=""
+                />
+                <img
+                  v-else-if="value.includes('Carbonato')"
+                  :src="'src/assets/img/i-carbonatoF.svg'"
+                  alt=""
+                />
+                <img
+                  v-else-if="value.includes('Alabandita')"
+                  :src="'src/assets/img/i-alabanditaF.svg'"
+                  alt=""
+                />
+              </template>
+            </template>
+            <template v-else>
+                <h5 class="t-complet">
+                  <img src="../assets/img/i-square.svg" alt="" />Comp..
+                </h5>
+              </template>
           </div>
         </template>
       </Column>
