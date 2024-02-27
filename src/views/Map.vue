@@ -248,7 +248,7 @@ const mergePilas = async () => {
     severity: "success",
     summary: "Union de pilas",
     detail: "Las leyes de las pilas son similares",
-    life: 3000,
+    life: 3000
   })
   const mining = pilasSelected.value.map((p) => p.pila.mining)[0]
   try {
@@ -261,7 +261,6 @@ const mergePilas = async () => {
     })
     const data = await response.json()
     if (data.status === true) {
-      console.log("Data", pilasSelected.value)
       console.log("Correcto")
       // const length = pilasSelected.value.length
       const tonh_total = pilasSelected.value.reduce(
@@ -345,7 +344,7 @@ const mergePilas = async () => {
 }
 
 socket.on("pilas", async (data) => {
-  console.log('SOCKET', data)
+  // console.log('SOCKET', data)
   const pilasFound = data.map((i) => {
     const pila = pilas.value.find((p) => p._id === i._id)
     return pila
@@ -674,20 +673,19 @@ const getDataCalendar = (data) => {
   openCalendar.value = true;
   dataModalCalendar.value = data;
 }
-// const zoom = (e) => {
-//   let delta = e.deltaY;
-//   let zoom = canvas.value.getZoom();
-//   zoom = zoom + delta / 200;
-//   if (zoom > 20) zoom = 20;
-//   if (zoom < 0.01) zoom = 0.01;
-//   canvas.value.setZoom(zoom);
-//   e.preventDefault();
-//   e.stopPropagation();
-// }
+const move = () => {
+  console.log("Zoom")
+  document.onkeydown = (e) => {
+    if (e.key === " ") {
+      console.log("Space")
+    }
+  }
+}
 </script>
 
 <template>
   <h1> Pilas: {{ pilas.length }} </h1>
+  <h1> Canvas: {{ canvas ? canvas.getObjects().length - 8 : 0 }} </h1>
   <Totals />
   <GeneratePDF />
   <CanchaModal
@@ -767,6 +765,7 @@ const getDataCalendar = (data) => {
       @click:cleared="empty"
       @mouse:moving="moving"
       @mouse:wheel=""
+      @mouse:move=""
     />
   </div>
 </template>

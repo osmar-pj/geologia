@@ -18,12 +18,13 @@ const store = createStore({
     dataFilterPlanta: [],
     dataFilterTable: [],
     dataSelectedFilters: [],
+    dataTripsPlanta: [],
     dataAnalysis: [],
     tajoList: [],
     pilaList: [],
     rumaTotal: [],
     userModal: null,
-    errior: null,
+    error: null,
     loading: false,
 
     panels: [],
@@ -37,57 +38,6 @@ const store = createStore({
     c2_nsr: 0,
     c2_ag_eq: 0,
   },
-  // getters: {
-  //   get_data_analysis: (state) => {
-  //     const dataAg = state.dataAnalysis.map((i) => {
-  //       return {
-  //         x: new Date(i.timestamp * 1000),
-  //         y: i.Ag,
-  //       }
-  //     })
-  //     const dataLey_prog = state.dataAnalysis.map((i) => {
-  //       return {
-  //         x: new Date(i.timestamp * 1000),
-  //         y: i.ley_prog,
-  //       }
-  //     })
-  //     const tonh = state.dataAnalysis.map((i) => {
-  //       return {
-  //         x: new Date(i.timestamp * 1000),
-  //         y: i.tonh,
-  //       }
-  //     })
-  //     const ton_prog = state.dataAnalysis.map((i) => {
-  //       return {
-  //         x: new Date(i.timestamp * 1000),
-  //         y: i.ton_prog,
-  //       }
-  //     })
-  //     const series = [
-  //       {
-  //         name: "Ley de Ag",
-  //         type: "line",
-  //         data: dataAg,
-  //       },
-  //       {
-  //         name: "Ley de Ag Prog.",
-  //         type: "line",
-  //         data: dataLey_prog,
-  //       },
-  //       {
-  //         name: "Tonelada",
-  //         type: "column",
-  //         data: tonh,
-  //       },
-  //       {
-  //         name: "Tonelada Prog",
-  //         type: "column",
-  //         data: ton_prog,
-  //       },
-  //     ]
-  //     return series
-  //   },
-  // },
   mutations: {
     authLogin(state, payload) {
       state.user = payload
@@ -160,7 +110,6 @@ const store = createStore({
           index: index
         }
       })
-      console.log(weights)
       state.panels = weights
     },
     // ADD to general list of pilas
@@ -173,6 +122,9 @@ const store = createStore({
     },
     lessDataRumaList(state, payload) {
       state.rumaTotal.slice(payload, 1)
+    },
+    getListPlanta(state, payload) {
+      state.dataTripsPlanta = payload
     }
   },
   actions: {

@@ -46,23 +46,14 @@ onMounted(() => {
     canvas.zoomToPoint({ x: e.e.offsetX, y: e.e.offsetY }, zoom)
     e.e.preventDefault()
     e.e.stopPropagation()
-    // let vpt = this.canvas.viewportTransform
-    // if (zoom < 400 / 1000) {
-    //   this.canvas.viewportTransform[4] = 200 - 1000 * zoom / 2
-    //   this.canvas.viewportTransform[5] = 200 - 1000 * zoom / 2
-    // } else {
-    //   if (vpt[4] >= 0) {
-    //     this.canvas.viewportTransform[4] = 0
-    //   } else if (vpt[4] < this.canvas.getWidth() - 1000 * zoom) {
-    //     this.canvas.viewportTransform[4] = this.canvas.getWidth() - 1000 * zoom
-    //   }
-    //   if (vpt[5] >= 0) {
-    //     this.canvas.viewportTransform[5] = 0
-    //   } else if (vpt[5] < this.canvas.getHeight() - 1000 * zoom) {
-    //     this.canvas.viewportTransform[5] = this.canvas.getHeight() - 1000 * zoom
-    //   }
-    // }
   })
+  canvas.on('mouse:move', (e) => {
+    if (e.e.buttons == 1) {
+      // move the canvas
+      canvas.relativePan(new fabric.Point(e.e.movementX, e.e.movementY))
+    }
+  })
+
   emit("canvas-created", canvas)
 })
 </script>

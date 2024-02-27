@@ -2,18 +2,19 @@
 import IPlus from "../icons/IPlus.vue";
 import { onMounted, ref, computed} from "vue"
 import { useStore } from "vuex"
-import IPila from "../prueba/IPila.vue";
+
 const store = useStore()
 
 onMounted(async () => {
-  // await store.dispatch("getWeights")
-  await store.dispatch("get_list")
+  await store.dispatch("pila_total")
+  await store.dispatch("get_listPlanta");
 })
 
 // const totalWeights = computed(() => store.state.weights)
-const oreControl = computed(() => store.state.dataList)
-
-
+const pilas = computed(() => store.state.rumaTotal)
+const todayAtZero = new Date().setHours(0, 0, 0, 0)
+const trips = computed(() => store.state.dataTripsPlanta);
+console.log(trips.value, pilas.value)
 </script>
 
 <template>
@@ -25,8 +26,7 @@ const oreControl = computed(() => store.state.dataList)
           <div class="w-w-cont-icon"> <img src="../assets/img/i-totalP.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <!-- <h1> {{ (totalWeights.stock.total).toFixed(2) }} </h1> -->
-              <h1> 488.82 </h1>
+              <h1> {{ pilas.reduce((a, b) => a + b.stock, 0).toFixed(1) }} </h1>
               <small>TMH</small>
             </div>
           </div>
@@ -41,8 +41,7 @@ const oreControl = computed(() => store.state.dataList)
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <!-- <h1> {{ totalWeights.ton.toFixed(2) }} </h1> -->
-              <h1> 463.44 </h1>
+              <h1> {{ pilas.filter(i => new Date(i.createdAt).getTime() >= todayAtZero).reduce((a, b) => a + b.stock, 0).toFixed(1) }} </h1>
               <small>TMH</small>
             </div>
           </div>
@@ -57,7 +56,7 @@ const oreControl = computed(() => store.state.dataList)
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>254.56</h1>
+              <h1> {{ trips.filter(i => new Date(i.date).getTime() >= todayAtZero).reduce((a, b) => a + b.tonh, 0).toFixed(1) }} </h1>
               <small>TMH</small>
             </div>
           </div>
@@ -75,7 +74,7 @@ const oreControl = computed(() => store.state.dataList)
           <div class="w-w-cont-content">
             <div class="w-w-value">
               <h1>1</h1>
-              <small>pila</small>
+              <small>viajes</small>
               <!-- <h1> {{ oreControl.data.length }} </h1> -->
               <!-- <small> {{ oreControl.data.length > 1 ? 'pilas' : 'pila' }} </small> -->
             </div>
@@ -97,7 +96,7 @@ const oreControl = computed(() => store.state.dataList)
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total2.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>5</h1>
+              <h1> {{ pilas.filter(i => (i.statusPila === "Analizando" || i.statusPila === "")).length }} </h1>
               <small>pilas</small>
             </div>
           </div>
@@ -118,7 +117,7 @@ const oreControl = computed(() => store.state.dataList)
           <div class="w-w-cont-icon"> <img src="../assets/img/i-total3.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1>3</h1>
+              <h1> {{ pilas.filter(i => i.statusPila === "waitBeginDespacho").length }} </h1>
               <small>pilas</small>
             </div>
           </div>
