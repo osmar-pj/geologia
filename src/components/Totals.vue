@@ -1,5 +1,5 @@
 <script setup>
-import IPlus from "../icons/IPlus.vue";
+import IPlus from "../icons/IPlus.vue"
 import { onMounted, ref, computed} from "vue"
 import { useStore } from "vuex"
 
@@ -7,14 +7,13 @@ const store = useStore()
 
 onMounted(async () => {
   await store.dispatch("pila_total")
-  await store.dispatch("get_listPlanta");
+  await store.dispatch("get_listPlanta")
 })
 
 // const totalWeights = computed(() => store.state.weights)
 const pilas = computed(() => store.state.rumaTotal)
 const todayAtZero = new Date().setHours(0, 0, 0, 0)
-const trips = computed(() => store.state.dataTripsPlanta);
-console.log(trips.value, pilas.value)
+const trips = computed(() => store.state.dataTripsPlanta)
 </script>
 
 <template>

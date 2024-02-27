@@ -29,6 +29,7 @@ const url = import.meta.env.VITE_API_URL
 
 const canvas = ref()
 const pilas = computed(() => store.state.rumaTotal)
+const config = computed(() => store.state.config)
 const ubication = ref("")
 const ubicationId = ref("")
 const ubicationType = ref("")
@@ -61,6 +62,7 @@ const scaleYOfPila = 5
 const handleCreated = async (fabricCanvas) => {
   console.log("Canvas Created")
   await store.dispatch("pila_total")
+  await store.dispatch("get_config")
   canvas.value = fabricCanvas
   await createSVGRect()
   const imgMap = document.getElementById("map")
