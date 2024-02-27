@@ -75,7 +75,7 @@ export const createArray = (nro, word) => {
   return arr;
 };
 
-export const calculus = (pilas) => {
+export const calculus = (pilas, vp_ag, vp_pb, vp_zn) => {
   const totalWeight = pilas
     .map((pila) => pila.tonh)
     .reduce((acc, curr) => acc + curr, 0);
@@ -94,11 +94,6 @@ export const calculus = (pilas) => {
   const tmh_zn = pilas
     .map((pila) => pila.tonh * pila.ley_zn)
     .reduce((acc, curr) => acc + curr, 0);
-  const pointValues = {
-    vp_ag: 13,
-    vp_pb: 14.69,
-    vp_zn: 13.76,
-  };
   const pilasCalculate = {
     ley_ag: tmh_ag / totalWeight,
     ley_pb: tmh_pb / totalWeight,
@@ -128,10 +123,10 @@ export const calculus = (pilas) => {
     }
   };
   const nsr =
-    ag_rec(pilasCalculate.ley_ag) * pointValues.vp_ag * pilasCalculate.ley_ag +
-    pb_rec(pilasCalculate.ley_pb) * pointValues.vp_pb * pilasCalculate.ley_pb +
-    zn_rec(pilasCalculate.ley_zn) * pointValues.vp_zn * pilasCalculate.ley_zn;
-  const ag_eq = nsr / (pointValues.vp_ag * ag_rec(pilasCalculate.ley_ag));
+    ag_rec(pilasCalculate.ley_ag) * vp_ag * pilasCalculate.ley_ag +
+    pb_rec(pilasCalculate.ley_pb) * vp_pb * pilasCalculate.ley_pb +
+    zn_rec(pilasCalculate.ley_zn) * vp_zn * pilasCalculate.ley_zn;
+  const ag_eq = nsr / (vp_ag * ag_rec(pilasCalculate.ley_ag));
   return {
     stock: totalWeight.toFixed(1),
     nsr: nsr.toFixed(2),

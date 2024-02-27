@@ -26,17 +26,8 @@ const store = createStore({
     userModal: null,
     error: null,
     loading: false,
-
+    config: [],
     panels: [],
-    colquicocha_stock: 0,
-    cc_nsr: 0,
-    cc_ag_eq: 0,
-    cancha1_stock: 0,
-    c1_nsr: 0,
-    c1_ag_eq: 0,
-    cancha2_stock: 0,
-    c2_nsr: 0,
-    c2_ag_eq: 0,
   },
   mutations: {
     authLogin(state, payload) {
@@ -106,7 +97,7 @@ const store = createStore({
       const weights = ubications.map((u, index) => {
         return {
           ubication: u,
-          total: calculus(payload.filter(i => (i.ubication === u && (i.statusPila === "waitBeginDespacho" || i.statusPila === "waitDateAbastecimiento")))),
+          total: calculus(payload.filter(i => (i.ubication === u && (i.statusPila === "waitBeginDespacho" || i.statusPila === "waitDateAbastecimiento"))), state.config.vp_ag, state.config.vp_pb, state.config.vp_zn),
           index: index
         }
       })
@@ -151,11 +142,25 @@ const store = createStore({
       } catch {
         commit("loading", false)
       }
-      
     },
     auth_logout: ({ commit }) => {
       localStorage.removeItem("user")
       commit("authLogout")
+    },
+    get_config: async ({ commit }) => {
+      try {
+        const response = await fetch(`${url}/config`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": true,
+          },
+        })
+        const data = await response.json()
+        console.log(data)
+        localStorage.setItem("config", JSON.stringify(data[0]))
+        commit("config", data[0])
+      } catch (error) {commit("loading", false)}
     },
     get_listOControl: async ({ commit }) => {
       try {
