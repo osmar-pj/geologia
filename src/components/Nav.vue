@@ -204,25 +204,27 @@ const logout = async () => {
 
       <ul class="s-content-menu">
         <li v-for="menuItem in menuItems" :key="menuItem.name">
-          <router-link v-if="!menuItem.items" :to="menuItem.route">
-            <div class="nav-select">
-              <component :is="menuItem.icon" />
-            </div>
+          <router-link
+            v-if="!menuItem.items"
+            :to="menuItem.route"
+            class="nav-select"
+          >
+            <component :is="menuItem.icon" />
             <span>{{ menuItem.label }}</span>
           </router-link>
-          <div v-else>
+          <template v-else>
             <div class="nav-select">
               <component :is="menuItem.icon" />
+              <span>{{ menuItem.label }}</span>
             </div>
-            <span>{{ menuItem.label }}</span>
-            <ul>
-              <li v-for="subItem in menuItem.items" :key="subItem.name">
+            <div>
+              <template v-for="subItem in menuItem.items" :key="subItem.name">
                 <router-link :to="subItem.route">
                   {{ subItem.label }}
                 </router-link>
-              </li>
-            </ul>
-          </div>
+              </template>
+            </div>
+          </template>
         </li>
       </ul>
 
@@ -523,10 +525,26 @@ const logout = async () => {
   }
 }
 
+.nav-select {
+  display: grid;
+  place-items: center;
+  color: var(--secundary);
+
+  svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--grey-light-3);
+    fill: transparent;
+    stroke-width: 1.7;
+  }
+}
 .sp-acti {
   background-color: var(--secondary);
 }
-
+.router-link-active,
+.router-link-exact-active {
+  background-color: var(--secondary);
+}
 .active {
   background-color: rebeccapurple;
 }
@@ -552,17 +570,9 @@ const logout = async () => {
     align-items: center;
     gap: 0.8rem;
     min-height: 40px;
-    .nav-select {
-      display: grid;
-      place-items: center;
-      color: var(--secundary);
-      svg {
-        width: 1.4rem;
-        height: 1.4rem;
-        color: var(--grey-light-3);
-        fill: transparent;
-        stroke-width: 1.7;
-      }
+    a {
+      display: flex;
+      gap: 0.8rem;
     }
 
     span {

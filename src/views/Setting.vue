@@ -1,6 +1,8 @@
 <script setup>
 import ConfigGeneral from "../components/ConfigGeneral.vue";
 import ConfigPlanta from "../components/ConfigPlanta.vue";
+import ConfigTajo from "../components/ConfigTajo.vue";
+
 </script>
 
 <template>
@@ -23,9 +25,15 @@ import ConfigPlanta from "../components/ConfigPlanta.vue";
       <TabPanel header="Editar Perfil">
         <p class="m-0">Sed ut perspiciatis</p>
       </TabPanel>
-      <TabPanel header="Data Planta">
+      <TabPanel header="Programación Cancha">
         <ConfigPlanta />
-      </TabPanel>     
+      </TabPanel>    
+      <TabPanel header="Programación Planta">
+        <ConfigPlanta />
+      </TabPanel>    
+      <TabPanel header="Tajo">
+        <ConfigTajo/>
+      </TabPanel>       
     </TabView>
   </div>
 </template>

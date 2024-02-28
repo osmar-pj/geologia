@@ -47,7 +47,10 @@ const updateConfig = async () => {
 </script>
 
 <template>
-  <div class="container-setting">
+  <div class="container-setting" :style="{
+          userSelect: buttonClicked ? 'none' : 'auto',
+          pointerEvents: buttonClicked ? 'none' : 'auto',
+        }">
     <div class="c-setting-body" v-if="loading">
       <template>
         <span class="loader"></span>
@@ -173,6 +176,7 @@ const updateConfig = async () => {
   flex-direction: column;
   gap: 2.5rem;
   width: 100%;
+  flex: 1 1;
   .c-setting-body {
     display: flex;
     flex-direction: column;
@@ -180,6 +184,7 @@ const updateConfig = async () => {
     // align-items: center;
     gap: 2.5rem;
     flex: 1 1;
+    overflow: auto;
     .setting-item {
       // max-width: 1000px;
       display: flex;

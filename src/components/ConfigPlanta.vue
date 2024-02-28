@@ -1,12 +1,15 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
-
+import { useStore } from "vuex";
 import readXlsxFile from "read-excel-file";
+import { formatFixed } from "../libs/utils";
+
 const url = import.meta.env.VITE_API_URL;
+const store = useStore();
 
 const loading = ref(true);
-const historial = ref([]);
-const headers = ref([]);
+const dataPlanta = ref([]);
+
 const showError = ref(false);
 
 const hideError = () => {
@@ -17,10 +20,21 @@ const handleFileChange = (event) => {
   readXlsxFile(file)
     .then((rows) => {
       if (rows.length > 0) {
-        // Guardar los datos del archivo en la variable historial
-        historial.value = rows.slice(1); // Excluir la primera fila (encabezados)
-        // Guardar los encabezados en la variable headers
-        headers.value = rows[0];
+        // Obtener los encabezados del archivo Excel
+        const headers = rows[0];
+
+        // Mapear cada fila del archivo a un objeto con las claves correspondientes
+        const data = rows.slice(1).map((row) => {
+          const rowData = {};
+          headers.forEach((header, index) => {
+            rowData[header] = row[index];
+          });
+          return rowData;
+        });
+
+        // Guardar los datos en la variable dataPlanta
+        dataPlanta.value = data;
+        console.log(dataPlanta.value);
       } else {
         console.error("El archivo Excel está vacío.");
       }
@@ -30,24 +44,29 @@ const handleFileChange = (event) => {
     });
 };
 
-const data = computed(() => store.state.config);
 const buttonClicked = ref(false);
 
+
+
 const uploadFile = async () => {
-  console.log(historial);
   try {
     buttonClicked.value = true;
-
+    const updatedTravel = {
+      data: dataPlanta.value,
+      user: store.state.user.name,
+      
+    };
+    console.log(updatedTravel);
     const response = await fetch(`${url}/program`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(historial.value),
+      body: JSON.stringify(updatedTravel),
     });
 
     const result = await response.json();
-
+    console.log(result);
     if (result.status === true) {
       console.log("Correcto");
       buttonClicked.value = false;
@@ -60,13 +79,57 @@ const uploadFile = async () => {
     buttonClicked.value = false;
   }
 };
+
+const formatDateExcel = (dateString) => {
+  const dateObject = new Date(dateString); // Convertir la cadena de fecha a un objeto Date
+  if (isNaN(dateObject.getTime())) {
+    console.error("La cadena de fecha no es válida:", dateString);
+    return ""; // Devolver una cadena vacía si la fecha no es válida
+  }
+
+  const isoString = dateObject.toISOString(); // Convertir la fecha a formato ISO 8601
+
+  // Obtener el año, mes y día de la cadena ISO 8601
+  const year = isoString.slice(0, 4);
+  const month = isoString.slice(5, 7);
+  const day = isoString.slice(8, 10);
+
+  // Obtener el nombre abreviado del mes
+  const monthNames = [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Oct",
+    "Nov",
+    "Dic",
+  ];
+  const monthIndex = parseInt(month, 10) - 1; // Restar 1 porque los meses se indexan desde 0 en JavaScript
+  const monthAbbr = monthNames[monthIndex];
+
+  // Formatear la fecha como "MMM DD, YYYY"
+  const formattedDate = `${monthAbbr} ${parseInt(day, 10)}, ${year}`;
+
+  return formattedDate;
+};
 </script>
 
 <template>
-  <div class="container-setting">
+  <div
+    class="container-setting"
+    :style="{
+      userSelect: buttonClicked ? 'none' : 'auto',
+      pointerEvents: buttonClicked ? 'none' : 'auto',
+    }"
+  >
     <div class="c-setting-body">
       <div class="file-upload-form">
-        <label for="file" class="file-upload-label">
+        <label for="filePlanta" class="file-upload-label">
           <div class="file-upload-design">
             <svg viewBox="0 0 640 512" height="1em">
               <path
@@ -75,22 +138,32 @@ const uploadFile = async () => {
             </svg>
             <span class="browse-button">Subir archivo</span>
           </div>
-          <input id="file" type="file" @change="handleFileChange" />
+          <input id="filePlanta" type="file" @change="handleFileChange" />
         </label>
       </div>
       <span class="label-error" v-if="showError">*Documento requerido</span>
-      <div class="config-content-table N-datatable" v-if="historial.length">
+     
+      <div class="config-content-table N-datatable" v-if="dataPlanta.length">
         <table>
           <thead>
             <tr>
-              <th v-for="header in headers" :key="header">{{ header }}</th>
+              <th v-for="(value, key) in dataPlanta[0]" :key="key">
+                {{ key }}
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in historial" :key="index">
-              <td v-for="value in row" :key="value">
-                <!-- Aplicar toFixed(2) si el valor es numérico -->
-                {{ typeof value === "number" ? value.toFixed(2) : value }}
+            <tr v-for="(row, index) in dataPlanta" :key="index">
+              <td v-for="(value, key) in row" :key="key">
+                <template v-if="key === 'date'">
+                  {{ formatDateExcel(value) }}
+                </template>
+                <template v-else-if="key === 'ton_prog'">
+                  {{ formatFixed(value) }} <small>TMH</small>
+                </template>
+                <template v-else>
+                  {{ typeof value === "number" ? value.toFixed(2) : value }}
+                </template>
               </td>
             </tr>
           </tbody>

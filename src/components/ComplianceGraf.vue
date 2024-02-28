@@ -29,7 +29,6 @@ onMounted(async () => {
 });
 
 const handleGraphic = async () => {
- 
   try {
     buttonClicked.value = true;
     const response = await fetch(
@@ -45,14 +44,14 @@ const handleGraphic = async () => {
     );
 
     const result = await response.json();
-   
+
     if (result.status === true) {
       buttonClicked.value = false;
     } else {
       buttonClicked.value = false;
     }
     analysisData.value = result.meta;
-    console.log(analysisData.value)
+    console.log(analysisData.value);
     graficData.value = [
       {
         name: "Ley Ag Ejec.",
@@ -306,7 +305,6 @@ const chartOptions = {
       <div class="g-d-body-totales">
         <div class="g-b-totals-item">
           <div class="circular-graf">
-            <!-- <span class="donut-title"></span> -->
             <span class="donut-total">
               {{
                 analysisData && analysisData.ton.percent_ejec
@@ -364,55 +362,135 @@ const chartOptions = {
         </div>
         <div class="g-totals-item-bar">
           <div class="bar-container">
-            <span class="bar-title">5.69 <small>Ag %</small> </span>           
+            <span class="bar-title"
+              >{{
+                formatFixed(
+                  analysisData && analysisData.ley_ag.total_ley_prog
+                    ? analysisData.ley_ag.total_ley_prog
+                    : 0
+                )
+              }}
+              <small>Ag %</small>
+            </span>
             <div
               class="bar-ley L-ag"
               :style="{
-                '--percentage-total': 89,
-                '--percentage-prog': 97,
+                '--percentage-total':
+                  analysisData && analysisData.ley_ag.percent_ejec
+                    ? analysisData.ley_ag.percent_ejec.toFixed(2)
+                    : 0,
+                '--percentage-prog':
+                  analysisData && analysisData.ley_ag.percent_prog
+                    ? analysisData.ley_ag.percent_prog.toFixed(2)
+                    : 0,
                 '--background': 'rgb(255, 69, 96)',
               }"
-            >
-            
-            </div>
+            ></div>
           </div>
           <div class="bar-container">
-            <span class="bar-title">Pb %</span>
+            <span class="bar-title"
+              >{{
+                formatFixed(
+                  analysisData && analysisData.ley_fe.total_ley_prog
+                    ? analysisData.ley_fe.total_ley_prog
+                    : 0
+                )
+              }}
+              <small>Fe %</small>
+            </span>
             <div
               class="bar-ley L-ag"
               :style="{
-                '--percentage-total': 76,
-                '--percentage-prog': 95,
-                '--background': 'rgb(119, 93, 208)',
-              }"
-            >              
-            </div>
-          </div>
-          <div class="bar-container">
-            <span class="bar-title">Cu %</span>
-            <div
-              class="bar-ley L-ag"
-              :style="{
-                '--percentage-total': 34,
-                '--percentage-prog': 98,
+                '--percentage-total':
+                  analysisData && analysisData.ley_fe.percent_ejec
+                    ? analysisData.ley_fe.percent_ejec.toFixed(2)
+                    : 0,
+                '--percentage-prog':
+                  analysisData && analysisData.ley_fe.percent_prog
+                    ? analysisData.ley_fe.percent_prog.toFixed(2)
+                    : 0,
                 '--background': 'rgba(27, 153, 139, 0.85)',
               }"
-            >
-              
-            </div>
+            ></div>
           </div>
           <div class="bar-container">
-            <span class="bar-title">Zn %</span>
+            <span class="bar-title"
+              >{{
+                formatFixed(
+                  analysisData && analysisData.ley_mn.total_ley_prog
+                    ? analysisData.ley_mn.total_ley_prog
+                    : 0
+                )
+              }}
+              <small>Mn %</small>
+            </span>
             <div
               class="bar-ley L-ag"
               :style="{
-                '--percentage-total': 20,
-                '--percentage-prog': 98,
+                '--percentage-total':
+                  analysisData && analysisData.ley_mn.percent_ejec
+                    ? analysisData.ley_mn.percent_ejec.toFixed(2)
+                    : 0,
+                '--percentage-prog':
+                  analysisData && analysisData.ley_mn.percent_prog
+                    ? analysisData.ley_mn.percent_prog.toFixed(2)
+                    : 0,
+                '--background': 'rgba(27, 153, 139, 0.85)',
+              }"
+            ></div>
+          </div>
+          <div class="bar-container">
+            <span class="bar-title"
+              >{{
+                formatFixed(
+                  analysisData && analysisData.ley_pb.total_ley_prog
+                    ? analysisData.ley_pb.total_ley_prog
+                    : 0
+                )
+              }}
+              <small>Pb %</small>
+            </span>
+            <div
+              class="bar-ley L-ag"
+              :style="{
+                '--percentage-total':
+                  analysisData && analysisData.ley_pb.percent_ejec
+                    ? analysisData.ley_pb.percent_ejec.toFixed(2)
+                    : 0,
+                '--percentage-prog':
+                  analysisData && analysisData.ley_pb.percent_prog
+                    ? analysisData.ley_pb.percent_prog.toFixed(2)
+                    : 0,
+                '--background': 'rgb(119, 93, 208)',
+              }"
+            ></div>
+          </div>
+
+          <div class="bar-container">
+            <span class="bar-title"
+              >{{
+                formatFixed(
+                  analysisData && analysisData.ley_zn.total_ley_prog
+                    ? analysisData.ley_zn.total_ley_prog
+                    : 0
+                )
+              }}
+              <small>Zn %</small>
+            </span>
+            <div
+              class="bar-ley L-ag"
+              :style="{
+                '--percentage-total':
+                  analysisData && analysisData.ley_zn.percent_ejec
+                    ? analysisData.ley_zn.percent_ejec.toFixed(2)
+                    : 0,
+                '--percentage-prog':
+                  analysisData && analysisData.ley_zn.percent_prog
+                    ? analysisData.ley_zn.percent_prog.toFixed(2)
+                    : 0,
                 '--background': 'rgba(254, 176, 25, 0.85)',
               }"
-            >
-              
-            </div>
+            ></div>
           </div>
         </div>
       </div>
@@ -501,22 +579,21 @@ const chartOptions = {
     flex: 1 1;
     display: flex;
     align-items: stretch;
-    .g-d-body-bar{
+    .g-d-body-bar {
       flex: 1 1;
       display: flex;
-    
     }
   }
-  .g-d-body-totales{
+  .g-d-body-totales {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
     gap: 1rem;
-    .g-totals-item-bar{
+    .g-totals-item-bar {
       display: flex;
       flex-direction: column;
-      gap: .5rem;
+      gap: 0.5rem;
     }
   }
 }
@@ -605,7 +682,7 @@ const chartOptions = {
   transform-origin: bottom;
   z-index: 3;
   background-color: transparent; /* Ajusta el color según sea necesario */
-  &::after{
+  &::after {
     content: "";
     width: 1px;
     height: 25px;
@@ -671,7 +748,7 @@ const chartOptions = {
 .bar-ley {
   --percentage-total: 0;
   --percentage-prog: 0;
-  --background:#000;
+  --background: #000;
   position: relative;
   margin: 0 auto;
   width: 130px;
