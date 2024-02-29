@@ -38,7 +38,7 @@
       </g>
       <g>
       <g transform="matrix(1.00001 0 0 1 1844.59 1921.14)">
-        <text x="-1822.28" y="-1891.75"  fill="#6E3303" font-weight="normal" font-size="9.01px" font-family="Lilita One"> {{ stock }} </text>
+        <text x="-1822.28" y="-1891.75"  fill="#6E3303" font-weight="normal" font-size="9.01px" font-family="Lilita One"> {{ stock.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} </text>
       </g>
       </g>
     </g>

@@ -13,7 +13,6 @@ const store = useStore();
 const socket = inject("socket");
 const pila$ = new Subject();
 const pilas = computed(() => store.state.pilaList)
-console.log(pilas.value)
 const dt = ref();
 const exportCSV = () => {
   dt.value.exportCSV();

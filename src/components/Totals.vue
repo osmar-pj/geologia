@@ -1,5 +1,4 @@
 <script setup>
-import IPlus from "../icons/IPlus.vue"
 import { onMounted, ref, computed} from "vue"
 import { useStore } from "vuex"
 
@@ -25,7 +24,7 @@ const trips = computed(() => store.state.dataTripsPlanta)
           <div class="w-w-cont-icon"> <img src="../assets/img/i-totalP.svg" alt=""></div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1> {{ pilas.reduce((a, b) => a + b.stock, 0).toFixed(1) }} </h1>
+              <h1> {{ pilas.reduce((a, b) => a + b.stock, 0).toFixed(1).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} </h1>
               <small>TMH</small>
             </div>
           </div>

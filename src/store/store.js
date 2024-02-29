@@ -233,7 +233,6 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        console.log(data)
         commit("getPila", data)
         commit("loading", false)
       } catch (error) { commit("loading", false)}
@@ -307,7 +306,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        commit("getListPlanta", data)
+        commit("getListPlanta", data.data)
       } catch (error) {commit("loading", false)}
     }
   },
