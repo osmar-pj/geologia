@@ -31,7 +31,6 @@ const url = import.meta.env.VITE_API_URL
 
 const canvas = ref()
 const pilas = computed(() => store.state.rumaTotal)
-const config = computed(() => store.state.config)
 const ubication = ref("")
 const ubicationId = ref("")
 const ubicationType = ref("")

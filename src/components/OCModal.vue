@@ -79,8 +79,8 @@ onMounted(async () => {
 });
 
 const dataPila = computed(() => {
-  return store.state.pilaList;
-});
+  return store.state.pilaList.pilasToOreControl;
+})
 
 const hideError = () => {
   showError.value = false;
@@ -115,7 +115,6 @@ const updateTravel = async () => {
       Object.values(item).some((value) => value === "" || value === null)
     )
   ) {
-    console.log(dataToUpdate.value);
     console.log("Los datos a actualizar están vacíos");
   } else {
     try {
