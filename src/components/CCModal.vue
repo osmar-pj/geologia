@@ -1,6 +1,6 @@
 <script setup>
 import Papa from "papaparse";
-import { ref, watch } from "vue";
+import { ref, watch, defineProps, defineEmits } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
 import Edit from "../icons/Edit.vue";
@@ -388,11 +388,7 @@ const isRelevantColumn = (key) => {
                         <InputText v-else v-model="data[field]" />
                       </template>
                       <template #footer="{ footerData }">
-                        <span
-                          
-                        >
-                          {{ footerData[column.field] }}
-                        </span>
+                        {{ calculateColumnAverage(key) }}
                       </template>
                     </Column>
                   </template>

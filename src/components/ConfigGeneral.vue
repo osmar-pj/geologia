@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
+import { formatDate } from "../libs/utils";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -21,7 +22,8 @@ const showSuccessM = ref(false);
 const updateConfig = async () => {
   try {
     buttonClicked.value = true;
-    console.log();
+
+    data.value.user = store.state.user.name;
 
     const response = await fetch(`${url}/config`, {
       method: "PUT",
@@ -35,7 +37,7 @@ const updateConfig = async () => {
 
     if (result.status === true) {
       console.log("Correcto");
-      
+
       showSuccessM.value = true;
       setTimeout(() => {
         showSuccessM.value = false;
@@ -170,6 +172,15 @@ const updateConfig = async () => {
       </div>
     </div>
     <div class="c-setting-footer">
+      <div>
+        <h4>
+          Última actualización:
+          <strong>{{ formatDate(data.updatedAt) }} </strong>
+        </h4>
+        <h5>
+          Hecho por: <strong>{{ data.user }}</strong>
+        </h5>
+      </div>
       <button class="btn-success" type="submit" @click.prevent="updateConfig">
         <template v-if="buttonClicked">
           <span class="loader"></span>Procesando...
@@ -247,8 +258,9 @@ const updateConfig = async () => {
   }
   .c-setting-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 0.5rem;
+    height: 40px;
     button {
       width: 150px;
     }

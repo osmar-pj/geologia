@@ -687,7 +687,7 @@ const move = (e) => {
 <template>
   <h1> Pilas: {{ pilas.length }} </h1>
   <h1> Canvas: {{ canvas ? canvas.getObjects().length - 8 : 0 }} </h1>
-  <Totals />
+  <!-- <Totals /> -->
   <GeneratePDF />
   <CanchaModal
   v-if="openCalendar"

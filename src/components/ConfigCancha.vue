@@ -2,14 +2,15 @@
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import readXlsxFile from "read-excel-file";
-import { formatFixed } from "../libs/utils";
+import { formatFixed, formatDateAbas, formatHour } from "../libs/utils";
 import Success from "../components/Success.vue";
+import ICalendar from "../icons/ICalendar.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 
 const loading = ref(true);
-const dataPlanta = ref([]);
+const dataCancha = ref([]);
 
 const showSuccessM = ref(false);
 const showError = ref(false);
@@ -17,6 +18,12 @@ const showError = ref(false);
 const hideError = () => {
   showError.value = false;
 };
+
+onMounted(async () => {
+  await store.dispatch("config_planta");
+});
+
+const data = computed(() => store.state.configPlanta);
 
 const handleFileChange = (event) => {
   const file = event.target.files[0];
@@ -35,9 +42,9 @@ const handleFileChange = (event) => {
           return rowData;
         });
 
-        // Guardar los datos en la variable dataPlanta
-        dataPlanta.value = data;
-        console.log(dataPlanta.value);
+        // Guardar los datos en la variable dataCancha
+        dataCancha.value = data;
+        console.log(dataCancha.value);
       } else {
         console.error("El archivo Excel está vacío.");
       }
@@ -53,12 +60,11 @@ const uploadFile = async () => {
   try {
     buttonClicked.value = true;
     const updatedTravel = {
-      data: dataPlanta.value,
+      data: dataCancha.value,
       user: store.state.user.name,
-      
     };
     console.log(updatedTravel);
-    const response = await fetch(`${url}/program/planta`, {
+    const response = await fetch(`${url}/program`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +78,7 @@ const uploadFile = async () => {
       console.log("Correcto");
       showSuccessM.value = true;
       setTimeout(() => {
-        dataPlanta.value = [];
+        dataCancha.value = [];
         showSuccessM.value = false;
         buttonClicked.value = false;
       }, 2500);
@@ -133,9 +139,100 @@ const formatDateExcel = (dateString) => {
       pointerEvents: buttonClicked ? 'none' : 'auto',
     }"
   >
+    <div class="c-setting-history">
+      <div
+        class="s-history-item"
+        v-for="(item, index) in data.data"
+        :key="index"
+      >
+        <div class="s-h-item-body">
+          <span>{{ item.month }}</span>
+          <h4><ICalendar /> {{ formatDateAbas(item.date) }}</h4>
+          <h4>
+            <img src="../assets/img/i-time.svg" alt="" />
+            {{ formatHour(item.date) }}
+          </h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5>
+            <strong>{{ item.user }}</strong>
+          </h5>
+        </div>
+      </div>
+      <div class="s-history-item histoy-desact">
+        <div class="s-h-item-body">
+          <span>ABRIL</span>
+          <h4><ICalendar />--</h4>
+          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5><strong>--</strong></h5>
+        </div>
+      </div>
+      <div class="s-history-item histoy-desact">
+        <div class="s-h-item-body">
+          <span>MAYO</span>
+          <h4><ICalendar />--</h4>
+          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5><strong>--</strong></h5>
+        </div>
+      </div>
+      <div class="s-history-item histoy-desact">
+        <div class="s-h-item-body">
+          <span>JUNIO</span>
+          <h4><ICalendar />--</h4>
+          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5><strong>--</strong></h5>
+        </div>
+      </div>
+      <div class="s-history-item histoy-desact">
+        <div class="s-h-item-body">
+          <span>JULIO</span>
+          <h4><ICalendar />--</h4>
+          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5><strong>--</strong></h5>
+        </div>
+      </div>
+      <div class="s-history-item histoy-desact">
+        <div class="s-h-item-body">
+          <span>AGOSTO</span>
+          <h4><ICalendar />--</h4>
+          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5><strong>--</strong></h5>
+        </div>
+      </div>
+      <div class="s-history-item histoy-desact">
+        <div class="s-h-item-body">
+          <span>SETIEMBRE</span>
+          <h4><ICalendar />--</h4>
+          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5><strong>--</strong></h5>
+        </div>
+      </div>
+      <div class="s-history-item histoy-desact">
+        <div class="s-h-item-body">
+          <span>OCTUBRE</span>
+          <h4><ICalendar />--</h4>
+          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
+        </div>
+        <div class="s-h-item-footer">
+          <h5><strong>--</strong></h5>
+        </div>
+      </div>
+    </div>
     <div class="c-setting-body">
       <div class="file-upload-form">
-        <label for="filePlanta" class="file-upload-label">
+        <label for="fileCancha" class="file-upload-label">
           <div class="file-upload-design">
             <svg viewBox="0 0 640 512" height="1em">
               <path
@@ -144,22 +241,22 @@ const formatDateExcel = (dateString) => {
             </svg>
             <span class="browse-button">Subir archivo</span>
           </div>
-          <input id="filePlanta" type="file" @change="handleFileChange" />
+          <input id="fileCancha" type="file" @change="handleFileChange" />
         </label>
       </div>
       <span class="label-error" v-if="showError">*Documento requerido</span>
-     
-      <div class="config-content-table N-datatable" v-if="dataPlanta.length">
+
+      <div class="config-content-table N-datatable" v-if="dataCancha.length">
         <table>
           <thead>
             <tr>
-              <th v-for="(value, key) in dataPlanta[0]" :key="key">
+              <th v-for="(value, key) in dataCancha[0]" :key="key">
                 {{ key }}
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in dataPlanta" :key="index">
+            <tr v-for="(row, index) in dataCancha" :key="index">
               <td v-for="(value, key) in row" :key="key">
                 <template v-if="key === 'date'">
                   {{ formatDateExcel(value) }}
@@ -176,6 +273,7 @@ const formatDateExcel = (dateString) => {
         </table>
       </div>
     </div>
+
     <div class="c-setting-footer">
       <button class="btn-success" type="submit" @click.prevent="uploadFile">
         <template v-if="buttonClicked">
@@ -198,5 +296,68 @@ const formatDateExcel = (dateString) => {
 .config-content-table {
   overflow: auto;
   height: 400px !important;
+}
+.c-setting-history {
+  display: flex;
+
+  gap: 1rem;
+  .s-history-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--white);
+    border: 1px solid var(--grey-light-2);
+    border-radius: 12px;
+    min-width: 130px;
+    gap: 0.3rem;
+
+    .s-h-item-body {
+      width: 100%;
+      padding: 1.3rem 1.2rem 0.5rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      span {
+        font-size: clamp(3px, 5vw, 14px);
+        line-height: 0.7rem;
+        font-weight: 600;
+        padding-bottom: 0.2rem;
+      }
+      h4 {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--grey-2);
+        font-size: clamp(5px, 8vw, 11.5px);
+        line-height: 0.8rem;
+        img,
+        svg {
+          width: 0.8rem;
+          height: 0.8rem;
+        }
+      }
+    }
+    .s-h-item-footer {
+      width: 100%;
+      padding: 0.5rem 1.2rem;
+      border-top: 1px solid var(--grey-light-2);
+      h5 {
+        color: var(--grey-2);
+        font-size: clamp(5px, 8vw, 10px);
+        line-height: 0.8rem;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        -webkit-line-clamp: 2;
+        text-overflow: ellipsis;
+        white-space: normal;
+      }
+    }
+  }
+}
+
+.histoy-desact{
+  opacity: .4;
 }
 </style>

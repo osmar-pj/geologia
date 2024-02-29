@@ -22,6 +22,7 @@ const store = createStore({
     dataSelectedFilters: [],
     dataAnalysis: [],
     tajoList: [],
+    configPlanta: [],
     pilaList: [],
     rumaTotal: [],
     userModal: null,
@@ -51,6 +52,10 @@ const store = createStore({
     },
     getTajo(state, payload) {
       state.tajoList = payload
+    },
+
+    getConfigPlanta(state, payload) {
+      state.configPlanta = payload
     },
     getRumaTotal(state, payload) {
       state.rumaTotal = payload
@@ -315,9 +320,10 @@ const store = createStore({
         commit("getDataAnalysis", data)
       } catch (error) {commit("loading", false)}
     },
-    get_listPlanta: async ({ commit }) => {
+    config_planta: async ({ commit }) => {
       try {
-        const response = await fetch(`${url}/planta`, {
+        commit("loading", true)
+        const response = await fetch(`${url}/program/planta`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -325,9 +331,12 @@ const store = createStore({
           },
         })
         const data = await response.json()
-        commit("getListPlanta", data.data)
+        commit("getConfigPlanta", data)
+        console.log(data);
+        commit("loading", false)
       } catch (error) {commit("loading", false)}
-    }
+    },
+    
   },
   modules: {},
 })

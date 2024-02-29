@@ -26,7 +26,7 @@ const initialValues = computed(() => {
   return props.accion
     ? {
        
-        tajo: props.data.name || "",
+        name: props.data.name || "",
         level: props.data.level || "",
         veta: props.data.veta || "",
         mineral: props.data.mineral || "",
@@ -36,7 +36,7 @@ const initialValues = computed(() => {
       }
     : {
        
-        tajo: "",
+        name: "",
         level: "",
         veta: "",
         mineral: " ",
@@ -195,7 +195,7 @@ const createTajo = async () => {
               <input
                 type="text"
                 placeholder="Ej. TJ1234-5"
-                v-model="formData.tajo"
+                v-model="formData.name"
               />
             </div>
             <span class="label-error" v-if="showError">*Campo requerido</span>

@@ -2123,6 +2123,7 @@ input[type="checkbox"] {
   display: flex;
   justify-content: center;
   gap: 5rem;
+  flex: 1 1;
   .p-tabview-nav-container{
     .p-tabview-nav {
       display: flex;

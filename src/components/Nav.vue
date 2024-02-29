@@ -12,14 +12,9 @@ import ISetting from "../icons/ISetting.vue";
 
 const router = useRouter();
 const route = useRoute();
-const isRouteActive = (routePath) => {
-  // console.log("Ruta actual:", route.path);
-  // console.log("Ruta comparada:", routePath);
-  return route.path === routePath;
-};
 
 const store = useStore();
-const active = ref("/");
+
 const menuItems = [
   {
     name: "/",
@@ -45,18 +40,7 @@ const menuItems = [
       },
     ],
   },
-  // {
-  //   name: "oreControl",
-  //   label: "Ore Control",
-  //   icon: IControl,
-  //   route: "oreControl",
-  // },
-  // {
-  //   name: "controlCalidad",
-  //   label: "Control de Calidad",
-  //   icon: CQuality,
-  //   route: "controlCalidad",
-  // },
+
   {
     name: "Gestión",
     label: "Gestión",
@@ -107,77 +91,6 @@ const menuItems = [
   },
 ];
 
-const items = ref([
-  {
-    label: "Mapa de Stock Piles",
-    icon: markRaw(CRuma),
-    command: () => {
-      router.push("/");
-    },
-  },
-  {
-    label: "Análisis",
-    icon: markRaw(IControl),
-    items: [
-      {
-        label: "Producción",
-
-        route: "/analysis",
-      },
-      {
-        label: "Planta",
-
-        route: "/analysisP",
-      },
-    ],
-  },
-  {
-    label: "Completar",
-    icon: markRaw(IList),
-    items: [
-      {
-        label: "Ore Control",
-        route: "/oreControl",
-      },
-      {
-        label: "Control de Calidad",
-        route: "/controlCalidad",
-      },
-    ],
-  },
-  {
-    label: "Viajes",
-    icon: markRaw(IList),
-    items: [
-      {
-        label: "Cancha",
-        route: "/list",
-      },
-      {
-        label: "Planta",
-        route: "/planta",
-      },
-    ],
-  },
-  {
-    label: "Stock Piles de Cancha",
-    icon: markRaw(CQuality),
-    command: () => {
-      router.push("/pila");
-    },
-  },
-  {
-    label: "Configuración",
-    icon: markRaw(ISetting),
-    command: () => {
-      router.push("/setting");
-    },
-  },
-]);
-const goToPage = (page) => {
-  router.push(page);
-  active.value = page;
-};
 const name = ref("");
 name.value = store.state.name;
 const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -218,7 +131,7 @@ const logout = async () => {
         </div>
         <div class="s-c-t-info">
           <span>
-            <strong>{{ items.length }}</strong> items
+            <strong>{{ menuItems.length }}</strong> items
           </span>
           <span> <strong>• 3</strong> principales </span>
         </div>
@@ -630,7 +543,7 @@ const logout = async () => {
       z-index: 2;
       li {
         width: calc(100% - 40px);
-        
+
         .nav-subitems-item {
           width: 100%;
           height: 40px;
@@ -652,6 +565,12 @@ const logout = async () => {
             max-width: 160px;
             font-weight: 400;
           }
+          &:hover {
+            background-color: var(--secondary);
+            span {
+              color: var(--white) !important;
+            }
+          }
         }
       }
       &::before {
@@ -665,8 +584,7 @@ const logout = async () => {
         border-radius: 0 0 0 8px;
         border: solid var(--grey-light-3);
         border-width: 0 0 0.1em 0.1em;
-        opacity: .4;
-        
+        opacity: 0.4;
       }
     }
     .nav-select-only {

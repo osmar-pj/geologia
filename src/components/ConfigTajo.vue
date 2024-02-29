@@ -199,69 +199,7 @@ const uploadFileTajo = async () => {
               </td>
             </tr>
           </tbody>
-        </table>
-        <!-- <DataTable
-          :value="listTajo"
-          tableStyle="width: 100%"
-          paginator
-          :rows="20"
-          paginatorTemplate=" PrevPageLink PageLinks NextPageLink  CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Página {currentPage} de {totalPages}"
-          :header="false"
-          :loading="store.state.loading"
-        >
-          <Column header="#" headerStyle="width: 2.5rem">
-            <template #body="slotProps">
-              <div class="td-user">
-                <div class="t-name">
-                  <h5>#{{ slotProps.index + 1 }}</h5>
-                </div>
-              </div>
-            </template>
-          </Column>
-          <template v-for="(header, index) in listTajo.header || []">
-            <Column
-              v-if="
-                !header ||
-                (header.field && !excludedFields.includes(header.field))
-              "
-              :key="index"
-              :field="header.field"
-              :header="header.title"
-            >
-              <template #body="slotProps">
-                <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
-                <template v-else>
-                  <template
-                    v-if="
-                      slotProps.data[header.field] !== '' &&
-                      slotProps.data[header.field] !== null &&
-                      slotProps.data[header.field] !== undefined &&
-                      (!Array.isArray(slotProps.data[header.field]) ||
-                        slotProps.data[header.field].length > 0)
-                    "
-                  >
-                    <h4 :class="{ 't-turn': header.field === 'turn' }">
-                      {{
-                        formatColumnValue(
-                          slotProps.data[header.field],
-                          header.fn,
-                          header.field,
-                          slotProps.data
-                        )
-                      }}
-                    </h4>
-                  </template>
-                  <template v-else>
-                    <h5 class="t-complet">
-                      <img src="../assets/img/i-square.svg" alt="" />Comp..
-                    </h5>
-                  </template>
-                </template>
-              </template>
-            </Column>
-          </template>
-        </DataTable> -->
+        </table>        
       </div>
     </div>
     <div class="c-setting-footer">

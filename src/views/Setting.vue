@@ -1,6 +1,7 @@
 <script setup>
 import ConfigGeneral from "../components/ConfigGeneral.vue";
 import ConfigPlanta from "../components/ConfigPlanta.vue";
+import ConfigCancha from "../components/ConfigCancha.vue";
 import ConfigTajo from "../components/ConfigTajo.vue";
 
 </script>
@@ -26,7 +27,7 @@ import ConfigTajo from "../components/ConfigTajo.vue";
         <p class="m-0">Sed ut perspiciatis</p>
       </TabPanel>
       <TabPanel header="Programación Cancha">
-        <ConfigPlanta />
+        <ConfigCancha />
       </TabPanel>    
       <TabPanel header="Programación Planta">
         <ConfigPlanta />
