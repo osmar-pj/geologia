@@ -7,7 +7,8 @@ const emit = defineEmits([
   // "mouse:dblclick",
   "click:selected",
   "click:updated",
-  "mouse:moving"
+  "mouse:moving",
+  "mouse:move"
 ])
 
 onMounted(() => {
@@ -37,6 +38,10 @@ onMounted(() => {
   canvas.on("object:moving", (e) => {
     emit("mouse:moving", e)
   })
+  canvas.on("mouse:move", (e) => {
+    emit("mouse:move", e)
+  })
+
   canvas.on('mouse:wheel', (e) => {
     let delta = e.e.deltaY
     let zoom = canvas.getZoom()
@@ -47,13 +52,6 @@ onMounted(() => {
     e.e.preventDefault()
     e.e.stopPropagation()
   })
-  canvas.on('mouse:move', (e) => {
-    if (e.e.buttons == 1) {
-      // move the canvas
-      canvas.relativePan(new fabric.Point(e.e.movementX, e.e.movementY))
-    }
-  })
-
   emit("canvas-created", canvas)
 })
 </script>

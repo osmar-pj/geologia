@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import readXlsxFile from "read-excel-file";
 import { formatFixed } from "../libs/utils";
+import Success from "../components/Success.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -10,11 +11,13 @@ const store = useStore();
 const loading = ref(true);
 const dataPlanta = ref([]);
 
+const showSuccessM = ref(false);
 const showError = ref(false);
 
 const hideError = () => {
   showError.value = false;
 };
+
 const handleFileChange = (event) => {
   const file = event.target.files[0];
   readXlsxFile(file)
@@ -46,8 +49,6 @@ const handleFileChange = (event) => {
 
 const buttonClicked = ref(false);
 
-
-
 const uploadFile = async () => {
   try {
     buttonClicked.value = true;
@@ -69,7 +70,12 @@ const uploadFile = async () => {
     console.log(result);
     if (result.status === true) {
       console.log("Correcto");
-      buttonClicked.value = false;
+      showSuccessM.value = true;
+      setTimeout(() => {
+        dataPlanta.value = [];
+        showSuccessM.value = false;
+        buttonClicked.value = false;
+      }, 2500);
     } else {
       console.log("error");
       buttonClicked.value = false;
@@ -179,6 +185,13 @@ const formatDateExcel = (dateString) => {
       </button>
     </div>
   </div>
+  <Transition :duration="550" name="nested">
+    <div class="modalCreate-backg" v-if="showSuccessM">
+      <Transition name="bounce">
+        <Success />
+      </Transition>
+    </div>
+  </Transition>
 </template>
 
 <style lang="scss">

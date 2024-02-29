@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
+import Success from "../components/Success.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -16,6 +17,7 @@ onMounted(async () => {
 
 const data = computed(() => store.state.config);
 const buttonClicked = ref(false);
+const showSuccessM = ref(false);
 const updateConfig = async () => {
   try {
     buttonClicked.value = true;
@@ -33,7 +35,12 @@ const updateConfig = async () => {
 
     if (result.status === true) {
       console.log("Correcto");
-      buttonClicked.value = false;
+      
+      showSuccessM.value = true;
+      setTimeout(() => {
+        showSuccessM.value = false;
+        buttonClicked.value = false;
+      }, 2500);
       await store.dispatch("get_config");
     } else {
       console.log("error");
@@ -47,15 +54,18 @@ const updateConfig = async () => {
 </script>
 
 <template>
-  <div class="container-setting" :style="{
-          userSelect: buttonClicked ? 'none' : 'auto',
-          pointerEvents: buttonClicked ? 'none' : 'auto',
-        }">
+  <div
+    class="container-setting"
+    :style="{
+      userSelect: buttonClicked ? 'none' : 'auto',
+      pointerEvents: buttonClicked ? 'none' : 'auto',
+    }"
+  >
     <div class="c-setting-body" v-if="loading">
-      <template>
+      <div>
         <span class="loader"></span>
         Procesando...
-      </template>
+      </div>
     </div>
     <div class="c-setting-body" v-else>
       <div class="setting-item">
@@ -168,6 +178,13 @@ const updateConfig = async () => {
       </button>
     </div>
   </div>
+  <Transition :duration="550" name="nested">
+    <div class="modalCreate-backg" v-if="showSuccessM">
+      <Transition name="bounce">
+        <Success />
+      </Transition>
+    </div>
+  </Transition>
 </template>
 
 <style lang="scss">

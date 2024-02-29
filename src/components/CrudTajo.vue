@@ -2,6 +2,7 @@
 import { defineEmits, defineProps, ref, computed,watchEffect } from "vue";
 import { useStore } from "vuex";
 import IPlus from "../icons/IPlus.vue";
+import Success from "../components/Success.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -13,6 +14,9 @@ const cerrarModal = () => {
 
 const buttonClicked = ref(false);
 const selectMineral = ref('');
+
+const showSuccessM = ref(false);
+const showForm = ref(true);
 const showError = ref(false);
 const hideError = () => {
   showError.value = false;
@@ -42,7 +46,7 @@ const initialValues = computed(() => {
 });
 
 
-const formData = computed(() => initialValues.value);
+const formData = ref(initialValues.value);
 watchEffect(() => {
   selectMineral.value = formData.value.mineral;
 });
@@ -87,7 +91,13 @@ const updateTravel = async () => {
     if (result.status === true) {
       console.log("Correcto");
       await store.dispatch("tajo_list");
-      cerrarModal();
+      showForm.value = false;
+        setTimeout(() => {
+          showSuccessM.value = true;
+        }, 600);
+        setTimeout(() => {
+          cerrarModal();
+        }, 2000);
     } else {
       console.log("error");
       buttonClicked.value = false;
@@ -98,12 +108,12 @@ const updateTravel = async () => {
   }
 };
 const createTajo = async () => {
-   if (
-     formData.length === 0     
-   ) {
-     console.log(formData);
-     console.log("Los datos a actualizar están vacíos");
-   } else {
+  console.log(formData.value);
+  if (
+    Object.values(formData).some((value) => value === "" || value === null)
+) {
+    console.log("Los datos a actualizar están vacíos");
+} else {
   try {
     buttonClicked.value = true;
     console.log(formData.value);
@@ -125,7 +135,14 @@ const createTajo = async () => {
       console.log("Correcto");
       
       await store.dispatch("tajo_list");
-      cerrarModal();
+      showForm.value = false;
+        setTimeout(() => {
+          showSuccessM.value = true;
+        }, 600);
+        setTimeout(() => {
+          cerrarModal();
+        }, 2000);
+      
     } else {
       console.log("error");
       buttonClicked.value = false;
@@ -140,12 +157,14 @@ const createTajo = async () => {
 
 <template>
   <div class="modalCreate-backg">
+    <Transition name="nested">
     <form
       class="mCreate-content mCreate-Crud inner"
       :style="{
         userSelect: buttonClicked ? 'none' : 'auto',
         pointerEvents: buttonClicked ? 'none' : 'auto',
       }"
+      v-if="showForm"
     >
       <div class="mC-c-header">
         <div class="mC-h-title">
@@ -271,6 +290,10 @@ const createTajo = async () => {
         </button>
       </div>
     </form>
+  </Transition>
+  <Transition name="bounce">
+      <Success v-if="showSuccessM" />
+    </Transition>
   </div>
 </template>
 

@@ -23,20 +23,10 @@ onMounted(async () => {
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+console.log(filters)
 const excludedFields = [
   "mining",
-  "ubication",
-  "pila",
-  "travels",
-  "statusPila",
-  "ley_ag",
-  "ley_pb",
-  "ley_fe",
-  "ley_mn",
-  "ley_zn",
-  "tonh",
-  "stock",
-  "cod_despacho",
+
 ];
 
 const modalData = ref(null);
@@ -137,6 +127,7 @@ const columns = ref([
       <span>| Dia terminado en Mina </span>
     </div>
   </div>
+  
   <div class="tableContainer">
     <DataTable
       v-model:filters="filters"

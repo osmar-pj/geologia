@@ -233,6 +233,7 @@ const store = createStore({
           },
         })
         const data = await response.json()   
+        console.log(data)
         commit("getPila", data.pilasToOreControl)
         
         commit("loading", false)
