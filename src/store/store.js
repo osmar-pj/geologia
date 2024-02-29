@@ -237,7 +237,6 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getListPlanta", data)
-        console.log(data);
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
@@ -315,19 +314,6 @@ const store = createStore({
         commit("getDataAnalysis", data)
       } catch (error) {commit("loading", false)}
     },
-    get_listPlanta: async ({ commit }) => {
-      try {
-        const response = await fetch(`${url}/planta`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": true,
-          },
-        })
-        const data = await response.json()
-        commit("getListPlanta", data.data)
-      } catch (error) {commit("loading", false)}
-    }
   },
   modules: {},
 })

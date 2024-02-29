@@ -687,7 +687,7 @@ const move = (e) => {
 <template>
   <h1> Pilas: {{ pilas.length }} </h1>
   <h1> Canvas: {{ canvas ? canvas.getObjects().length - 8 : 0 }} </h1>
-  <Totals />
+  <!-- <Totals /> -->
   <GeneratePDF />
   <CanchaModal
   v-if="openCalendar"
@@ -704,6 +704,8 @@ const move = (e) => {
         dominio,
         _id,
         pilas_merged,
+        statusPila,
+        createdAt
       } in pilas"
       :ley_ag="ley_ag"
       :stock="stock"
@@ -714,6 +716,8 @@ const move = (e) => {
       :dominio2="chooseDominioShadeColor(dominio)"
       :id="_id"
       :isMerged="pilas_merged.length > 0"
+      :statusPila="statusPila"
+      :createdAt="createdAt"
     />
     <zoneCC  id="cc"/>
     <zoneC1 id="c1"/>
