@@ -1,20 +1,18 @@
 <script setup>
-import { computed, ref, onMounted, inject } from "vue";
-import { useStore } from "vuex";
-import SkeletonLoader from "../components/SkeletonLoader.vue";
-import Filters from "../components/filters.vue";
 import { FilterMatchMode } from "primevue/api";
+import { Subject } from "rxjs";
+import { computed, inject, onMounted, ref } from "vue";
+import { useStore } from "vuex";
+import Filters from "../components/filters.vue";
 import IExport from "../icons/IExport.vue";
 import {
-  formatDate,
-  formatFixed,
-  formatArrayField,
-  formatHour,
-  formatDateAbas,
+formatArrayField,
+formatDate,
+formatDateAbas,
+formatFixed,
+formatHour,
 } from "../libs/utils";
-import { Subject } from "rxjs";
 
-const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 const socket = inject("socket");
 const trip$ = new Subject();
@@ -79,7 +77,6 @@ const updateTrips = (tripsFound, data) => {
 };
 
 const tripsFiltered = computed(() => store.state.dataFilterTable);
-console.log("tripsFiltered", tripsFiltered.value);
 
 const formatColumnValue = (value, fn, field, row) => {
   switch (fn) {

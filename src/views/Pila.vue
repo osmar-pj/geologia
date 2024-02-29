@@ -12,7 +12,8 @@ import IExport from "../icons/IExport.vue";
 const store = useStore();
 const socket = inject("socket");
 const pila$ = new Subject();
-const pilas = computed(() => store.state.pilaList);
+const pilas = computed(() => store.state.pilaList)
+console.log(pilas.value)
 const dt = ref();
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -22,11 +23,9 @@ onMounted(async () => {
 });
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
-console.log(filters)
+})
 const excludedFields = [
   "mining",
-
 ];
 
 const modalData = ref(null);

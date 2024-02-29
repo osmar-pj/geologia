@@ -17,9 +17,10 @@ const data = ref(props.data);
 const isCamion = computed(() => data.value.carriage === "Camion");
 const isVagones = computed(() => data.value.carriage === "Vagones");
 const isSplitRequired = computed(() => data.value.splitRequired);
-const numberOfMaterials = isSplitRequired.value
+const numberOfMaterials = isSplitRequired.value && data.value && data.value.materials
   ? data.value.materials.length
   : 1;
+
 
 const dataToUpdate = ref([]);
 
@@ -79,8 +80,8 @@ onMounted(async () => {
 });
 
 const dataPila = computed(() => {
-  return store.state.pilaList;
-});
+  return store.state.pilaList.pilasToOreControl;
+})
 
 const hideError = () => {
   showError.value = false;
@@ -115,7 +116,6 @@ const updateTravel = async () => {
       Object.values(item).some((value) => value === "" || value === null)
     )
   ) {
-    console.log(dataToUpdate.value);
     console.log("Los datos a actualizar están vacíos");
   } else {
     try {
