@@ -14,8 +14,8 @@ import IPila from "../maps/IPila.vue"
 import ICenter from "../icons/ICenter.vue"
 import IResample from "../icons/IResample.vue"
 import IDesmonte from "../maps/IDesmonte.vue"
-import ICC from "../prueba/ICC.vue"
 import ICalendar from "../icons/ICalendar.vue"
+import IPanel from "../maps/IPanel.vue"
 import GeneratePDF from "../components/GeneratePDF.vue"
 import CanchaModal from "../components/CanchaModal.vue"
 import MapInfo from "../components/MapInfo.vue"
@@ -48,6 +48,7 @@ const pilasSelected = ref([])
 const panels = computed(() => store.state.panels)
 const openCalendar = ref(false)
 const dataModalCalendar = ref(null)
+const moveAvailable = ref(false)
 
 class CustomRect extends fabric.Rect {
   constructor(options) {
@@ -590,7 +591,6 @@ const handleMoveUpdatePosition = async () => {
   // await store.dispatch("pila_total")
 }
 const moving = async (e) => {
-  // console.log("Moving")
   if (thereAreUnlessTwoPilasSelected.value) {
     canvas.value.discardActiveObject()
     toast.add({
@@ -640,11 +640,12 @@ const moving = async (e) => {
 }
 
 const edit = () => {
-  canvas.value.forEachObject((o) => {
-    o.hasBorders = true
-    o.selectable = true
-    o.hasControls = true;
-  });
+  moveAvailable.value = !moveAvailable.value
+  // canvas.value.forEachObject((o) => {
+  //   o.hasBorders = true
+  //   o.selectable = true
+  //   o.hasControls = true;
+  // });
 };
 const remove = () => {
   // canvas.value.remove(...canvas.value.getActiveObjects())
@@ -677,12 +678,9 @@ const getDataCalendar = (data) => {
   openCalendar.value = true;
   dataModalCalendar.value = data;
 }
-const move = () => {
-  console.log("Zoom")
-  document.onkeydown = (e) => {
-    if (e.key === " ") {
-      console.log("Space")
-    }
+const move = (e) => {
+  if (e.e.buttons == 1 && pilasSelected.value.length == 0) {
+    canvas.value.relativePan(new fabric.Point(e.e.movementX, e.e.movementY))
   }
 }
 </script>
@@ -723,7 +721,8 @@ const move = () => {
     <zoneC2 id="c2"/>
     <img src="../prueba/canchas.png" alt="" id="map">
     <!-- <IMap id="map" /> -->
-    <ICC :id="index" :ubication="ubication" :stock="total.stock" :nsr="total.nsr" :ag_equiv="total.ag_eq" v-for="{ubication, total, index} in panels" />
+    <IPanel v-for="{ubication, total, index} in panels" :id="index" :ubication="ubication" :stock="total.stock" :nsr="total.nsr" :ag_equiv="total.ag_eq"/>
+    <!-- <ICC :id="index" :ubication="ubication" :stock="total.stock" :nsr="total.nsr" :ag_equiv="total.ag_eq" v-for="{ubication, total, index} in panels" /> -->
     <!-- <IDesmonte id="desmonte" v-for="desmonte in pilas.filter(i => i.typePila == 'Desmonte')" :pila="desmonte" :id="desmonte.cod_tableta"/> -->
   </div>
   <Toast />
@@ -764,7 +763,7 @@ const move = () => {
     </div>
     <Transition name="bounce">
       <MapInfo v-if="unlessOnePilaSelected" :data="pilasSelected"/>
-  </Transition>
+    </Transition>
     <FabricCanvas
       @canvas-created="handleCreated"
       @click:selected="handleSelect"
@@ -772,7 +771,7 @@ const move = () => {
       @click:cleared="empty"
       @mouse:moving="moving"
       @mouse:wheel=""
-      @mouse:move=""
+      @mouse:move="move"
     />
     <div>
       <span class="loader"></span>
