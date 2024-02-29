@@ -15,10 +15,11 @@ const store = createStore({
     dataListQControl: [],
     dataListGeneral: [],
     dataListCancha: [],
+    dataListPlanta: [],
+
     dataFilterPlanta: [],
     dataFilterTable: [],
     dataSelectedFilters: [],
-    dataTripsPlanta: [],
     dataAnalysis: [],
     tajoList: [],
     pilaList: [],
@@ -56,6 +57,9 @@ const store = createStore({
     },
     getListCancha(state, payload) {
       state.dataListCancha = payload
+    },
+    getListPlanta(state, payload) {
+      state.dataListPlanta = payload
     },
     getFilterTable(state, payload) {
       state.dataFilterTable = payload
@@ -117,9 +121,7 @@ const store = createStore({
     lessDataRumaList(state, payload) {
       state.rumaTotal.slice(payload, 1)
     },
-    getListPlanta(state, payload) {
-      state.dataTripsPlanta = payload
-    }
+    
   },
   actions: {
     auth_login: async ({ commit }, payload) => {
@@ -174,6 +176,7 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getOreControl", data)
+        console.log(data)
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
@@ -219,6 +222,22 @@ const store = createStore({
         })
         const data = await response.json()
         commit("getListCancha", data)
+        commit("loading", false)
+      } catch (error) {commit("loading", false)}
+    },
+    get_listPlanta: async ({ commit }) => {
+      try {
+        commit("loading", true)
+        const response = await fetch(`${url}/planta`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": true,
+          },
+        })
+        const data = await response.json()
+        commit("getListPlanta", data)
+        console.log(data);
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },

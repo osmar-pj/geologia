@@ -82,9 +82,9 @@ const menuItems = [
 
     items: [
       {
-        name: "list",
+        name: "cancha",
         label: "Cancha",
-        route: "list",
+        route: "cancha",
       },
       {
         name: "planta",

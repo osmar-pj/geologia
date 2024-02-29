@@ -100,7 +100,7 @@ const sendFilter = async () => {
       },
       body: JSON.stringify({
         ts: selectedEstado.value.getTime(),
-        arr: ["rango", "type"],
+        arr: selectedCategories.value,
         category: "trips",
       }),
     });
@@ -194,7 +194,7 @@ const sendFilter = async () => {
                   v-model="selectedCategories"
                   :inputId="category.title"
                   name="category"
-                  :value="category.title"
+                  :value="category.field"
                 />
                 <label :for="category.title">{{ category.title }}</label>
               </div>

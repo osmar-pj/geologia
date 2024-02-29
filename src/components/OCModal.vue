@@ -17,9 +17,10 @@ const data = ref(props.data);
 const isCamion = computed(() => data.value.carriage === "Camion");
 const isVagones = computed(() => data.value.carriage === "Vagones");
 const isSplitRequired = computed(() => data.value.splitRequired);
-const numberOfMaterials = isSplitRequired.value
+const numberOfMaterials = isSplitRequired.value && data.value && data.value.materials
   ? data.value.materials.length
   : 1;
+
 
 const dataToUpdate = ref([]);
 
