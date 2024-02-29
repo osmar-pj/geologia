@@ -31,43 +31,67 @@ const menuItems = [
     name: "analysis",
     label: "Análisis",
     icon: IDash,
-    route: "analysis",
+
     items: [
       {
         name: "analysis",
-        label: "Análisis",
+        label: "Producción",
         route: "analysis",
       },
       {
         name: "analysisP",
-        label: "Análisis Planta",
+        label: "Planta",
         route: "analysisP",
       },
     ],
   },
+  // {
+  //   name: "oreControl",
+  //   label: "Ore Control",
+  //   icon: IControl,
+  //   route: "oreControl",
+  // },
+  // {
+  //   name: "controlCalidad",
+  //   label: "Control de Calidad",
+  //   icon: CQuality,
+  //   route: "controlCalidad",
+  // },
   {
-    name: "oreControl",
-    label: "Ore Control",
+    name: "Gestión",
+    label: "Gestión",
     icon: IControl,
-    route: "oreControl",
+
+    items: [
+      {
+        name: "oreControl",
+        label: "Ore Control",
+        route: "oreControl",
+      },
+      {
+        name: "controlCalidad",
+        label: "Control de Calidad",
+        route: "controlCalidad",
+      },
+    ],
   },
   {
-    name: "controlCalidad",
-    label: "Control de Calidad",
-    icon: CQuality,
-    route: "controlCalidad",
-  },
-  {
-    name: "list",
-    label: "Viajes a Cancha",
+    name: "analysis",
+    label: "Lista de viajes",
     icon: IList,
-    route: "list",
-  },
-  {
-    name: "planta",
-    label: "Viajes a Planta",
-    icon: CQuality,
-    route: "planta",
+
+    items: [
+      {
+        name: "list",
+        label: "Cancha",
+        route: "list",
+      },
+      {
+        name: "planta",
+        label: "Planta",
+        route: "planta",
+      },
+    ],
   },
   {
     name: "pila",
@@ -113,12 +137,10 @@ const items = ref([
     items: [
       {
         label: "Ore Control",
-
         route: "/oreControl",
       },
       {
         label: "Control de Calidad",
-
         route: "/controlCalidad",
       },
     ],
@@ -203,29 +225,33 @@ const logout = async () => {
       </div>
 
       <ul class="s-content-menu">
-        <li v-for="menuItem in menuItems" :key="menuItem.name">
-          <router-link
-            v-if="!menuItem.items"
-            :to="menuItem.route"
-            class="nav-select"
-          >
-            <component :is="menuItem.icon" />
-            <span>{{ menuItem.label }}</span>
-          </router-link>
+        <details
+          v-for="menuItem in menuItems"
+          :key="menuItem.name"
+          class="s-c-menu-details"
+        >
+          <template v-if="!menuItem.items">
+            <summary>
+              <router-link :to="menuItem.route" class="nav-select-only">
+                <component :is="menuItem.icon" />
+                <span>{{ menuItem.label }}</span>
+              </router-link>
+            </summary>
+          </template>
           <template v-else>
-            <div class="nav-select">
+            <summary class="nav-select-grouped">
               <component :is="menuItem.icon" />
               <span>{{ menuItem.label }}</span>
-            </div>
-            <div>
-              <template v-for="subItem in menuItem.items" :key="subItem.name">
-                <router-link :to="subItem.route">
-                  {{ subItem.label }}
+            </summary>
+            <ul class="nav-subitems">
+              <li v-for="subItem in menuItem.items" :key="subItem.name">
+                <router-link :to="subItem.route" class="nav-subitems-item">
+                  <span>{{ subItem.label }}</span>
                 </router-link>
-              </template>
-            </div>
+              </li>
+            </ul>
           </template>
-        </li>
+        </details>
       </ul>
 
       <!-- <PanelMenu :model="items">
@@ -264,7 +290,7 @@ const logout = async () => {
         </template>
       </PanelMenu> -->
 
-      <div class="s-content-msg">
+      <!-- <div class="s-content-msg">
         <div class="s-c-msg-header"><span>Mensajes</span></div>
         <div class="s-c-msg-items">
           <div class="msg-i-item">
@@ -283,7 +309,7 @@ const logout = async () => {
             <p>Send the document for the sale of the cart to vycharste</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="sidebar-footer">
       <div className="s-footer-logout">
@@ -538,19 +564,16 @@ const logout = async () => {
     stroke-width: 1.7;
   }
 }
-.sp-acti {
-  background-color: var(--secondary);
-}
+
 .router-link-active,
 .router-link-exact-active {
-  background-color: var(--secondary);
-}
-.active {
-  background-color: rebeccapurple;
-}
-
-.sp-desact {
-  opacity: 0.4;
+  background-color: var(--primary) !important;
+  svg {
+    color: var(--white) !important;
+  }
+  span {
+    color: var(--white) !important;
+  }
 }
 
 .s-content-menu {
@@ -558,36 +581,135 @@ const logout = async () => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.3rem;
+  gap: 0.2rem;
   padding-top: 2rem;
-  li {
-    border-radius: 10px;
-    padding: 0.7rem 1.2rem;
+  .s-c-menu-details {
     width: 100%;
-    cursor: pointer;
-    transition: all 0.5s ease-in-out;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    min-height: 40px;
-    a {
+    .nav-select-grouped {
       display: flex;
+      align-items: center;
+      color: var(--secundary);
+      padding: 0.7rem 1rem;
       gap: 0.8rem;
+      height: 40px;
+      cursor: pointer;
+      position: relative;
+      svg {
+        width: 1.4rem;
+        height: 1.4rem;
+        color: var(--grey-light-3);
+        fill: transparent;
+        stroke-width: 1.7;
+      }
+      span {
+        color: var(--grey-light-3);
+        font-size: clamp(5px, 8vw, 13px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
+        font-weight: 400;
+      }
+      &::before {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 0.3em;
+        height: 0.3em;
+        border: solid var(--grey-light-3);
+        border-width: 0 0.1em 0.1em 0;
+        transform: rotate(45deg) translate(-50%, -50%);
+      }
     }
+    .nav-subitems {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      position: relative;
+      z-index: 2;
+      li {
+        width: calc(100% - 40px);
+        
+        .nav-subitems-item {
+          width: 100%;
+          height: 40px;
+          cursor: pointer;
+          border-radius: 8px;
+          padding: 0.7rem 1rem;
+          transition: all 0.35s ease-in-out;
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+          background-color: #0f1217;
 
-    span {
-      color: var(--grey-light-3);
-      font-size: clamp(5px, 8vw, 13px);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 160px;
-      font-weight: 400;
+          span {
+            color: var(--grey-light-3);
+            font-size: clamp(5px, 8vw, 13px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+            font-weight: 400;
+          }
+        }
+      }
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        left: 25px;
+        top: 0;
+        width: 20px;
+        height: calc(100% - 20px);
+        border-radius: 0 0 0 8px;
+        border: solid var(--grey-light-3);
+        border-width: 0 0 0.1em 0.1em;
+        opacity: .4;
+        
+      }
     }
-    &:hover {
-      opacity: 1;
-      background-color: var(--secondary);
+    .nav-select-only {
+      width: 100%;
+      height: 40px;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      transition: all 0.35s ease-in-out;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      svg {
+        width: 1.4rem;
+        height: 1.4rem;
+        color: var(--grey-light-3);
+        fill: transparent;
+        stroke-width: 1.7;
+      }
+      span {
+        color: var(--grey-light-3);
+        font-size: clamp(5px, 8vw, 13px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
+        font-weight: 400;
+      }
+      &:hover {
+        background-color: var(--secondary);
+        svg {
+          color: var(--white) !important;
+        }
+        span {
+          color: var(--white) !important;
+        }
+      }
     }
   }
+}
+
+details,
+summary {
+  list-style: none;
 }
 </style>

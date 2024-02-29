@@ -2069,51 +2069,51 @@ input[type="checkbox"] {
   }
 }
 
-.p-panelmenu {
-  flex: 1 1;
-  padding-top: 2rem;
-  .p-panelmenu-panel {
-    .p-panelmenu-header-content {
-      .s-content-menu {
-        border-radius: 10px;
-        padding: 0.7rem 1rem;
-        width: 100%;
-        cursor: pointer;
-        transition: all 0.5s ease-in-out;
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        height: 40px;
-        .nav-select {
-          display: grid;
-          place-items: center;
-          color: var(--secundary);
-          svg {
-            width: 1.4rem;
-            height: 1.4rem;
-            color: var(--grey-light-3);
-            fill: transparent;
-            stroke-width: 1.7;
-          }
-        }
+// .p-panelmenu {
+//   flex: 1 1;
+//   padding-top: 2rem;
+//   .p-panelmenu-panel {
+//     .p-panelmenu-header-content {
+//       .s-content-menu {
+//         border-radius: 10px;
+//         padding: 0.7rem 1rem;
+//         width: 100%;
+//         cursor: pointer;
+//         transition: all 0.5s ease-in-out;
+//         display: flex;
+//         align-items: center;
+//         gap: 0.8rem;
+//         height: 40px;
+//         .nav-select {
+//           display: grid;
+//           place-items: center;
+//           color: var(--secundary);
+//           svg {
+//             width: 1.4rem;
+//             height: 1.4rem;
+//             color: var(--grey-light-3);
+//             fill: transparent;
+//             stroke-width: 1.7;
+//           }
+//         }
 
-        span {
-          color: var(--grey-light-3);
-          font-size: clamp(5px, 8vw, 13px);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 160px;
-          font-weight: 400;
-        }
-        &:hover {
-          opacity: 1;
-          background-color: var(--secondary);
-        }
-      }
-    }
-  }
-}
+//         span {
+//           color: var(--grey-light-3);
+//           font-size: clamp(5px, 8vw, 13px);
+//           white-space: nowrap;
+//           overflow: hidden;
+//           text-overflow: ellipsis;
+//           max-width: 160px;
+//           font-weight: 400;
+//         }
+//         &:hover {
+//           opacity: 1;
+//           background-color: var(--secondary);
+//         }
+//       }
+//     }
+//   }
+// }
 
 /*==========================================*/
 /*----------TAB VIEW---------*/
