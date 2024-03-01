@@ -54,11 +54,12 @@ const handleFileChange = (event) => {
         });
 
         dataPlanta.value = data;
-
+        buttonClicked.value = true;
         showLoader.value = true;
         setTimeout(() => {
           fileUploaded.value = true;
           showLoader.value = false;
+          buttonClicked.value = false;
         }, 1600);
         console.log(dataPlanta.value);
       } else {
@@ -105,6 +106,7 @@ const uploadFile = async () => {
           dataPlanta.value = [];
           showSuccessM.value = false;
           buttonClicked.value = false;
+          fileUploaded.value = false;
         }, 2500);
       } else {
         console.log("error");
@@ -117,6 +119,10 @@ const uploadFile = async () => {
   }
 };
 
+const cancelFile = () => {
+  dataPlanta.value = [];
+  fileUploaded.value = false;
+};
 const formatDateExcel = (dateString) => {
   const dateObject = new Date(dateString); // Convertir la cadena de fecha a un objeto Date
   if (isNaN(dateObject.getTime())) {
@@ -169,6 +175,7 @@ const formatDateExcel = (dateString) => {
         class="s-history-item"
         v-for="(item, index) in data.data"
         :key="index"
+        
       >
         <div class="s-h-item-body">
           <span>{{ item.month }}</span>
@@ -199,7 +206,7 @@ const formatDateExcel = (dateString) => {
         </div>
       </div>
     </div>
-    <div class="c-setting-body">
+    <div class="c-setting-body" >
       <div class="container-loader-files" v-if="!fileUploaded">
         <div class="file-upload-form">
           <label for="filePlanta" class="file-upload-label">
@@ -223,6 +230,7 @@ const formatDateExcel = (dateString) => {
         <table>
           <thead>
             <tr>
+              <th>#</th>
               <th v-for="(value, key) in dataPlanta[0]" :key="key">
                 {{ key }}
               </th>
@@ -230,6 +238,13 @@ const formatDateExcel = (dateString) => {
           </thead>
           <tbody>
             <tr v-for="(row, index) in dataPlanta" :key="index">
+              <td>
+                <div class="td-user">
+                  <div class="t-name">
+                    <h5>#{{ index + 1 }}</h5>
+                  </div>
+                </div>
+              </td>
               <td v-for="(value, key) in row" :key="key">
                 <template v-if="key === 'date'">
                   {{ formatDateExcel(value) }}
@@ -247,12 +262,12 @@ const formatDateExcel = (dateString) => {
       </div>
     </div>
     <div class="c-setting-footer">
-      <button class="btn-cancel">Cancelar</button>
+      <button class="btn-cancel" @click="cancelFile">Cancelar</button>
       <button class="btn-success" type="submit" @click.prevent="uploadFile">
         <template v-if="buttonClicked">
           <span class="loader"></span>Procesando...
         </template>
-        <template v-else> Guardar</template>
+        <template v-else> Enviar</template>
       </button>
     </div>
   </div>

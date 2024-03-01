@@ -57,7 +57,8 @@ const store = useStore();
 .c-setting-header {
   display: grid;
   place-items: center;
-  padding-bottom: 2rem;
+
+  height: 50px;
   .c-s-header-content {
     display: flex;
     align-items: center;

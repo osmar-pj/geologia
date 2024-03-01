@@ -170,9 +170,7 @@ const updateConfig = async () => {
           </div>
         </div>
       </div>
-    </div>
-    <div class="c-setting-footer">
-      <div>
+      <div class="setting-item">
         <h4>
           Última actualización:
           <strong>{{ formatDate(data.updatedAt) }} </strong>
@@ -181,6 +179,9 @@ const updateConfig = async () => {
           Hecho por: <strong>{{ data.user }}</strong>
         </h5>
       </div>
+    </div>
+    <div class="c-setting-footer">
+      
       <button class="btn-success" type="submit" @click.prevent="updateConfig">
         <template v-if="buttonClicked">
           <span class="loader"></span>Procesando...

@@ -9,15 +9,27 @@ import ICalendar from "../icons/ICalendar.vue";
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
 
-const loading = ref(true);
 const dataCancha = ref([]);
-
+const fileUploaded = ref(false);
 const showSuccessM = ref(false);
 const showError = ref(false);
+const showLoader = ref(false);
 
 const hideError = () => {
   showError.value = false;
 };
+
+const months = ref([
+  "ABRIL",
+  "MAYO",
+  "JUNIO",
+  "JULIO",
+  "AGOSTO",
+  "SETIEMBRE",
+  "OCTUBRE",
+  "NOVIEMBRE",
+  "DICIEMBRE",
+]);
 
 onMounted(async () => {
   await store.dispatch("config_cancha");
@@ -30,10 +42,8 @@ const handleFileChange = (event) => {
   readXlsxFile(file)
     .then((rows) => {
       if (rows.length > 0) {
-        // Obtener los encabezados del archivo Excel
         const headers = rows[0];
 
-        // Mapear cada fila del archivo a un objeto con las claves correspondientes
         const data = rows.slice(1).map((row) => {
           const rowData = {};
           headers.forEach((header, index) => {
@@ -42,9 +52,15 @@ const handleFileChange = (event) => {
           return rowData;
         });
 
-        // Guardar los datos en la variable dataCancha
         dataCancha.value = data;
-        console.log(dataCancha.value);
+        buttonClicked.value = true;
+        showLoader.value = true;
+        setTimeout(() => {
+          fileUploaded.value = true;
+          showLoader.value = false;
+          buttonClicked.value = false;
+        }, 1600);
+        
       } else {
         console.error("El archivo Excel está vacío.");
       }
@@ -89,6 +105,7 @@ const uploadFile = async () => {
           dataCancha.value = [];
           showSuccessM.value = false;
           buttonClicked.value = false;
+          fileUploaded.value = false;
         }, 2500);
       } else {
         console.log("error");
@@ -101,6 +118,10 @@ const uploadFile = async () => {
   }
 };
 
+const cancelFile = () => {
+  dataCancha.value = [];
+  fileUploaded.value = false;
+};
 const formatDateExcel = (dateString) => {
   const dateObject = new Date(dateString); // Convertir la cadena de fecha a un objeto Date
   if (isNaN(dateObject.getTime())) {
@@ -153,6 +174,7 @@ const formatDateExcel = (dateString) => {
         class="s-history-item"
         v-for="(item, index) in data.data"
         :key="index"
+        
       >
         <div class="s-h-item-body">
           <span>{{ item.month }}</span>
@@ -168,60 +190,14 @@ const formatDateExcel = (dateString) => {
           </h5>
         </div>
       </div>
-      <div class="s-history-item histoy-desact">
+      <div
+        v-for="month in months"
+        :key="month"
+        class="s-history-item histoy-desact"
+      >
         <div class="s-h-item-body">
-          <span>ABRIL</span>
-          <h4><ICalendar />--</h4>
-          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
-        </div>
-        <div class="s-h-item-footer">
-          <h5><strong>--</strong></h5>
-        </div>
-      </div>
-      <div class="s-history-item histoy-desact">
-        <div class="s-h-item-body">
-          <span>MAYO</span>
-          <h4><ICalendar />--</h4>
-          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
-        </div>
-        <div class="s-h-item-footer">
-          <h5><strong>--</strong></h5>
-        </div>
-      </div>
-      <div class="s-history-item histoy-desact">
-        <div class="s-h-item-body">
-          <span>JUNIO</span>
-          <h4><ICalendar />--</h4>
-          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
-        </div>
-        <div class="s-h-item-footer">
-          <h5><strong>--</strong></h5>
-        </div>
-      </div>
-      <div class="s-history-item histoy-desact">
-        <div class="s-h-item-body">
-          <span>JULIO</span>
-          <h4><ICalendar />--</h4>
-          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
-        </div>
-        <div class="s-h-item-footer">
-          <h5><strong>--</strong></h5>
-        </div>
-      </div>
-      <div class="s-history-item histoy-desact">
-        <div class="s-h-item-body">
-          <span>AGOSTO</span>
-          <h4><ICalendar />--</h4>
-          <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
-        </div>
-        <div class="s-h-item-footer">
-          <h5><strong>--</strong></h5>
-        </div>
-      </div>
-      <div class="s-history-item histoy-desact">
-        <div class="s-h-item-body">
-          <span>SETIEMBRE</span>
-          <h4><ICalendar />--</h4>
+          <span>{{ month }}</span>
+          <h4><ICalendar /> --</h4>
           <h4><img src="../assets/img/i-time.svg" alt="" /> --</h4>
         </div>
         <div class="s-h-item-footer">
@@ -229,26 +205,31 @@ const formatDateExcel = (dateString) => {
         </div>
       </div>
     </div>
-    <div class="c-setting-body">
-      <div class="file-upload-form">
-        <label for="fileCancha" class="file-upload-label">
-          <div class="file-upload-design">
-            <svg viewBox="0 0 640 512" height="1em">
-              <path
-                d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
-              ></path>
-            </svg>
-            <span class="browse-button">Subir archivo</span>
-          </div>
-          <input id="fileCancha" type="file" @change="handleFileChange" />
-        </label>
+    <div class="c-setting-body" >
+      <div class="container-loader-files" v-if="!fileUploaded">
+        <div class="file-upload-form">
+          <label for="fileCancha" class="file-upload-label">
+            <div class="file-upload-design">
+              <svg viewBox="0 0 640 512" height="1em">
+                <path
+                  d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                ></path>
+              </svg>
+              <span class="browse-button">Subir archivo</span>
+            </div>
+            <input id="fileCancha" type="file" @change="handleFileChange" />
+          </label>
+        </div>
+        <div class="progress-container" v-if="showLoader">
+          <div class="progress-bar" id="myBar"></div>
+        </div>
+        <span class="label-error" v-if="showError">*Documento requerido</span>
       </div>
-      <span class="label-error" v-if="showError">*Documento requerido</span>
-
-      <div class="config-content-table N-datatable" v-if="dataCancha.length">
+      <div class="config-content-table N-datatable" v-if="fileUploaded">
         <table>
           <thead>
             <tr>
+              <th>#</th>
               <th v-for="(value, key) in dataCancha[0]" :key="key">
                 {{ key }}
               </th>
@@ -256,6 +237,13 @@ const formatDateExcel = (dateString) => {
           </thead>
           <tbody>
             <tr v-for="(row, index) in dataCancha" :key="index">
+              <td>
+                <div class="td-user">
+                  <div class="t-name">
+                    <h5>#{{ index + 1 }}</h5>
+                  </div>
+                </div>
+              </td>
               <td v-for="(value, key) in row" :key="key">
                 <template v-if="key === 'date'">
                   {{ formatDateExcel(value) }}
@@ -272,13 +260,13 @@ const formatDateExcel = (dateString) => {
         </table>
       </div>
     </div>
-
     <div class="c-setting-footer">
+      <button class="btn-cancel" @click="cancelFile">Cancelar</button>
       <button class="btn-success" type="submit" @click.prevent="uploadFile">
         <template v-if="buttonClicked">
           <span class="loader"></span>Procesando...
         </template>
-        <template v-else> Guardar</template>
+        <template v-else> Enviar</template>
       </button>
     </div>
   </div>
@@ -292,6 +280,4 @@ const formatDateExcel = (dateString) => {
 </template>
 
 <style lang="scss">
-
-
 </style>

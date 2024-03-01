@@ -6,13 +6,15 @@ import { formatDateAbas } from "../libs/utils";
 import { formatFixed } from "../libs/utils";
 import Edit from "../icons/Edit.vue";
 import CrudTajo from "../components/CrudTajo.vue";
+import IPlus from "../icons/IPlus.vue";
+
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
-
-const loading = ref(true);
 const dataTajo = ref([]);
-
+const fileUploaded = ref(false);
+const showSuccessM = ref(false);
 const showError = ref(false);
+const showLoader = ref(false);
 
 const hideError = () => {
   showError.value = false;
@@ -34,6 +36,13 @@ const handleFileTajo = (event) => {
           return rowData;
         });
         dataTajo.value = data;
+        buttonClicked.value = true;
+        showLoader.value = true;
+        setTimeout(() => {
+          fileUploaded.value = true;
+          showLoader.value = false;
+          buttonClicked.value = false;
+        }, 1600);
       } else {
         console.error("El archivo Excel está vacío.");
       }
@@ -98,6 +107,10 @@ const uploadFileTajo = async () => {
     }
   }
 };
+const cancelFile = () => {
+  dataTajo.value = [];
+  fileUploaded.value = false;
+};
 </script>
 
 <template>
@@ -109,46 +122,13 @@ const uploadFileTajo = async () => {
     }"
   >
     <div class="c-setting-body">
-      <div class="file-upload-form">
-        <label for="fileTajo" class="file-upload-label">
-          <div class="file-upload-design">
-            <svg viewBox="0 0 640 512" height="1em">
-              <path
-                d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
-              ></path>
-            </svg>
-            <span class="browse-button">Subir archivo</span>
-          </div>
-          <input id="fileTajo" type="file" @change="handleFileTajo" />
-        </label>
-      </div>
-      <span class="label-error" v-if="showError">*Documento requerido</span>
-
-      <div class="config-content-table N-datatable" v-if="dataTajo.length">
-        <table>
-          <thead>
-            <tr>
-              <th v-for="(value, key) in dataTajo[0]" :key="key">{{ key }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, index) in dataTajo" :key="index">
-              <td v-for="(value, key) in row" :key="key">
-                <template v-if="key === 'date'">
-                  {{ formatDateAbas(value) }}
-                </template>
-
-                <template v-else>
-                  {{ value }}
-                </template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
       <div>
-        <button @click="openModal(row, false)" class="btn-success">
-          Crear
+        <button
+          @click="openModal(row, false)"
+          class="btn-success"
+          style="width: 140px"
+        >
+          <IPlus /> Crear tajo
         </button>
       </div>
       <div class="config-content-table N-datatable">
@@ -156,7 +136,14 @@ const uploadFileTajo = async () => {
           <thead>
             <tr>
               <th>#</th>
-              <th v-for="(value, key) in listTajo[0]" :key="key">{{ key }}</th>
+              <th>Nombre</th>
+              <th>Valid</th>
+              <th>Nivel</th>
+              <th>Veta</th>
+              <th>Mineral</th>
+              <th>Zona</th>              
+              <th>Fech. Creación</th>
+              <th>Fech. Actualiza.</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -169,21 +156,18 @@ const uploadFileTajo = async () => {
                   </div>
                 </div>
               </td>
-              <td v-for="(value, key) in row" :key="key">
-                <template>
-                  {{ key }}
-                </template>
-                <template v-if="key === 'createdAt' || key === 'updatedAt'">
-                  {{ formatDateAbas(value) }}
-                </template>
+             
+              <td>{{ row.name }}</td>
+              <td>{{ row.valid }}</td>
+              <td>{{ row.level }}</td>
+              <td>{{ row.veta }}</td>
+              <td>{{ row.mineral }}</td>
+              <td>{{ row.zona }}</td>
+              
+              <td>{{ formatDateAbas(row.createdAt) }}</td>
+              <td>{{ formatDateAbas(row.updatedAt) }}</td>
 
-                <template v-else-if="key === 'ton_prog'">
-                  {{ formatFixed(value) }} <small>TMH</small>
-                </template>
-                <template v-else>
-                  {{ value }}
-                </template>
-              </td>
+             
               <td>
                 <div className="btns">
                   <button
@@ -209,13 +193,64 @@ const uploadFileTajo = async () => {
           </tbody>
         </table>
       </div>
+      <div class="container-loader-files" v-if="!fileUploaded">
+        <div class="file-upload-form">
+          <label for="fileTajo" class="file-upload-label">
+            <div class="file-upload-design">
+              <svg viewBox="0 0 640 512" height="1em">
+                <path
+                  d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                ></path>
+              </svg>
+              <span class="browse-button">Subir archivo</span>
+            </div>
+            <input id="fileTajo" type="file" @change="handleFileTajo" />
+          </label>
+        </div>
+        <div class="progress-container" v-if="showLoader">
+          <div class="progress-bar" id="myBar"></div>
+        </div>
+        <span class="label-error" v-if="showError">*Documento requerido</span>
+      </div>
+
+      <div class="config-content-table N-datatable" v-if="fileUploaded">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th v-for="(value, key) in dataTajo[0]" :key="key">{{ key }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, index) in dataTajo" :key="index">
+              <td>
+                <div class="td-user">
+                  <div class="t-name">
+                    <h5>#{{ index + 1 }}</h5>
+                  </div>
+                </div>
+              </td>
+              <td v-for="(value, key) in row" :key="key">
+                <template v-if="key === 'date'">
+                  {{ formatDateAbas(value) }}
+                </template>
+
+                <template v-else>
+                  {{ value }}
+                </template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="c-setting-footer">
+      <button class="btn-cancel" @click="cancelFile">Cancelar</button>
       <button class="btn-success" type="submit" @click.prevent="uploadFileTajo">
         <template v-if="buttonClicked">
           <span class="loader"></span>Procesando...
         </template>
-        <template v-else> Guardar</template>
+        <template v-else> Enviar</template>
       </button>
     </div>
   </div>
