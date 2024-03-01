@@ -16,7 +16,6 @@ const trips = computed(() => store.state.dataTripsPlanta)
 </script>
 
 <template>
-  {{ trips }}
   <div class="Container-totals">
     <div class="C-totals-items">
       <div class="Item-w-total primary-color">
