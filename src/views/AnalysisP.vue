@@ -1,5 +1,6 @@
 <script setup>
-import FeedingGraf from "../components/FeedingGraf.vue";
+import GrafCompliance from "../components/GrafCompliance.vue";
+import Head from "../components/Head.vue";
 </script>
 
 <template>
@@ -10,18 +11,13 @@ import FeedingGraf from "../components/FeedingGraf.vue";
       </div>
       <span>Hoy| Dia terminado en Mina </span>
     </div>
-    <div class="global-h-button"></div>
+    <div class="global-h-button"><Head/></div>
   </div>
   <div class="c-global-c-analysis">
-    <div class="c-analysis-items">
-      <ComplianceGraf stage="analysisIn" mining="YUMPAG"/>
-      <ComplianceGraf stage="analysisIn" mining="UCHUCCHACUA"/>
-    </div>
-    <div>
-    <h2>Alimentación de Planta</h2>
+    <GrafCompliance stage="analysisOut" mining="YUMPAG"/>
+    <GrafCompliance stage="analysisOut" mining="UCHUCCHACUA"/>
   </div>
-      <FeedingGraf stage="analysisOut" mining="YUMPAG" />    
-  </div>
+     
 </template>
 
 <style lang="scss">

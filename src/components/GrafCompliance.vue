@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, watchEffect} from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { useStore } from "vuex";
 import ICalendar from "../icons/ICalendar.vue";
@@ -99,6 +99,15 @@ const handleGraphic = async () => {
   } catch (error) {
     console.error("Error al actualizar:", error);
   }
+};
+
+
+const SendValues = async () => {
+  store.commit('getValuesPDF', {
+    ts: selectedEstado.value.getTime(),
+    mining: props.mining,
+    stage: props.stage
+  });
 };
 
 watchEffect(() => {
@@ -265,7 +274,11 @@ const chartOptions = {
           <strong> Stock {{ props.mining }} </strong>
           (Análisis)
         </h3>
+        <button class="btn-success" @click.prevent="SendValues()">
+          Guardar valores para PDF
+        </button>
       </div>
+      {{ valuesPDF }}
       <div class="g-d-header-btns">
         <div>
           <Calendar

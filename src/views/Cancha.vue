@@ -3,7 +3,7 @@ import { FilterMatchMode } from "primevue/api";
 import { Subject } from "rxjs";
 import { computed, inject, onMounted, ref } from "vue";
 import { useStore } from "vuex";
-import Filters from "../components/filters.vue";
+import FiltersCancha from "../components/FiltersCancha.vue";
 import IExport from "../icons/IExport.vue";
 import {
 formatArrayField,
@@ -12,6 +12,7 @@ formatDateAbas,
 formatFixed,
 formatHour,
 } from "../libs/utils";
+import Head from "../components/Head.vue";
 
 const store = useStore();
 const socket = inject("socket");
@@ -23,9 +24,10 @@ const exportCSV = () => {
 };
 
 onMounted(async () => {
+  store.commit("filtroAplicado", false);
   await store.dispatch("get_listCancha");
   trips.value = store.state.dataListCancha;
-  console.log(trips.value);
+  
 });
 
 socket.on("OreControl", (data) => {
@@ -140,7 +142,7 @@ const columns = ref([
       <span>| Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-      <Filters />
+      <FiltersCancha /> <Head/>
     </div>
   </div>
   <div class="c-global-c-content" v-show="!filtroAplicado">
@@ -175,6 +177,7 @@ const columns = ref([
           <button class="btn-success" @click="exportCSV($event)">
             <IExport /> Exportar
           </button>
+          
         </div>
       </template>
       <Column header="#" headerStyle="width: 2.5rem">
@@ -359,7 +362,7 @@ const columns = ref([
         tableStyle="width: 100%"
         :loading="store.state.loading"
       >
-        <Column header="#" headerStyle="width: 2.5rem">
+        <!-- <Column header="#" headerStyle="width: 2.5rem">
           <template #body="slotProps">
             <div class="td-user">
               <div class="t-name">
@@ -367,7 +370,7 @@ const columns = ref([
               </div>
             </div>
           </template>
-        </Column>
+        </Column> -->
         <Column
           v-for="(header, index) in tripsFiltered.header || []"
           :key="index"
@@ -422,29 +425,6 @@ const columns = ref([
 </template>
 
 <style lang="scss">
-.div-co-dash {
-  display: flex;
-  gap: 1rem;
-}
-.btn-graficar {
-  background-color: var(--primary);
-  max-width: 200px;
-}
-.container-t- {
-  width: 100%;
-  color: var(--black);
-  font-size: clamp(6px, 8vw, 14px);
-  line-height: 0.7rem;
-  font-weight: 500;
-  border-collapse: collapse;
-  white-space: nowrap;
-  overflow: hidden;
-  padding-top: 1rem;
-  background-color: var(--white);
-  border-radius: var(--br-xxl);
-  border: 1px solid var(--grey-light-22);
-  padding: 2rem;
-}
 
 .travel-status {
   position: relative;

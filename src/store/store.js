@@ -11,6 +11,8 @@ const store = createStore({
     weights: [],
     // canvas: null,
     filtroAplicado: false,
+    filtroAplicadoPlanta: false,
+
     dataListOControl: [],
     dataListQControl: [],
     dataListGeneral: [],
@@ -89,9 +91,16 @@ const store = createStore({
     filtroAplicado(state, payload) {
       state.filtroAplicado = payload
     },
+    filtroAplicadoPlanta(state, payload) {
+      state.filtroAplicadoPlanta = payload
+    },
+
     // ADD to list of trips
     addDataGeneralList(state, payload) {
       state.dataFilterTable.data.unshift(payload)
+    },
+    addDataGeneralList(state, payload) {
+      state.dataFilterPlanta.data.unshift(payload)
     },
     addDataListOreControl(state, payload) {
       state.dataListOControl.data.push(payload)
@@ -132,7 +141,7 @@ const store = createStore({
       state.rumaTotal.slice(payload, 1)
     },
     getValuesPDF(state, payload) {
-      state.valuesPDF = payload
+      state.valuesPDF.push(payload)
     },
   },
   actions: {
@@ -358,11 +367,7 @@ const store = createStore({
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
-    data_valuesPDF: async ({ commit }, data) => {
-      try {
-        commit("getValuesPDF", data)
-      } catch (error) {commit("loading", false)}
-    },
+    
   },
   modules: {},
 })

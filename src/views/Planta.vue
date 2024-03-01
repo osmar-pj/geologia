@@ -1,16 +1,16 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useStore } from "vuex";
-import FiltersPlanta from "../components/filtersPlanta.vue";
 import { FilterMatchMode } from "primevue/api";
+import FiltersPlanta from "../components/filtersPlanta.vue";
 import IExport from "../icons/IExport.vue";
+import Head from "../components/Head.vue";
 import {
-formatDate,
-formatDateAbas,
-formatFixed,
-formatHour
+  formatDate,
+  formatDateAbas,
+  formatFixed,
+  formatHour,
 } from "../libs/utils";
-
 
 const store = useStore();
 const trips = ref([]);
@@ -19,13 +19,13 @@ const exportCSV = () => {
   dt.value.exportCSV();
 };
 onMounted(async () => {
+  store.commit("filtroAplicadoPlanta", false);
   await store.dispatch("get_listPlanta");
   trips.value = store.state.dataListPlanta;
-  console.log(trips.value);
 });
 
-const filtroAplicado = computed(() => store.state.filtroAplicado);
-const tripsFiltered = computed(() => store.state.dataFilterTable);
+const filtroAplicadoPlanta = computed(() => store.state.filtroAplicadoPlanta);
+const tripsFiltered = computed(() => store.state.dataFilterPlanta);
 
 const excludedFields = [
   "year",
@@ -79,11 +79,9 @@ const columns = ref([
       </div>
       <span>| Dia terminado en Mina </span>
     </div>
-    <div class="global-h-button">
-       <FiltersPlanta /> 
-    </div>
+    <div class="global-h-button"><FiltersPlanta /> <Head /></div>
   </div>
-  <div class="c-global-c-content" v-show="!filtroAplicado">
+  <div class="c-global-c-content" v-show="!filtroAplicadoPlanta">
     <DataTable
       v-model:filters="filters"
       :value="trips.data"
@@ -110,12 +108,6 @@ const columns = ref([
     >
       <template #header>
         <div>
-          <!-- <InputIcon>
-              <img src="../assets/img/i-search.svg" alt="" />
-            </InputIcon> -->
-          <!-- <InputText
-           
-          /> -->
           <input
             type="text"
             v-model="filters['global'].value"
@@ -123,7 +115,9 @@ const columns = ref([
           />
         </div>
         <div>
-          <button class="btn-success" @click="exportCSV($event)"><IExport /> Exportar</button>
+          <button class="btn-success" @click="exportCSV($event)">
+            <IExport /> Exportar
+          </button>
         </div>
       </template>
       <Column header="#" headerStyle="width: 2.5rem">
@@ -166,7 +160,7 @@ const columns = ref([
           </div>
         </template>
       </Column>
-      
+
       <template v-for="(header, index) in trips.header || []">
         <Column
           v-if="
@@ -250,9 +244,9 @@ const columns = ref([
       </Column>
     </DataTable>
   </div>
-  <div class="c-global-c-filtered" v-show="filtroAplicado">
- 
-    <DataTable
+
+  <div class="config-content-table N-datatable" v-show="filtroAplicadoPlanta">
+    <!-- <DataTable
       v-model:filters="filters"
       :value="tripsFiltered.content"
       ref="dt"
@@ -274,12 +268,6 @@ const columns = ref([
     >
       <template #header>
         <div>
-          <!-- <InputIcon>
-              <img src="../assets/img/i-search.svg" alt="" />
-            </InputIcon> -->
-          <!-- <InputText
-           
-          /> -->
           <input
             type="text"
             v-model="filters['global'].value"
@@ -331,10 +319,82 @@ const columns = ref([
           </template>
         </Column>
       </template>
-    
-    
-    </DataTable>
-  
+    </DataTable> -->
+    <table
+      v-if="
+        tripsFiltered && tripsFiltered.data && tripsFiltered.data.length > 0
+      "
+    >
+      <thead>
+        <tr>
+          <th>#</th>
+          <th v-for="column in tripsFiltered.header" :key="column.field">
+            {{ column.title }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="(row, index) in tripsFiltered.data.slice(0, -1)"
+          :key="index"
+        >
+          <td>
+            <div class="td-user">
+              <div class="t-name">
+                <h5>#{{ index + 1 }}</h5>
+              </div>
+            </div>
+          </td>
+          <td v-for="column in tripsFiltered.header" :key="column.field">
+            <h4
+              :style="{
+                color: (() => {
+                  const value = row[column.field];
+                  if (
+                    typeof value === 'number' &&
+                    column.field.startsWith('ley_')
+                  ) {
+                    return value < 3
+                      ? '#00B050'
+                      : value < 10
+                      ? '#FF9900'
+                      : '#FF0000';
+                  }
+                  return '';
+                })(),
+              }"
+            >
+              {{
+                typeof row[column.field] === "number"
+                  ? formatFixed(row[column.field])
+                  : row[column.field]
+              }}
+            </h4>
+          </td>
+        </tr>
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="">TOTAL</td>
+          <td v-for="column in tripsFiltered.header" :key="column.field">
+            {{
+              tripsFiltered.data.length > 0 &&
+              typeof tripsFiltered.data[tripsFiltered.data.length - 1][
+                column.field
+              ] === "number"
+                ? tripsFiltered.data[tripsFiltered.data.length - 1][
+                    column.field
+                  ].toFixed(2)
+                : tripsFiltered.data[tripsFiltered.data.length - 1][
+                    column.field
+                  ]
+            }}
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+    <div v-else>No hay datos disponibles.</div>
   </div>
 </template>
 

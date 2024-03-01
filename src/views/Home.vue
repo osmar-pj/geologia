@@ -1,5 +1,4 @@
 <script setup>
-import Head from "../components/Head.vue";
 import Nav from "../components/Nav.vue";
 </script>
 
@@ -7,7 +6,6 @@ import Nav from "../components/Nav.vue";
   <div class="content">
     <Nav />
     <main>
-        <!-- <Head /> -->
         <div class="c-main">
             <router-view></router-view>
         </div>

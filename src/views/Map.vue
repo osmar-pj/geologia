@@ -270,13 +270,8 @@ const mergePilas = async () => {
     });
     const data = await response.json();
     if (data.status === true) {
-<<<<<<< HEAD
       console.log("Correcto")
       const length = pilasSelected.value.length
-=======
-      console.log("Correcto");
-      // const length = pilasSelected.value.length
->>>>>>> 68b7eba743f311d4878453a8bfffefa8aa1e2e13
       const tonh_total = pilasSelected.value.reduce(
         (a, b) => a + b.pila.tonh,
         0
@@ -741,20 +736,7 @@ const move = (e) => {
     <zoneC2 id="c2" />
     <img src="../prueba/canchas.png" alt="" id="map" />
     <!-- <IMap id="map" /> -->
-<<<<<<< HEAD
     <IPanel v-for="{ubication, total, index} in panels" :id="index" :ubication="ubication" :stock="total.stock" :nsr="total.nsr" :ag_equiv="total.ag_eq"/>
-=======
-    <IPanel
-      v-for="{ ubication, total, index } in panels"
-      :id="index"
-      :ubication="ubication"
-      :stock="total.stock"
-      :nsr="total.nsr"
-      :ag_equiv="total.ag_eq"
-    />
-    <!-- <ICC :id="index" :ubication="ubication" :stock="total.stock" :nsr="total.nsr" :ag_equiv="total.ag_eq" v-for="{ubication, total, index} in panels" /> -->
-    <!-- <IDesmonte id="desmonte" v-for="desmonte in pilas.filter(i => i.typePila == 'Desmonte')" :pila="desmonte" :id="desmonte.cod_tableta"/> -->
->>>>>>> 68b7eba743f311d4878453a8bfffefa8aa1e2e13
   </div>
   <Toast />
   <div class="c-global-container-map">

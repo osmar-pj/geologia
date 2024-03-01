@@ -1,7 +1,47 @@
-<script setup></script>
+<script setup>
+import { computed, ref} from "vue";
+import { useStore } from "vuex";
+
+const store = useStore();
+const valuesPDF = computed(()=>store.state.valuesPDF)
+const showFilters = ref(false);
+
+const openModal = () => {
+  showFilters.value = true;
+};
+const cerrarModal = () => {
+  showFilters.value = false;
+};
+
+</script>
 
 <template>
-  <div className="c-header">
+  <button class="btn-filters" @click="openModal()">
+   
+    Valores PDF <span></span>
+  </button>
+  <Transition :duration="550" name="filter">
+    <div
+      class="modalFilters-backg"
+      v-if="showFilters"      
+    >
+    <form
+        class="modalFilters-content inner"
+       
+      >
+      <div class="mF-c-header">
+          <div class="mF-h-title">
+            <h2>Values PDF</h2>
+          </div>
+          <span @click="cerrarModal" class="mF-h-close" type="button">
+            <img src="../assets/img/i-close.svg" alt="" />
+          </span>
+        </div>
+      {{ valuesPDF }}
+    </form>
+    </div>
+  </Transition>
+  <!-- <div className="c-header">
     <div className="header-left">
       <button onClick="{handleOnClick}" className="header-l-menu">
         <div className="header-l-menu">
@@ -26,7 +66,7 @@
     <div className="header-right">
        <span> Home > Dashboard</span> 
     </div>
-  </div>
+  </div> -->
 </template>
 
 <style lang="scss">
