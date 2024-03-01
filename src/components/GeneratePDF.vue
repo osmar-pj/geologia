@@ -91,26 +91,30 @@ setInterval(() => {
 
             <!-- Contenido de la primera hoja -->
             <div class="pdf-c-table line-pdf line-pdf" id="first-page">
-              
+              <h2>Cancha /Dominio Rango</h2>
+              <TablePDF lisA="dominio" lisB='rango' />
             </div>
             <div class="html2pdf__page-break"></div>
 
-            <div class="pdf-c-table line-pdf line-pdf" id="f-page">
-              <TablePDF/>
+            <div class="pdf-c-table line-pdf line-pdf" id="f-pdf-c-table">
+              <h2>Cancha /Tipo - Rango</h2>
+              <TablePDF lisA="type" lisB='rango' />
             </div>
             <!-- Salto de página después de la primera hoja -->
             <div class="html2pdf__page-break"></div>
+
+            
 
             <!-- Contenido de la segunda hoja -->
             <div class="pdf-c-grafic line-pdf" id="second-page">
               <h2 class="pdf-title">
                 Reporte de canchas / Yumpag - Uchuccchacua
               </h2>
-               <!-- <GrafCompliance
+                <GrafCompliance
                 style="width: 100%"
                 stage="analysisIn"
                 mining="YUMPAG"
-              />  -->
+              />  
             </div>
 
             <!-- Contenido de la segunda hoja -->
@@ -119,11 +123,11 @@ setInterval(() => {
                 Reporte de canchas / Yumpag - Uchuccchacua
               </h3>
 
-               <!-- <GrafCompliance
+                <GrafCompliance
                 style="width: 100%"
                 stage="analysisIn"
                 mining="UCHUCCHACUA"
-              />  -->
+              />  
             </div>
           </div>
         </div>
@@ -268,5 +272,9 @@ setInterval(() => {
   td {
     background-color: #ffd90049;
   }
+}
+
+.pdf-c-table{
+ gap: 2rem;
 }
 </style>

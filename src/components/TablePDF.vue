@@ -5,6 +5,7 @@ import { useStore } from "vuex";
 const store = useStore();
 const url = import.meta.env.VITE_API_URL;
 
+const props = defineProps(["lisA",'lisB', "mining"]);
 const emit = defineEmits();
 
 const trips = ref([]);
@@ -19,7 +20,7 @@ const sendFilter = async () => {
       },
       body: JSON.stringify({
         ts: 1704085200000,
-        arr: ["type", "rango"],
+        arr: [props.lisA, props.lisB],
         category: "trips",
       }),
     });
@@ -38,7 +39,7 @@ const sendFilter = async () => {
         newData[1].header = newData2;
 
         trips.value = newData;
-        console.log(newData)
+        console.log(newData);
       } else {
         console.error(
           "newData no es un array o no contiene al menos dos elementos"
@@ -55,41 +56,39 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="pdf-c-table line-pdf line-pdf" id="f-page">
-    <h3 class="pdf-title">Stock de canchas / Uchuccchacua</h3>
-    
-    <div class="c-global-c-filtered">
-  <div
-    class="c-item-filtered config-content-table N-datatable"
-    v-for="(trip, index) in trips.data"
-    :key="index"
-  >
-    <table class="table" style="width: 100%" v-if="!store.state.loading">
-      <thead>
-        <tr>
-          <th
-            v-for="(column, columnIndex) in trip.header"
-            :key="columnIndex"
-          >
-            {{ column.title }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, rowIndex) in trip.body" :key="rowIndex">
-          <td v-for="(column, columnIndex) in row" :key="columnIndex">
-            <h4 class="t-ley">
-              {{ column }}
-            </h4>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-else>Loading...</div>
-  </div>
-</div>
-
-   
+  <div class="line-pdf line-pdf" id="f-page">
+    <br><br><br>
+    <div
+      class="c-item-filtered config-content-table N-datatable"
+      v-for="(trip, index) in trips"
+      :key="index"
+    >
+      <table class="table" style="width: 100%" v-if="!store.state.loading">
+        <thead>
+          <tr>
+            <th v-for="(column, columnIndex) in trip.header" :key="columnIndex">
+              {{ column.title }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, rowIndex) in trip.body" :key="rowIndex">
+            <td v-for="(column, columnIndex) in trip.header" :key="columnIndex">
+              <h4 class="t-ley">
+                {{
+                  typeof row[column.field] === "number"
+                    ? row[column.field].toFixed(2)
+                    : row[column.field]
+                }}
+              </h4>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div v-else>Loading...</div>
+    </div>
+    <br><br><br>
   </div>
 </template>
 

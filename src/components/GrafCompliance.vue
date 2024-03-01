@@ -129,7 +129,7 @@ const chartOptions = {
       if (val === null) {
         return "";
       } else {
-        return val.toFixed(0);
+        return val.toFixed(2);
       }
     },
   },
