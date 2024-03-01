@@ -37,7 +37,7 @@ const excludedFields = [
   "vagones",
   "tonh",
   "turn",
-  "id_trip",
+  
   "dominio"
 ];
 

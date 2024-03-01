@@ -79,7 +79,7 @@ const columns = ref([
       </div>
       <span>| Dia terminado en Mina </span>
     </div>
-    <div class="global-h-button"><FiltersPlanta /> <Head /></div>
+    <div class="global-h-button"><FiltersPlanta /> </div>
   </div>
   <div class="c-global-c-content" v-show="!filtroAplicadoPlanta">
     <DataTable

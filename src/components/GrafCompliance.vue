@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watchEffect} from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { useStore } from "vuex";
 import ICalendar from "../icons/ICalendar.vue";
@@ -101,12 +101,11 @@ const handleGraphic = async () => {
   }
 };
 
-
 const SendValues = async () => {
-  store.commit('getValuesPDF', {
+  store.commit("getValuesPDF", {
     ts: selectedEstado.value.getTime(),
     mining: props.mining,
-    stage: props.stage
+    stage: props.stage,
   });
 };
 
@@ -125,21 +124,16 @@ const chartOptions = {
   },
   dataLabels: {
     enabled: true,
-    enabledOnSeries: [0, 1, 3],
+    enabledOnSeries: [0, 1, 3, 4],
     formatter: (val) => {
       if (val === null) {
         return "";
       } else {
-        return val.toFixed(2);
+        return val.toFixed(0);
       }
     },
   },
-  colors: [
-    "rgb(255, 69, 96)",
-    "#00B050",
-    "rgb(0, 143, 251)",
-    "rgba(254, 176, 25, 0.85)",
-  ],
+  colors: ["#00a000", "#88db08", "#008f8f", "#11c7c6"],
 
   stroke: {
     width: [1, 1, 1],
@@ -252,6 +246,8 @@ const chartOptions = {
   },
   stroke: {
     width: 1.5,
+    curve: "straight",
+    dashArray: [0, 8],
   },
   legend: {
     show: true,
@@ -259,8 +255,8 @@ const chartOptions = {
     horizontalAlign: "left",
   },
   markers: {
-    size: 5,
-    strokeWidth: 1,
+    size: 1,
+    strokeWidth: 5,
   },
 };
 </script>
@@ -271,14 +267,14 @@ const chartOptions = {
     <div class="g-dash-header">
       <div class="g-d-header-title">
         <h3>
-          <strong> Stock {{ props.mining }} </strong>
+          <strong> {{ props.mining }} </strong>
           (Análisis)
         </h3>
-        <button class="btn-success" @click.prevent="SendValues()">
+        <!-- <button class="btn-success" @click.prevent="SendValues()">
           Guardar valores para PDF
-        </button>
+        </button> -->
       </div>
-      {{ valuesPDF }}
+
       <div class="g-d-header-btns">
         <div>
           <Calendar
@@ -333,7 +329,7 @@ const chartOptions = {
                   analysisData && analysisData.ton.percent_ejec
                     ? analysisData.ton.percent_ejec.toFixed(2)
                     : 0,
-                '--fill': '#FF3D00',
+                '--fill': '#00a000',
               }"
             ></div>
             <div
@@ -396,7 +392,7 @@ const chartOptions = {
                   analysisData && analysisData.ley_ag.percent_prog
                     ? analysisData.ley_ag.percent_prog.toFixed(2)
                     : 0,
-                '--background': 'rgb(255, 69, 96)',
+                '--background': '#00a000',
               }"
             ></div>
           </div>
@@ -422,7 +418,7 @@ const chartOptions = {
                   analysisData && analysisData.ley_fe.percent_prog
                     ? analysisData.ley_fe.percent_prog.toFixed(2)
                     : 0,
-                '--background': 'rgba(27, 153, 139, 0.85)',
+                '--background': 'rgb(0, 143, 251)',
               }"
             ></div>
           </div>
@@ -448,7 +444,7 @@ const chartOptions = {
                   analysisData && analysisData.ley_mn.percent_prog
                     ? analysisData.ley_mn.percent_prog.toFixed(2)
                     : 0,
-                '--background': 'rgba(27, 153, 139, 0.85)',
+                '--background': 'rgb(255, 69, 96)',
               }"
             ></div>
           </div>
@@ -706,17 +702,11 @@ const chartOptions = {
   }
 }
 
-.semi-ley {
-  &:after {
-    border-color: var(--grey-light-22) var(--grey-light-22) rgb(255, 69, 96)
-      rgb(255, 69, 96);
-  }
-}
 
 .semi-tonelada {
   &:after {
-    border-color: var(--grey-light-22) var(--grey-light-22) rgb(0, 143, 251)
-      rgb(0, 143, 251);
+    border-color: var(--grey-light-22) var(--grey-light-22) #008f8f
+      #008f8f;
   }
 }
 
@@ -768,6 +758,7 @@ const chartOptions = {
   height: 10px;
   border-radius: 2px;
   background-color: var(--grey-light-22);
+  overflow: hidden;
   &::after {
     content: "";
     animation: porc3 1.5s ease-in-out forwards;
