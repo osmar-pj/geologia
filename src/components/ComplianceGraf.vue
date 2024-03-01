@@ -70,7 +70,7 @@ const handleGraphic = async () => {
         data: result.data.map((item) => {
           return {
             x: new Date(item.timestamp * 1000),
-            y: item.ley_prog,
+            y: item.ley_ag_prog,
           };
         }),
       },

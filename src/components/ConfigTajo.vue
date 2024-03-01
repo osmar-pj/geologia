@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted,computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import readXlsxFile from "read-excel-file";
 import { formatDateAbas } from "../libs/utils";
@@ -11,7 +11,6 @@ const store = useStore();
 
 const loading = ref(true);
 const dataTajo = ref([]);
-
 
 const showError = ref(false);
 
@@ -49,47 +48,54 @@ const accionModal = ref(null);
 
 const openModal = (data, accion) => {
   modalData.value = data;
-  console.log(data)
+  console.log(data);
   accionModal.value = accion;
-  console.log(accion)
+  console.log(accion);
   showOCModal.value = true;
 };
 onMounted(async () => {
   await store.dispatch("tajo_list");
-
 });
 
 const listTajo = computed(() => store.state.tajoList);
 const buttonClicked = ref(false);
 
 const uploadFileTajo = async () => {
-  try {
-    buttonClicked.value = true;
-    const updatedTravel = {
-      data: dataTajo.value,
-      user: store.state.user.name,
-    };
-    console.log(updatedTravel);
-    const response = await fetch(`${url}/tajo`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedTravel),
-    });
+  if (dataTajo.value.length === 0) {
+    showError.value = true;
+    setTimeout(() => {
+      showError.value = false;
+    }, 5000);
+  } else {
+    showError.value = false;
+    try {
+      buttonClicked.value = true;
+      const updatedTravel = {
+        data: dataTajo.value,
+        user: store.state.user.name,
+      };
+      console.log(updatedTravel);
+      const response = await fetch(`${url}/tajo`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTravel),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (result.status === true) {
-      console.log("Correcto");
-      buttonClicked.value = false;
-    } else {
-      console.log("error");
+      if (result.status === true) {
+        console.log("Correcto");
+        buttonClicked.value = false;
+      } else {
+        console.log("error");
+        buttonClicked.value = false;
+      }
+    } catch (error) {
+      console.error("Error al actualizar:", error);
       buttonClicked.value = false;
     }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
-    buttonClicked.value = false;
   }
 };
 </script>
@@ -141,7 +147,9 @@ const uploadFileTajo = async () => {
         </table>
       </div>
       <div>
-        <button @click="openModal(row,false)" class="btn-success">Crear</button>
+        <button @click="openModal(row, false)" class="btn-success">
+          Crear
+        </button>
       </div>
       <div class="config-content-table N-datatable">
         <table>
@@ -180,7 +188,7 @@ const uploadFileTajo = async () => {
                 <div className="btns">
                   <button
                     class="item-btn table-btn-edit"
-                    @click="openModal(row,true)"
+                    @click="openModal(row, true)"
                     v-tooltip.bottom="{
                       value: 'Completar',
                       pt: {
@@ -199,7 +207,7 @@ const uploadFileTajo = async () => {
               </td>
             </tr>
           </tbody>
-        </table>        
+        </table>
       </div>
     </div>
     <div class="c-setting-footer">
@@ -222,8 +230,8 @@ const uploadFileTajo = async () => {
 </template>
 
 <style lang="scss">
-.config-content-table {
-  overflow: auto;
-  height: 400px !important;
-}
+// .config-content-table {
+//   overflow: auto;
+//   height: 400px !important;
+// }
 </style>

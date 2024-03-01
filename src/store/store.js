@@ -23,6 +23,7 @@ const store = createStore({
     dataAnalysis: [],
     tajoList: [],
     configPlanta: [],
+    configCancha: [],
     pilaList: [],
     rumaTotal: [],
     userModal: null,
@@ -30,6 +31,7 @@ const store = createStore({
     loading: false,
     config: {},
     panels: [],
+    valuesPDF: [],
   },
   mutations: {
     authLogin(state, payload) {
@@ -56,6 +58,9 @@ const store = createStore({
 
     getConfigPlanta(state, payload) {
       state.configPlanta = payload
+    },
+    getConfigCancha(state, payload) {
+      state.configCancha = payload
     },
     getRumaTotal(state, payload) {
       state.rumaTotal = payload
@@ -126,7 +131,9 @@ const store = createStore({
     lessDataRumaList(state, payload) {
       state.rumaTotal.slice(payload, 1)
     },
-    
+    getValuesPDF(state, payload) {
+      state.valuesPDF = payload
+    },
   },
   actions: {
     auth_login: async ({ commit }, payload) => {
@@ -335,7 +342,27 @@ const store = createStore({
         commit("loading", false)
       } catch (error) {commit("loading", false)}
     },
-    
+    config_cancha: async ({ commit }) => {
+      try {
+        commit("loading", true)
+        const response = await fetch(`${url}/program/cancha`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": true,
+          },
+        })
+        const data = await response.json()
+        commit("getConfigCancha", data)
+        console.log(data);
+        commit("loading", false)
+      } catch (error) {commit("loading", false)}
+    },
+    data_valuesPDF: async ({ commit }, data) => {
+      try {
+        commit("getValuesPDF", data)
+      } catch (error) {commit("loading", false)}
+    },
   },
   modules: {},
 })

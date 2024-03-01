@@ -506,6 +506,7 @@ const logout = async () => {
       gap: 0.8rem;
       height: 40px;
       cursor: pointer;
+      border-radius: 8px;
       position: relative;
       svg {
         width: 1.4rem;
@@ -526,13 +527,22 @@ const logout = async () => {
       &::before {
         content: "";
         position: absolute;
-        right: 0;
+        right: 20px;
         top: 50%;
         width: 0.3em;
         height: 0.3em;
         border: solid var(--grey-light-3);
         border-width: 0 0.1em 0.1em 0;
         transform: rotate(45deg) translate(-50%, -50%);
+      }
+      &:hover {
+        background-color: var(--secondary);
+        svg {
+          color: var(--white) !important;
+        }
+        span {
+          color: var(--white) !important;
+        }
       }
     }
     .nav-subitems {
@@ -550,7 +560,7 @@ const logout = async () => {
           cursor: pointer;
           border-radius: 8px;
           padding: 0.7rem 1rem;
-          transition: all 0.35s ease-in-out;
+          transition: all 0.25s ease-in-out;
           display: flex;
           align-items: center;
           gap: 0.8rem;
@@ -593,7 +603,7 @@ const logout = async () => {
       cursor: pointer;
       border-radius: 8px;
       padding: 0.7rem 1rem;
-      transition: all 0.35s ease-in-out;
+      transition: all 0.25s ease-in-out;
       display: flex;
       align-items: center;
       gap: 0.8rem;
