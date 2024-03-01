@@ -298,9 +298,9 @@ const createTajo = async () => {
 </template>
 
 <style lang="scss">
-.mCreate-Crud {
-  max-width: 450px !important;
-}
+// .mCreate-Crud {
+//   max-width: 450px !important;
+// }
 
 .mC-b-imputs-Crud {
   display: flex;

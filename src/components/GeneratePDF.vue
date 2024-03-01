@@ -1,11 +1,16 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, defineEmits, defineProps } from "vue";
 import { useStore } from "vuex";
 import html2pdf from "html2pdf.js";
 import ComplianceGraf from "./ComplianceGraf.vue";
 
 const store = useStore();
 const url = import.meta.env.VITE_API_URL;
+
+const emit = defineEmits();
+const cerrarModal = () => {
+  emit("cerrarModal");
+};
 
 const trips = ref([]);
 const tripsY = ref([]);
@@ -114,142 +119,152 @@ setInterval(() => {
 }, 1000);
 </script>
 <template>
-  <button class="btn-success btn-GP" @click="generatePDF">Exportar PDF</button>
-  <div class="pdf-content" v-show="!generatingPDF">
-    <div id="app" ref="document" style="width: 297mm; height: 210mm">
-      <div id="pdf-content">
-        <!-- Contenido de la caratula hoja -->
+  <div class="modalCreate-backg">
+    <div class="mExporrtPDF-content">
+      <button class="btn-success btn-GP" @click="generatePDF">
+        Exportar PDF
+      </button>
+      <div class="pdf-content" v-show="generatingPDF">
+        <div id="app" ref="document" >
+          <div id="pdf-content">
+            <!-- Contenido de la caratula hoja -->
 
-        <div class="caratula">
-          <div class="contenido-caratula">
-            <h3>{{ formattedDate }}</h3>
-            <h1>REPORTE</h1>
-            <h2>Área/ Geología</h2>
-            <h4>{{ storedUser.name }}</h4>
+            <div class="caratula">
+              <div class="contenido-caratula">
+                <h3>{{ formattedDate }}</h3>
+                <h1>REPORTE</h1>
+                <h2>Área/ Geología</h2>
+                <h4>{{ storedUser.name }}</h4>
+              </div>
+            </div>
+
+            <!-- Contenido de la primera hoja -->
+            <div class="pdf-c-table" id="first-page">
+              <h3 class="pdf-title">Stock de canchas / Yumpag</h3>
+              <div class="N-datatable">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mes</th>
+                      <th>Rango</th>
+                      <th>Tipo</th>
+                      <th>Tonelaje</th>
+                      <th>Ley Ag</th>
+                      <th>Ley Fe</th>
+                      <th>Ley Mn</th>
+                      <th>Ley Pb</th>
+                      <th>Ley Zn</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in trips.body" :key="item.id">
+                      <td>{{ item.month }}</td>
+                      <td>{{ item.rango }}</td>
+                      <td>{{ item.type }}</td>
+                      <td>{{ item.tonh.toFixed(2) }}</td>
+                      <td>{{ item.ley_ag.toFixed(2) }}</td>
+                      <td>{{ item.ley_fe.toFixed(2) }}</td>
+                      <td>{{ item.ley_mn.toFixed(2) }}</td>
+                      <td>{{ item.ley_pb.toFixed(2) }}</td>
+                      <td>{{ item.ley_zn.toFixed(2) }}</td>
+                    </tr>
+                    <tr
+                      v-for="item in trips.footer"
+                      :key="item.id"
+                      class="tbl-bold"
+                    >
+                      <td>Total</td>
+                      <td></td>
+                      <td></td>
+                      <td>{{ item.tonh.toFixed(2) }}</td>
+                      <td>{{ item.ley_ag.toFixed(2) }}</td>
+                      <td>{{ item.ley_fe.toFixed(2) }}</td>
+                      <td>{{ item.ley_mn.toFixed(2) }}</td>
+                      <td>{{ item.ley_pb.toFixed(2) }}</td>
+                      <td>{{ item.ley_zn.toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="html2pdf__page-break"></div>
+
+            <div class="pdf-c-table" id="f-page">
+              <h3 class="pdf-title">Stock de canchas / Uchuccchacua</h3>
+              <div class="N-datatable">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Mes</th>
+                      <th>Rango</th>
+                      <th>Tipo</th>
+                      <th>Tonelaje</th>
+                      <th>Ley Ag</th>
+                      <th>Ley Fe</th>
+                      <th>Ley Mn</th>
+                      <th>Ley Pb</th>
+                      <th>Ley Zn</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in tripsY.body" :key="item.id">
+                      <td>{{ item.month }}</td>
+                      <td>{{ item.rango }}</td>
+                      <td>{{ item.type }}</td>
+                      <td>{{ item.tonh.toFixed(2) }}</td>
+                      <td>{{ item.ley_ag.toFixed(2) }}</td>
+                      <td>{{ item.ley_fe.toFixed(2) }}</td>
+                      <td>{{ item.ley_mn.toFixed(2) }}</td>
+                      <td>{{ item.ley_pb.toFixed(2) }}</td>
+                      <td>{{ item.ley_zn.toFixed(2) }}</td>
+                    </tr>
+                    <tr
+                      v-for="item in tripsY.footer"
+                      :key="item.id"
+                      class="tbl-bold"
+                    >
+                      <td>Total</td>
+                      <td></td>
+                      <td></td>
+                      <td>{{ item.tonh.toFixed(2) }}</td>
+                      <td>{{ item.ley_ag.toFixed(2) }}</td>
+                      <td>{{ item.ley_fe.toFixed(2) }}</td>
+                      <td>{{ item.ley_mn.toFixed(2) }}</td>
+                      <td>{{ item.ley_pb.toFixed(2) }}</td>
+                      <td>{{ item.ley_zn.toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- Salto de página después de la primera hoja -->
+            <div class="html2pdf__page-break"></div>
+
+            <!-- Contenido de la segunda hoja -->
+            <div class="pdf-c-grafic" id="second-page">
+              <h2 class="pdf-title">
+                Reporte de canchas / Yumpag - Uchuccchacua
+              </h2>
+              <ComplianceGraf
+                style="width: 100%"
+                stage="analysisIn"
+                mining="YUMPAG"
+              />
+            </div>
+
+            <!-- Contenido de la segunda hoja -->
+            <div class="pdf-c-grafic" id="t-page">
+              <h3 class="pdf-title">
+                Reporte de canchas / Yumpag - Uchuccchacua
+              </h3>
+
+              <ComplianceGraf
+                style="width: 100%"
+                stage="analysisIn"
+                mining="UCHUCCHACUA"
+              />
+            </div>
           </div>
-        </div>
-
-        <!-- Contenido de la primera hoja -->
-        <div class="pdf-c-table" id="first-page">
-          <h3 class="pdf-title">Stock de canchas / Yumpag</h3>
-          <div class="N-datatable">
-            <table>
-              <thead>
-                <tr>
-                  <th>Mes</th>
-                  <th>Rango</th>
-                  <th>Tipo</th>
-                  <th>Tonelaje</th>
-                  <th>Ley Ag</th>
-                  <th>Ley Fe</th>
-                  <th>Ley Mn</th>
-                  <th>Ley Pb</th>
-                  <th>Ley Zn</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in trips.body" :key="item.id">
-                  <td>{{ item.month }}</td>
-                  <td>{{ item.rango }}</td>
-                  <td>{{ item.type }}</td>
-                  <td>{{ item.tonh.toFixed(2) }}</td>
-                  <td>{{ item.ley_ag.toFixed(2) }}</td>
-                  <td>{{ item.ley_fe.toFixed(2) }}</td>
-                  <td>{{ item.ley_mn.toFixed(2) }}</td>
-                  <td>{{ item.ley_pb.toFixed(2) }}</td>
-                  <td>{{ item.ley_zn.toFixed(2) }}</td>
-                </tr>
-                <tr
-                  v-for="item in trips.footer"
-                  :key="item.id"
-                  class="tbl-bold"
-                >
-                  <td>Total</td>
-                  <td></td>
-                  <td></td>
-                  <td>{{ item.tonh.toFixed(2) }}</td>
-                  <td>{{ item.ley_ag.toFixed(2) }}</td>
-                  <td>{{ item.ley_fe.toFixed(2) }}</td>
-                  <td>{{ item.ley_mn.toFixed(2) }}</td>
-                  <td>{{ item.ley_pb.toFixed(2) }}</td>
-                  <td>{{ item.ley_zn.toFixed(2) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="html2pdf__page-break"></div>
-
-        <div class="pdf-c-table" id="f-page">
-          <h3 class="pdf-title">Stock de canchas / Uchuccchacua</h3>
-          <div class="N-datatable">
-            <table>
-              <thead>
-                <tr>
-                  <th>Mes</th>
-                  <th>Rango</th>
-                  <th>Tipo</th>
-                  <th>Tonelaje</th>
-                  <th>Ley Ag</th>
-                  <th>Ley Fe</th>
-                  <th>Ley Mn</th>
-                  <th>Ley Pb</th>
-                  <th>Ley Zn</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in tripsY.body" :key="item.id">
-                  <td>{{ item.month }}</td>
-                  <td>{{ item.rango }}</td>
-                  <td>{{ item.type }}</td>
-                  <td>{{ item.tonh.toFixed(2) }}</td>
-                  <td>{{ item.ley_ag.toFixed(2) }}</td>
-                  <td>{{ item.ley_fe.toFixed(2) }}</td>
-                  <td>{{ item.ley_mn.toFixed(2) }}</td>
-                  <td>{{ item.ley_pb.toFixed(2) }}</td>
-                  <td>{{ item.ley_zn.toFixed(2) }}</td>
-                </tr>
-                <tr
-                  v-for="item in tripsY.footer"
-                  :key="item.id"
-                  class="tbl-bold"
-                >
-                  <td>Total</td>
-                  <td></td>
-                  <td></td>
-                  <td>{{ item.tonh.toFixed(2) }}</td>
-                  <td>{{ item.ley_ag.toFixed(2) }}</td>
-                  <td>{{ item.ley_fe.toFixed(2) }}</td>
-                  <td>{{ item.ley_mn.toFixed(2) }}</td>
-                  <td>{{ item.ley_pb.toFixed(2) }}</td>
-                  <td>{{ item.ley_zn.toFixed(2) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <!-- Salto de página después de la primera hoja -->
-        <div class="html2pdf__page-break"></div>
-
-        <!-- Contenido de la segunda hoja -->
-        <div class="pdf-c-grafic" id="second-page">
-          <h2 class="pdf-title">Reporte de canchas / Yumpag - Uchuccchacua</h2>
-          <ComplianceGraf
-            style="width: 100%"
-            stage="analysisIn"
-            mining="YUMPAG"
-          />
-        </div>
-
-        <!-- Contenido de la segunda hoja -->
-        <div class="pdf-c-grafic" id="t-page">
-          <h3 class="pdf-title">Reporte de canchas / Yumpag - Uchuccchacua</h3>
-
-          <ComplianceGraf
-            style="width: 100%"
-            stage="analysisIn"
-            mining="UCHUCCHACUA"
-          />
         </div>
       </div>
     </div>
@@ -257,12 +272,25 @@ setInterval(() => {
 </template>
 
 <style lang="scss">
+.mExporrtPDF-content {
+  background-color: var(--white);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  
+  width: 80%;
+  height: 90vh;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 .pdf-content {
   // width: 100%;
   // height: 80vh;
   overflow: auto;
   border: 1px solid var(--grey-light-3);
-  margin: 2rem 2rem 2rem 2rem;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -272,9 +300,8 @@ setInterval(() => {
   background-color: var(--white);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
-
-  width: 297mm;
-  height: 210mm;
+  width: 80%;
+  height: 90vh;
 }
 .btn-GP {
   width: 200px !important;
@@ -317,9 +344,10 @@ setInterval(() => {
   }
 }
 
-.pdf-c-table,.pdf-c-grafic  {
-  width: 297mm;
-  height: 210mm;
+.pdf-c-table,
+.pdf-c-grafic {
+  width: 100%;
+  height: 90vh;
   padding: 4rem;
   display: flex;
   flex-direction: column;

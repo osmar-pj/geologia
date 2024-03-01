@@ -21,7 +21,6 @@ const numberOfMaterials = isSplitRequired.value && data.value && data.value.mate
   ? data.value.materials.length
   : 1;
 
-
 const dataToUpdate = ref([]);
 
 const selectedDominio = ref(null);
