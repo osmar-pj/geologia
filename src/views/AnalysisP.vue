@@ -11,7 +11,7 @@ import Head from "../components/Head.vue";
       </div>
       <span>Hoy| Dia terminado en Mina </span>
     </div>
-    <div class="global-h-button"><Head/></div>
+    <!-- <div class="global-h-button"><Head/></div> -->
   </div>
   <div class="c-global-c-analysis">
     <GrafCompliance stage="analysisOut" mining="YUMPAG"/>

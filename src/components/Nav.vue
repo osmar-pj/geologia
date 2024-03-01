@@ -138,7 +138,7 @@ const logout = async () => {
       </div>
 
       <ul class="s-content-menu">
-        <details
+        <details open
           v-for="menuItem in menuItems"
           :key="menuItem.name"
           class="s-c-menu-details"

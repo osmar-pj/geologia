@@ -81,7 +81,7 @@ const sendFilter = async () => {
     }, 5000);
   } else {
     try {
-      console.log("Ingresando");
+      console.log("Ingresando",selectedEstado.value.getTime());
       buttonClicked.value = true;
 
       const response = await fetch(`${url}/listGeneral`, {

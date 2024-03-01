@@ -697,7 +697,7 @@ const move = (e) => {
 <template>
   <h1>Pilas: {{ pilas.length }}</h1>
   <h1>Canvas: {{ canvas ? canvas.getObjects().length - 8 : 0 }}</h1>
-  <!-- <Totals /> -->
+  <Totals /> 
   <button class="btn-success btn-GP" @click.prevent="openModal()">
     Generar PDF
   </button>

@@ -2,7 +2,9 @@
 import { ref, onMounted, computed, defineEmits, defineProps } from "vue";
 import { useStore } from "vuex";
 import html2pdf from "html2pdf.js";
-import ComplianceGraf from "./ComplianceGraf.vue";
+import GrafCompliance from "./GrafCompliance.vue";
+import IExport from "../icons/IExport.vue";
+import TablePDF from "../components/TablePDF.vue"
 
 const store = useStore();
 const url = import.meta.env.VITE_API_URL;
@@ -12,68 +14,9 @@ const cerrarModal = () => {
   emit("cerrarModal");
 };
 
-const trips = ref([]);
-const tripsY = ref([]);
+
 const generatingPDF = ref(true);
 // Función para enviar el filtro y obtener los datos
-const sendFilter = async () => {
-  try {
-    const response = await fetch(`${url}/listGeneral`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": true,
-      },
-      body: JSON.stringify({
-        arr: ["mining", "year", "month", "rango", "type"],
-        category: "trips",
-        filtered: { month: "ENERO", mining: "UCHUCCHACUA" },
-      }),
-    });
-
-    const data = await response.json();
-    console.log(data);
-    if (data.status === true) {
-      console.log("correcto");
-      trips.value = data.data;
-      console.log(data.data);
-    }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
-  }
-};
-
-const sendFilterY = async () => {
-  try {
-    const response = await fetch(`${url}/listGeneral`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": true,
-      },
-      body: JSON.stringify({
-        arr: ["mining", "year", "month", "rango", "type"],
-        category: "trips",
-        filtered: { month: "ENERO", mining: "YUMPAG" },
-      }),
-    });
-
-    const data = await response.json();
-    console.log(data);
-    if (data.status === true) {
-      console.log("correcto");
-      tripsY.value = data.data;
-      console.log(data.data);
-    }
-  } catch (error) {
-    console.error("Error al actualizar:", error);
-  }
-};
-
-onMounted(async () => {
-  await sendFilter();
-  await sendFilterY();
-});
 
 const generatePDF = () => {
   const options = {
@@ -121,15 +64,23 @@ setInterval(() => {
 <template>
   <div class="modalCreate-backg">
     <div class="mExporrtPDF-content">
-      <button class="btn-success btn-GP" @click="generatePDF">
-        Exportar PDF
-      </button>
+      <div class="pdf-header">
+        <h5>
+          PDF-Test.pdf
+        </h5>
+        <button class="btn-GP" @click="generatePDF">
+          <IExport/>
+        </button>
+      </div>
+      <span @click="cerrarModal" class="btn-close" type="button">
+        <img src="../assets/img/i-close.svg" alt="" />
+      </span>
       <div class="pdf-content" v-show="generatingPDF">
         <div id="app" ref="document" >
           <div id="pdf-content">
             <!-- Contenido de la caratula hoja -->
 
-            <div class="caratula">
+            <div class="caratula line-pdf">
               <div class="contenido-caratula">
                 <h3>{{ formattedDate }}</h3>
                 <h1>REPORTE</h1>
@@ -139,130 +90,40 @@ setInterval(() => {
             </div>
 
             <!-- Contenido de la primera hoja -->
-            <div class="pdf-c-table" id="first-page">
-              <h3 class="pdf-title">Stock de canchas / Yumpag</h3>
-              <div class="N-datatable">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Mes</th>
-                      <th>Rango</th>
-                      <th>Tipo</th>
-                      <th>Tonelaje</th>
-                      <th>Ley Ag</th>
-                      <th>Ley Fe</th>
-                      <th>Ley Mn</th>
-                      <th>Ley Pb</th>
-                      <th>Ley Zn</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="item in trips.body" :key="item.id">
-                      <td>{{ item.month }}</td>
-                      <td>{{ item.rango }}</td>
-                      <td>{{ item.type }}</td>
-                      <td>{{ item.tonh.toFixed(2) }}</td>
-                      <td>{{ item.ley_ag.toFixed(2) }}</td>
-                      <td>{{ item.ley_fe.toFixed(2) }}</td>
-                      <td>{{ item.ley_mn.toFixed(2) }}</td>
-                      <td>{{ item.ley_pb.toFixed(2) }}</td>
-                      <td>{{ item.ley_zn.toFixed(2) }}</td>
-                    </tr>
-                    <tr
-                      v-for="item in trips.footer"
-                      :key="item.id"
-                      class="tbl-bold"
-                    >
-                      <td>Total</td>
-                      <td></td>
-                      <td></td>
-                      <td>{{ item.tonh.toFixed(2) }}</td>
-                      <td>{{ item.ley_ag.toFixed(2) }}</td>
-                      <td>{{ item.ley_fe.toFixed(2) }}</td>
-                      <td>{{ item.ley_mn.toFixed(2) }}</td>
-                      <td>{{ item.ley_pb.toFixed(2) }}</td>
-                      <td>{{ item.ley_zn.toFixed(2) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <div class="pdf-c-table line-pdf line-pdf" id="first-page">
+              
             </div>
             <div class="html2pdf__page-break"></div>
 
-            <div class="pdf-c-table" id="f-page">
-              <h3 class="pdf-title">Stock de canchas / Uchuccchacua</h3>
-              <div class="N-datatable">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Mes</th>
-                      <th>Rango</th>
-                      <th>Tipo</th>
-                      <th>Tonelaje</th>
-                      <th>Ley Ag</th>
-                      <th>Ley Fe</th>
-                      <th>Ley Mn</th>
-                      <th>Ley Pb</th>
-                      <th>Ley Zn</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="item in tripsY.body" :key="item.id">
-                      <td>{{ item.month }}</td>
-                      <td>{{ item.rango }}</td>
-                      <td>{{ item.type }}</td>
-                      <td>{{ item.tonh.toFixed(2) }}</td>
-                      <td>{{ item.ley_ag.toFixed(2) }}</td>
-                      <td>{{ item.ley_fe.toFixed(2) }}</td>
-                      <td>{{ item.ley_mn.toFixed(2) }}</td>
-                      <td>{{ item.ley_pb.toFixed(2) }}</td>
-                      <td>{{ item.ley_zn.toFixed(2) }}</td>
-                    </tr>
-                    <tr
-                      v-for="item in tripsY.footer"
-                      :key="item.id"
-                      class="tbl-bold"
-                    >
-                      <td>Total</td>
-                      <td></td>
-                      <td></td>
-                      <td>{{ item.tonh.toFixed(2) }}</td>
-                      <td>{{ item.ley_ag.toFixed(2) }}</td>
-                      <td>{{ item.ley_fe.toFixed(2) }}</td>
-                      <td>{{ item.ley_mn.toFixed(2) }}</td>
-                      <td>{{ item.ley_pb.toFixed(2) }}</td>
-                      <td>{{ item.ley_zn.toFixed(2) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <div class="pdf-c-table line-pdf line-pdf" id="f-page">
+              <TablePDF/>
             </div>
             <!-- Salto de página después de la primera hoja -->
             <div class="html2pdf__page-break"></div>
 
             <!-- Contenido de la segunda hoja -->
-            <div class="pdf-c-grafic" id="second-page">
+            <div class="pdf-c-grafic line-pdf" id="second-page">
               <h2 class="pdf-title">
                 Reporte de canchas / Yumpag - Uchuccchacua
               </h2>
-              <ComplianceGraf
+               <!-- <GrafCompliance
                 style="width: 100%"
                 stage="analysisIn"
                 mining="YUMPAG"
-              />
+              />  -->
             </div>
 
             <!-- Contenido de la segunda hoja -->
-            <div class="pdf-c-grafic" id="t-page">
+            <div class="pdf-c-grafic line-pdf" id="t-page">
               <h3 class="pdf-title">
                 Reporte de canchas / Yumpag - Uchuccchacua
               </h3>
 
-              <ComplianceGraf
+               <!-- <GrafCompliance
                 style="width: 100%"
                 stage="analysisIn"
                 mining="UCHUCCHACUA"
-              />
+              />  -->
             </div>
           </div>
         </div>
@@ -273,38 +134,74 @@ setInterval(() => {
 
 <style lang="scss">
 .mExporrtPDF-content {
-  background-color: var(--white);
+  background-color: rgba(92,97,100,255);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
   border-radius: 15px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 340mm;
+  height: 230mm;
   display: flex;
   flex-direction: column;
-  position: absolute;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-  
-  width: 80%;
-  height: 90vh;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  justify-content: space-between;
+  align-items: center;
 }
+.pdf-header{
+  background-color: #373d3f;
+  height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 3rem;
+  h5{
+  color: var(--white);
+  }
+}
+
 .pdf-content {
-  // width: 100%;
-  // height: 80vh;
-  overflow: auto;
+  overflow-y: auto;
   border: 1px solid var(--grey-light-3);
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  
   z-index: 2;
-  // max-width: 1000px;
   background-color: var(--white);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
-  width: 80%;
-  height: 90vh;
+  width: 297mm;
+  height: 210mm;
+  margin-bottom: 1rem;
 }
 .btn-GP {
-  width: 200px !important;
+  width: 35px ;
+  height: 35px;
+  background-color: rgba(92,97,100,255);
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  padding: 0;
+  svg{
+    fill: transparent;
+    color: var(--white);
+    stroke-width: 1.7;
+  }
+  &:hover{
+    background-color: rgba(92, 97, 100, 0.404);
+  }
+}
+
+.btn-close{
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.623);
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  
 }
 
 .caratula {
@@ -314,6 +211,7 @@ setInterval(() => {
   background-size: cover;
   background-repeat: no-repeat;
   position: relative;
+
 
   .contenido-caratula {
     position: absolute;
@@ -344,10 +242,13 @@ setInterval(() => {
   }
 }
 
+.line-pdf{
+  border-bottom: 1px solid var(--grey-light-22);
+}
 .pdf-c-table,
 .pdf-c-grafic {
-  width: 100%;
-  height: 90vh;
+  width: 297mm;
+  height: 210mm;
   padding: 4rem;
   display: flex;
   flex-direction: column;

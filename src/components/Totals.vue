@@ -1,18 +1,18 @@
 <script setup>
-import { onMounted, ref, computed} from "vue"
-import { useStore } from "vuex"
+import { onMounted, ref, computed } from "vue";
+import { useStore } from "vuex";
 
-const store = useStore()
+const store = useStore();
 
 onMounted(async () => {
-  await store.dispatch("pila_total")
-  await store.dispatch("get_listPlanta")
-})
+  await store.dispatch("pila_total");
+  await store.dispatch("get_listPlanta");
+});
 
 // const totalWeights = computed(() => store.state.weights)
-const pilas = computed(() => store.state.rumaTotal)
-const todayAtZero = new Date().setHours(0, 0, 0, 0)
-const trips = computed(() => store.state.dataTripsPlanta)
+const pilas = computed(() => store.state.rumaTotal);
+const todayAtZero = new Date().setHours(0, 0, 0, 0);
+const trips = computed(() => store.state.dataTripsPlanta);
 </script>
 
 <template>
@@ -21,10 +21,20 @@ const trips = computed(() => store.state.dataTripsPlanta)
       <div class="Item-w-total primary-color">
         <h5 class="w-w-title">Total de Stock</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"> <img src="../assets/img/i-totalP.svg" alt=""></div>
+          <div class="w-w-cont-icon">
+            <img src="../assets/img/i-totalP.svg" alt="" />
+          </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1> {{ pilas.reduce((a, b) => a + b.stock, 0).toFixed(1).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} </h1>
+              <h1>
+                {{
+                  pilas
+                    .reduce((a, b) => a + b.stock, 0)
+                    .toFixed(1)
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }}
+              </h1>
               <small>TMH</small>
             </div>
           </div>
@@ -36,10 +46,21 @@ const trips = computed(() => store.state.dataTripsPlanta)
       <div class="Item-w-total one-color">
         <h5 class="w-w-title">Total Mineral Ingresado Dia</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
+          <div class="w-w-cont-icon">
+            <img src="../assets/img/i-total1.svg" alt="" />
+          </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1> {{ pilas.filter(i => new Date(i.createdAt).getTime() >= todayAtZero).reduce((a, b) => a + b.stock, 0).toFixed(1) }} </h1>
+              <h1>
+                {{
+                  pilas
+                    .filter(
+                      (i) => new Date(i.createdAt).getTime() >= todayAtZero
+                    )
+                    .reduce((a, b) => a + b.stock, 0)
+                    .toFixed(1)
+                }}
+              </h1>
               <small>TMH</small>
             </div>
           </div>
@@ -51,10 +72,21 @@ const trips = computed(() => store.state.dataTripsPlanta)
       <div class="Item-w-total two-color">
         <h5 class="w-w-title">Total Mineral Enviado a Planta</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"> <img src="../assets/img/i-total1.svg" alt=""></div>
+          <div class="w-w-cont-icon">
+            <img src="../assets/img/i-total1.svg" alt="" />
+          </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1> {{ trips.filter(i => new Date(i.date).getTime() >= todayAtZero).reduce((a, b) => a + b.tonh, 0).toFixed(1) }} </h1>
+              <h1>
+                {{
+                  trips &&
+                  Array.isArray(trips) &&
+                  trips
+                    .filter((i) => new Date(i.date).getTime() >= todayAtZero)
+                    .reduce((a, b) => a + b.tonh, 0)
+                    .toFixed(1)
+                }}
+              </h1>
               <small>TMH</small>
             </div>
           </div>
@@ -67,7 +99,7 @@ const trips = computed(() => store.state.dataTripsPlanta)
         <h5 class="w-w-title">Ore Control</h5>
         <div class="w-w-body">
           <div class="w-w-cont-icon">
-            <img src="../assets/img/i-total3.svg" alt="">
+            <img src="../assets/img/i-total3.svg" alt="" />
           </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
@@ -91,10 +123,18 @@ const trips = computed(() => store.state.dataTripsPlanta)
       <div class="Item-w-total fouth-color">
         <h5 class="w-w-title">Analisis</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"> <img src="../assets/img/i-total2.svg" alt=""></div>
+          <div class="w-w-cont-icon">
+            <img src="../assets/img/i-total2.svg" alt="" />
+          </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1> {{ pilas.filter(i => (i.statusPila === "Analizando" || i.statusPila === "")).length }} </h1>
+              <h1>
+                {{
+                  pilas.filter(
+                    (i) => i.statusPila === "Analizando" || i.statusPila === ""
+                  ).length
+                }}
+              </h1>
               <small>pilas</small>
             </div>
           </div>
@@ -112,10 +152,17 @@ const trips = computed(() => store.state.dataTripsPlanta)
       <div class="Item-w-total five-color">
         <h5 class="w-w-title">Abastecimiento</h5>
         <div class="w-w-body">
-          <div class="w-w-cont-icon"> <img src="../assets/img/i-total3.svg" alt=""></div>
+          <div class="w-w-cont-icon">
+            <img src="../assets/img/i-total3.svg" alt="" />
+          </div>
           <div class="w-w-cont-content">
             <div class="w-w-value">
-              <h1> {{ pilas.filter(i => i.statusPila === "waitBeginDespacho").length }} </h1>
+              <h1>
+                {{
+                  pilas.filter((i) => i.statusPila === "waitBeginDespacho")
+                    .length
+                }}
+              </h1>
               <small>pilas</small>
             </div>
           </div>
@@ -131,7 +178,6 @@ const trips = computed(() => store.state.dataTripsPlanta)
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -333,32 +379,32 @@ const trips = computed(() => store.state.dataTripsPlanta)
 .t-max {
   color: #ff172a;
 }
-.primary-color{
+.primary-color {
   background-color: #0f1217;
-  .w-w-title{
+  .w-w-title {
     color: var(--grey-light-2) !important;
   }
-  .w-w-value{
+  .w-w-value {
     color: var(--grey-light-3) !important;
-    h1{
+    h1 {
       color: var(--white) !important;
     }
   }
 }
 
-.one-color{
-  background-color: #E5F6F6;
+.one-color {
+  background-color: #e5f6f6;
 }
-.two-color{
-  background-color: #E1DAF9;
+.two-color {
+  background-color: #e1daf9;
 }
-.three-color{
-  background-color: #E0EFFF;
+.three-color {
+  background-color: #e0efff;
 }
-.fouth-color{
-  background-color: #FFF7D0;
+.fouth-color {
+  background-color: #fff7d0;
 }
-.five-color{
-  background-color: #D7F2DD;
+.five-color {
+  background-color: #d7f2dd;
 }
 </style>

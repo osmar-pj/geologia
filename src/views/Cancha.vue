@@ -142,7 +142,7 @@ const columns = ref([
       <span>| Dia terminado en Mina </span>
     </div>
     <div class="global-h-button">
-      <FiltersCancha /> <Head/>
+      <FiltersCancha /> 
     </div>
   </div>
   <div class="c-global-c-content" v-show="!filtroAplicado">
