@@ -718,6 +718,7 @@ const move = (e) => {
         pilas_merged,
         statusPila,
         createdAt,
+        dateSupply
       } in pilas"
       :ley_ag="ley_ag"
       :stock="stock"
@@ -730,6 +731,7 @@ const move = (e) => {
       :isMerged="pilas_merged.length > 0"
       :statusPila="statusPila"
       :createdAt="createdAt"
+      :dateSupply="dateSupply"
     />
     <zoneCC id="cc" />
     <zoneC1 id="c1" />
