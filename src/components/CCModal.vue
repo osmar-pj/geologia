@@ -17,6 +17,9 @@ const csvData = ref([]);
 const averages = ref([]);
 const selectedProducts = ref();
 const showError = ref(false);
+const fileUploaded = ref(false);
+const showLoader = ref(false);
+
 const showDocError = ref(false);
 const buttonClicked = ref(false);
 const showSuccessM = ref(false);
@@ -68,9 +71,18 @@ const handleFileUpload = (event) => {
             row["id"] = index + 1;
             row["disabled"] = false;
           });
-          console.log(finalData);
+         
 
           csvData.value.push(...finalData);
+
+          buttonClicked.value = true;
+          showLoader.value = true;
+          setTimeout(() => {
+            fileUploaded.value = true;
+            showLoader.value = false;
+            buttonClicked.value = false;
+          }, 1600);
+          console.log(finalData);
         },
         error: (error) => {
           console.error("Error parsing CSV:", error.message);
@@ -85,6 +97,11 @@ const handleFileUpload = (event) => {
       return;
     }
   }
+};
+
+const cancelFile = () => {
+  dataPlanta.value = [];
+  fileUploaded.value = false;
 };
 
 const dataTableClass = "table-exel";
@@ -320,27 +337,33 @@ const isRelevantColumn = (key) => {
           </div>
           <div className="mC-b-imputs">
             <div class="table-excel">
-              <div class="file-upload-form">
-                <label for="file" class="file-upload-label">
-                  <div class="file-upload-design">
-                    <svg viewBox="0 0 640 512" height="1em">
-                      <path
-                        d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
-                      ></path>
-                    </svg>
-                    <span class="browse-button">Subir archivo</span>
-                  </div>
-                  <input id="file" type="file" @change="handleFileUpload" />
-                </label>
+              <div class="container-loader-files" v-if="!fileUploaded">
+                <div class="file-upload-form">
+                  <label for="file" class="file-upload-label">
+                    <div class="file-upload-design">
+                      <svg viewBox="0 0 640 512" height="1em">
+                        <path
+                          d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                        ></path>
+                      </svg>
+                      <span class="browse-button">Subir archivo</span>
+                    </div>
+                    <input id="file" type="file" @change="handleFileUpload" />
+                  </label>
+                </div>
+                <div class="progress-container" v-if="showLoader">
+                  <div class="progress-bar" id="myBar"></div>
+                </div>
+                <span class="label-error" v-if="showError"
+                  >*Documento requerido</span
+                >
+                <span class="label-error" v-if="showDocError"
+                  >*El nombre del archivo ingresado no coincide con el código de
+                  despacho</span
+                >
               </div>
-              <span class="label-error" v-if="showError"
-                >*No debe existir cambos vacíos</span
-              >
-              <span class="label-error" v-if="showDocError"
-                >*El nombre del archivo ingresado no coincide con el código de
-                despacho</span
-              >
-              <div class="view-excel" v-if="csvData.length">
+
+              <div class="view-excel" v-if="fileUploaded">
                 <h4 class="text-excel">
                   Codigo de Despacho
                   <strong>{{ props.data.cod_despacho }}</strong>

@@ -140,7 +140,7 @@ const chartOptions = {
   },
   plotOptions: {
     bar: {
-      borderRadius: 1.5,
+      borderRadius: 5,
       borderWidth: 1,
     },
   },
@@ -202,12 +202,16 @@ const chartOptions = {
       min: 0,
       max: 4000,
       labels: {
-        formatter: (val) => {
-          if (val === null) {
-            return "";
-          } else {
-            return val.toFixed(0);
+        formatter: function (value) {
+          // Comprueba si el valor es nulo o vacío
+          if (value == null || value === "") {
+            return null; // Devuelve null si el valor es nulo o vacío
           }
+
+          let val = Math.abs(value); // Toma el valor absoluto del número
+          val = (val / 1000).toFixed(0) + "k"; // Divide el valor por 1000 y añade "K" al final
+
+          return val; // Devuelve el valor formateado como una cadena de texto
         },
       },
     },
@@ -252,7 +256,7 @@ const chartOptions = {
   legend: {
     show: true,
     position: "top",
-    horizontalAlign: "left",
+    horizontalAlign: "bottom",
   },
   markers: {
     size: 1,
@@ -264,88 +268,77 @@ const chartOptions = {
 <template>
   <div class="graphic-dash">
     <!-- {{ series }} -->
-    <div class="g-dash-header">
-      <div class="g-d-header-title">
-        <h3>
-          <strong> {{ props.mining }} </strong>
-          (Análisis)
-        </h3>
-        <!-- <button class="btn-success" @click.prevent="SendValues()">
-          Guardar valores para PDF
-        </button> -->
-      </div>
 
-      <div class="g-d-header-btns">
-        <div>
-          <Calendar
-            v-model="selectedEstado"
-            view="month"
-            :minDate="minDate"
-            :maxDate="maxDate"
-            :manualInput="false"
-            dateFormat="mm/yy"
-            aria-placeholder="mm/yy"
-            showIcon
-            iconDisplay="input"
-            :yearNavigator="true"
-          >
-            <template #inputicon="{ clickCallback }">
-              <ICalendar />
-            </template>
-          </Calendar>
+    <div class="g-d-body-bar">
+      <div class="g-dash-header">
+        <div class="g-d-header-title">
+          <h3>
+            <strong> {{ props.mining }} </strong>
+            (Análisis)
+          </h3>
+          <!-- <button class="btn-success" @click.prevent="SendValues()">
+              Guardar valores para PDF
+            </button> -->
+        </div>
+
+        <div class="g-d-header-btns">
+          <div>
+            <Calendar
+              v-model="selectedEstado"
+              view="month"
+              :minDate="minDate"
+              :maxDate="maxDate"
+              :manualInput="false"
+              dateFormat="mm/yy"
+              aria-placeholder="mm/yy"
+              showIcon
+              iconDisplay="input"
+              :yearNavigator="true"
+            >
+              <template #inputicon="{ clickCallback }">
+                <ICalendar />
+              </template>
+            </Calendar>
+          </div>
         </div>
       </div>
+      <template v-if="buttonClicked">
+        <Skeleton height="270px"></Skeleton>
+      </template>
+      <template v-else>
+        <div id="chart">
+          <VueApexCharts
+            height="100%"
+            :options="chartOptions"
+            :series="graficData"
+          />
+        </div>
+      </template>
     </div>
-    <div class="g-dash-body">
-      <div class="g-d-body-bar">
-        <template v-if="buttonClicked">
-          <Skeleton height="270px"></Skeleton>
-        </template>
-        <template v-else>
-          <div id="chart">
-            <VueApexCharts
-              height="100%"
-              :options="chartOptions"
-              :series="graficData"
-            />
-          </div>
-        </template>
-      </div>
-      <div class="g-d-body-totales">
-        <div class="g-b-totals-item">
-          <div class="circular-graf">
-            <span class="donut-total">
-              {{
+    <div class="g-d-body-totales">
+      <div class="g-b-totals-item item-semicircle">
+        <div class="ton-total">
+          <h5>Tonelaje</h5>
+          <span
+            >{{
+              formatFixed(
+                analysisData && analysisData.ton.total_ton_ejec_cumm
+                  ? analysisData.ton.total_ton_ejec_cumm
+                  : 0
+              )
+            }}
+          </span>
+        </div>
+        <div class="circular-graf">
+          <div class="values-donut">
+            <h5>
+              <strong>{{
                 analysisData && analysisData.ton.percent_ejec
                   ? analysisData.ton.percent_ejec.toFixed(1)
                   : 0
-              }}
-              <small>%</small>
-            </span>
-            <div
-              class="semi-donut margin semi-tonelada"
-              :style="{
-                '--percentage':
-                  analysisData && analysisData.ton.percent_ejec
-                    ? analysisData.ton.percent_ejec.toFixed(2)
-                    : 0,
-                '--fill': '#00a000',
-              }"
-            ></div>
-            <div
-              class="needle"
-              :style="{
-                transform:
-                  'rotate(calc(((' +
-                  (analysisData && analysisData.ton.percent_prog
-                    ? analysisData.ton.percent_prog.toFixed(2)
-                    : 0) +
-                  ' - 50) * 1.8deg))',
-              }"
-            ></div>
-          </div>
-          <div class="values-donut">
-            <span class="hour-left">0,00</span>
+              }}</strong>
+              <small> %</small>
+            </h5>
             <span class="hour-right">
               {{
                 formatFixed(
@@ -356,151 +349,170 @@ const chartOptions = {
               }}
             </span>
           </div>
-          <div class="ton-total">
-            <span
-              >{{
-                formatFixed(
-                  analysisData && analysisData.ton.total_ton_ejec_cumm
-                    ? analysisData.ton.total_ton_ejec_cumm
-                    : 0
-                )
-              }}
-            </span>
-            <small> ton</small>
-          </div>
+          <div
+            class="semi-donut semi-tonelada"
+            :style="{
+              '--percentage':
+                analysisData && analysisData.ton.percent_ejec
+                  ? analysisData.ton.percent_ejec.toFixed(2)
+                  : 0,
+              '--fill': '#00a000',
+            }"
+          ></div>
+          <div
+            class="needle"
+            :style="{
+              transform:
+                'rotate(calc(((' +
+                (analysisData && analysisData.ton.percent_prog
+                  ? analysisData.ton.percent_prog.toFixed(2)
+                  : 0) +
+                ' - 50) * 1.8deg))',
+            }"
+          ></div>
         </div>
-        <div class="g-totals-item-bar">
-          <div class="bar-container">
-            <span class="bar-title"
-              >{{
+      </div>
+      <div class="g-totals-item-bar">
+        <div class="bar-container">
+          <div class="bar-value">
+            <span>Ag %</span>
+            <h5>
+              <strong>{{
                 formatFixed(
                   analysisData && analysisData.ley_ag.total_ley_prog
                     ? analysisData.ley_ag.total_ley_prog
                     : 0
                 )
-              }}
-              <small>Ag %</small>
-            </span>
-            <div
-              class="bar-ley L-ag"
-              :style="{
-                '--percentage-total':
-                  analysisData && analysisData.ley_ag.percent_ejec
-                    ? analysisData.ley_ag.percent_ejec.toFixed(2)
-                    : 0,
-                '--percentage-prog':
-                  analysisData && analysisData.ley_ag.percent_prog
-                    ? analysisData.ley_ag.percent_prog.toFixed(2)
-                    : 0,
-                '--background': '#00a000',
-              }"
-            ></div>
+              }}</strong>
+            </h5>
           </div>
-          <div class="bar-container">
-            <span class="bar-title"
-              >{{
+          <div
+            class="bar-ley L-ag"
+            :style="{
+              '--percentage-total':
+                analysisData && analysisData.ley_ag.percent_ejec
+                  ? analysisData.ley_ag.percent_ejec.toFixed(2)
+                  : 0,
+              '--percentage-prog':
+                analysisData && analysisData.ley_ag.percent_prog
+                  ? analysisData.ley_ag.percent_prog.toFixed(2)
+                  : 0,
+              '--background': '#00a000',
+            }"
+          ></div>
+        </div>
+
+        <div class="bar-container">
+          <div class="bar-value">
+            <span>Fe %</span>
+            <h5>
+              <strong>{{
                 formatFixed(
                   analysisData && analysisData.ley_fe.total_ley_prog
                     ? analysisData.ley_fe.total_ley_prog
                     : 0
                 )
-              }}
-              <small>Fe %</small>
-            </span>
-            <div
-              class="bar-ley L-ag"
-              :style="{
-                '--percentage-total':
-                  analysisData && analysisData.ley_fe.percent_ejec
-                    ? analysisData.ley_fe.percent_ejec.toFixed(2)
-                    : 0,
-                '--percentage-prog':
-                  analysisData && analysisData.ley_fe.percent_prog
-                    ? analysisData.ley_fe.percent_prog.toFixed(2)
-                    : 0,
-                '--background': 'rgb(0, 143, 251)',
-              }"
-            ></div>
+              }}</strong>
+            </h5>
           </div>
-          <div class="bar-container">
-            <span class="bar-title"
-              >{{
+          <div
+            class="bar-ley L-ag"
+            :style="{
+              '--percentage-total':
+                analysisData && analysisData.ley_fe.percent_ejec
+                  ? analysisData.ley_fe.percent_ejec.toFixed(2)
+                  : 0,
+              '--percentage-prog':
+                analysisData && analysisData.ley_fe.percent_prog
+                  ? analysisData.ley_fe.percent_prog.toFixed(2)
+                  : 0,
+              '--background': '#018FFB',
+            }"
+          ></div>
+        </div>
+        <div class="bar-container">
+          <div class="bar-value">
+            <span>Mn %</span>
+            <h5>
+              <strong>{{
                 formatFixed(
                   analysisData && analysisData.ley_mn.total_ley_prog
                     ? analysisData.ley_mn.total_ley_prog
                     : 0
                 )
-              }}
-              <small>Mn %</small>
-            </span>
-            <div
-              class="bar-ley L-ag"
-              :style="{
-                '--percentage-total':
-                  analysisData && analysisData.ley_mn.percent_ejec
-                    ? analysisData.ley_mn.percent_ejec.toFixed(2)
-                    : 0,
-                '--percentage-prog':
-                  analysisData && analysisData.ley_mn.percent_prog
-                    ? analysisData.ley_mn.percent_prog.toFixed(2)
-                    : 0,
-                '--background': 'rgb(255, 69, 96)',
-              }"
-            ></div>
+              }}</strong>
+            </h5>
           </div>
-          <div class="bar-container">
-            <span class="bar-title"
-              >{{
+          <div
+            class="bar-ley L-ag"
+            :style="{
+              '--percentage-total':
+                analysisData && analysisData.ley_mn.percent_ejec
+                  ? analysisData.ley_mn.percent_ejec.toFixed(2)
+                  : 0,
+              '--percentage-prog':
+                analysisData && analysisData.ley_mn.percent_prog
+                  ? analysisData.ley_mn.percent_prog.toFixed(2)
+                  : 0,
+              '--background': '#FF4560',
+            }"
+          ></div>
+        </div>
+        <div class="bar-container">
+          <div class="bar-value">
+            <span>Pb %</span>
+            <h5>
+              <strong>{{
                 formatFixed(
                   analysisData && analysisData.ley_pb.total_ley_prog
                     ? analysisData.ley_pb.total_ley_prog
                     : 0
                 )
-              }}
-              <small>Pb %</small>
-            </span>
-            <div
-              class="bar-ley L-ag"
-              :style="{
-                '--percentage-total':
-                  analysisData && analysisData.ley_pb.percent_ejec
-                    ? analysisData.ley_pb.percent_ejec.toFixed(2)
-                    : 0,
-                '--percentage-prog':
-                  analysisData && analysisData.ley_pb.percent_prog
-                    ? analysisData.ley_pb.percent_prog.toFixed(2)
-                    : 0,
-                '--background': 'rgb(119, 93, 208)',
-              }"
-            ></div>
+              }}</strong>
+            </h5>
           </div>
-
-          <div class="bar-container">
-            <span class="bar-title"
-              >{{
+          <div
+            class="bar-ley L-ag"
+            :style="{
+              '--percentage-total':
+                analysisData && analysisData.ley_pb.percent_ejec
+                  ? analysisData.ley_pb.percent_ejec.toFixed(2)
+                  : 0,
+              '--percentage-prog':
+                analysisData && analysisData.ley_pb.percent_prog
+                  ? analysisData.ley_pb.percent_prog.toFixed(2)
+                  : 0,
+              '--background': '#785DD0',
+            }"
+          ></div>
+        </div>
+        <div class="bar-container">
+          <div class="bar-value">
+            <span>Zn %</span>
+            <h5>
+              <strong>{{
                 formatFixed(
                   analysisData && analysisData.ley_zn.total_ley_prog
                     ? analysisData.ley_zn.total_ley_prog
                     : 0
                 )
-              }}
-              <small>Zn %</small>
-            </span>
-            <div
-              class="bar-ley L-ag"
-              :style="{
-                '--percentage-total':
-                  analysisData && analysisData.ley_zn.percent_ejec
-                    ? analysisData.ley_zn.percent_ejec.toFixed(2)
-                    : 0,
-                '--percentage-prog':
-                  analysisData && analysisData.ley_zn.percent_prog
-                    ? analysisData.ley_zn.percent_prog.toFixed(2)
-                    : 0,
-                '--background': 'rgba(254, 176, 25, 0.85)',
-              }"
-            ></div>
+              }}</strong>
+            </h5>
           </div>
+          <div
+            class="bar-ley L-ag"
+            :style="{
+              '--percentage-total':
+                analysisData && analysisData.ley_zn.percent_ejec
+                  ? analysisData.ley_zn.percent_ejec.toFixed(2)
+                  : 0,
+              '--percentage-prog':
+                analysisData && analysisData.ley_zn.percent_prog
+                  ? analysisData.ley_zn.percent_prog.toFixed(2)
+                  : 0,
+              '--background': '#FAC338',
+            }"
+          ></div>
         </div>
       </div>
     </div>
@@ -531,78 +543,90 @@ const chartOptions = {
   font-weight: 300;
   border-collapse: collapse;
   white-space: nowrap;
-  padding-top: 1rem;
-  border-radius: var(--br-xxl);
-  border: 1px solid var(--grey-light-22);
-  padding: 2rem 2rem 2rem 2rem;
-  background-color: var(--white);
   flex: 1 1;
   display: flex;
-  flex-direction: column;
-  .g-dash-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-bottom: 1rem;
-    .g-d-header-title {
-      display: flex;
-      h3 {
-        color: var(--grey-light-3);
-        font-size: clamp(5px, 8vw, 12px);
-        font-weight: 400;
-        text-transform: capitalize;
-        strong {
-          color: var(--black);
-          font-size: clamp(5px, 8vw, 16px);
-          font-weight: 500;
-        }
-      }
-    }
-    .g-d-header-btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .g-d-header-totales {
-      display: flex;
-
-      gap: 1rem;
-      .g-d-h-totales-item {
-        span {
-          font-size: clamp(6px, 8vw, 12px);
-          line-height: 0.6rem;
-          font-weight: 500;
-          color: var(--grey-light-3);
-        }
-        h4 {
-          padding-top: 0.5rem;
-          font-size: clamp(6px, 8vw, 14px);
-          line-height: 0.8rem;
-          font-weight: 500;
-        }
-      }
-    }
-  }
-  .g-dash-body {
+  gap: 1rem;
+  .g-d-body-bar {
     flex: 1 1;
     display: flex;
-    align-items: stretch;
-    .g-d-body-bar {
-      flex: 1 1;
+    flex-direction: column;
+    gap: 1rem;
+    border-radius: var(--br-xxl);
+    border: 1px solid var(--grey-light-22);
+    padding: 1.5rem;
+    background-color: var(--white);
+    .g-dash-header {
       display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      padding-bottom: 0;
+      .g-d-header-title {
+        display: flex;
+        h3 {
+          color: var(--grey-light-3);
+          font-size: clamp(5px, 8vw, 12px);
+          font-weight: 400;
+          text-transform: capitalize;
+          strong {
+            color: var(--black);
+            font-size: clamp(5px, 8vw, 16px);
+            font-weight: 500;
+          }
+        }
+      }
+      .g-d-header-btns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .g-d-header-totales {
+        display: flex;
+        gap: 1rem;
+        .g-d-h-totales-item {
+          span {
+            font-size: clamp(6px, 8vw, 12px);
+            line-height: 0.6rem;
+            font-weight: 500;
+            color: var(--grey-light-3);
+          }
+          h4 {
+            padding-top: 0.5rem;
+            font-size: clamp(6px, 8vw, 14px);
+            line-height: 0.8rem;
+            font-weight: 500;
+          }
+        }
+      }
     }
   }
   .g-d-body-totales {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     gap: 1rem;
+
     .g-totals-item-bar {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 1rem;
+      border-radius: var(--br-xxl);
+      border: 1px solid var(--grey-light-22);
+      padding: 1.5rem;
+      background-color: var(--white);
+    }
+
+    .item-semicircle {
+      width: 100%;
+      border-radius: var(--br-xxl);
+      border: 1px solid var(--grey-light-22);
+      padding: 1.5rem 1rem 0rem 1rem;
+      background-color: var(--white);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
   }
 }
@@ -614,22 +638,32 @@ const chartOptions = {
 // ===================Semi Donut Chart model-1========================
 
 .circular-graf {
-  height: 60px;
-  width: 130px;
+  height: 90px;
+  width: 185px;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  .donut-total {
+  .values-donut {
     position: absolute;
-    z-index: 3;
-    bottom: 0;
+    z-index: 2;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: clamp(6px, 8vw, 14px);
-    line-height: 0.6rem;
-    font-weight: 550;
-    color: var(--black);
+    border-radius: 8px;
+    padding: 5px 10px;
+    background-color: #d8f5c4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: .1rem;
+    .hour-right {
+      font-size: clamp(6px, 8vw, 9.5px);
+      line-height: 0.6rem;
+      font-weight: 500;
+      color: var(--black);
+    }
   }
   .donut-title {
     position: absolute;
@@ -645,19 +679,27 @@ const chartOptions = {
 }
 .ton-total {
   text-align: center;
-  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   span {
-    font-size: clamp(6px, 8vw, 14px);
-    line-height: 0.6rem;
+    font-size: clamp(6px, 8vw, 16px);
+    line-height: 1.3rem;
     font-weight: 550;
     color: var(--black);
+  }
+  h5 {
+    font-size: clamp(6px, 8vw, 9px);
+    line-height: 0.6rem;
+    color: var(--grey-light-3);
   }
 }
 
 .semi-donut {
   --percentage: 0;
-  width: 130px;
-  height: 60px;
+  width: 185px;
+  height: 90px;
   position: relative;
   font-size: 22px;
   font-weight: 600;
@@ -668,9 +710,9 @@ const chartOptions = {
   box-sizing: border-box;
   &:after {
     content: "";
-    width: 130px;
-    height: 130px;
-    border: 25px solid;
+    width: 185px;
+    height: 185px;
+    border: 28px solid;
     position: absolute;
     border-radius: 50%;
     left: 0;
@@ -678,13 +720,14 @@ const chartOptions = {
     box-sizing: border-box;
     transform: rotate(calc(1deg * (-45 + var(--percentage) * 1.8)));
     animation: fillAnimation 1s ease-in;
-    z-index: 3;
+    z-index: 1;
+    border-color: var(--grey-light-1) var(--grey-light-1) #008f8f #008f8f;
   }
 }
 
 .needle {
   width: 0;
-  height: 65px; /* Ajusta la longitud de la línea según sea necesario */
+  height: 93px; /* Ajusta la longitud de la línea según sea necesario */
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -694,7 +737,7 @@ const chartOptions = {
   &::after {
     content: "";
     width: 1px;
-    height: 25px;
+    height: 28px;
     background-color: black;
     position: absolute;
     right: 0;
@@ -702,114 +745,65 @@ const chartOptions = {
   }
 }
 
-
-.semi-tonelada {
-  &:after {
-    border-color: var(--grey-light-22) var(--grey-light-22) #008f8f
-      #008f8f;
-  }
-}
-
-.values-donut {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 8px;
-}
-.hour-left,
-.hour-right {
-  font-size: clamp(6px, 8vw, 10px);
-  line-height: 0.6rem;
-  font-weight: 500;
-  color: var(--black);
-}
-
-.gaTwo {
-  transform: rotate(180deg);
-
-  &:after {
-    border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) #f3bd5a #f3bd5a !important;
-  }
-}
-
 #chart {
   flex: 1 1;
 }
 
+// ===================BAR CONTAINER========================
+
 .bar-container {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 
-  .bar-title {
-    padding-bottom: 0.2rem;
-    text-align: center;
-    font-size: clamp(6px, 8vw, 11px);
-    line-height: 0.6rem;
-    font-weight: 550;
-    width: 100%;
+  .bar-ley {
+    --percentage-total: 0;
+    --percentage-prog: 0;
+    --background: var(--grey-light-1);
+    position: relative;
+    margin: 0 auto;
+    width: 130px;
+    height: 25px;
+    border-radius: 5px;
+    background-color: var(--grey-light-1);
+    overflow: hidden;
+    &::after {
+      content: "";
+      animation: porc3 1.5s ease-in-out forwards;
+      position: absolute;
+      height: 100%;
+      border-radius: 5px;
+      width: calc(var(--percentage-total) * 1%);
+      background: var(--background);
+    }
+    &::before {
+      content: "";
+      position: absolute;
+      height: 100%;
+      width: 1px;
+      height: 30px;
+      z-index: 2;
+      left: calc(var(--percentage-prog) * 1%);
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--black);
+    }
+  }
+  .bar-value {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.1rem;
+    width: 40px;
+    height: 25px;
+    span {
+      font-size: clamp(6px, 8vw, 9px);
+      line-height: 0.6rem;
+      color: var(--grey-2);
+    }
+    h5 {
+    }
   }
 }
-.bar-ley {
-  --percentage-total: 0;
-  --percentage-prog: 0;
-  --background: #000;
-  position: relative;
-  margin: 0 auto;
-  width: 130px;
-  height: 10px;
-  border-radius: 2px;
-  background-color: var(--grey-light-22);
-  overflow: hidden;
-  &::after {
-    content: "";
-    animation: porc3 1.5s ease-in-out forwards;
-    position: absolute;
-    height: 100%;
-    border-radius: 2px;
-    width: calc(var(--percentage-total) * 1%);
-    background: var(--background);
-  }
-  &::before {
-    content: "";
-    position: absolute;
-    height: 100%;
-    width: 1px;
-    height: 13px;
-    z-index: 4;
-    left: calc(var(--percentage-prog) * 1%);
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--black);
-  }
-  .b-value {
-    position: absolute;
-    top: 50%;
-    left: 10%;
-    z-index: 3;
-    transform: translateY(-50%);
-    font-size: clamp(6px, 8vw, 11px);
-    line-height: 0.8rem;
-    font-weight: 550;
-  }
-}
-
-// .L-ag::after {
-
-//   --porcentaje-finalizado: 80%;
-// }
-// .L-ag::before {
-
-//   --porcentaje-finalizado: 80%;
-// }
-
-// @keyframes porc3 {
-//   0% {
-//     width: 0%;
-//   }
-//   55% {
-//     width: 75%;
-//   }
-//   100% {
-//     width: var(--porcentaje-finalizado);
-//   }
-// }
 </style>

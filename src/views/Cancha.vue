@@ -351,7 +351,7 @@ const columns = ref([
       </Column>
     </DataTable>
   </div>
-  <div class="c-global-c-filtered" v-show="filtroAplicado">
+  <!-- <div class="c-global-c-filtered" v-show="filtroAplicado">
     <div
       class="c-item-filtered"
       v-for="tripFiltered in tripsFiltered.data"
@@ -362,15 +362,7 @@ const columns = ref([
         tableStyle="width: 100%"
         :loading="store.state.loading"
       >
-        <!-- <Column header="#" headerStyle="width: 2.5rem">
-          <template #body="slotProps">
-            <div class="td-user">
-              <div class="t-name">
-                <h5>#{{ slotProps.index + 1 }}</h5>
-              </div>
-            </div>
-          </template>
-        </Column> -->
+       
         <Column
           v-for="(header, index) in tripsFiltered.header || []"
           :key="index"
@@ -421,7 +413,80 @@ const columns = ref([
         </Column>
       </DataTable>
     </div>
+  </div> -->
+  <div class="config-content-table N-datatable" v-show="filtroAplicado">
+    <div
+      class="c-item-filtered"
+      v-for="(tripFiltered, index) in tripsFiltered.data"
+      :key="index"
+    >
+      <table class="table" style="width: 100%" v-if="tripFiltered">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th v-for="(header, index) in tripsFiltered.header" :key="index">
+              {{ header.title }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, rowIndex) in tripFiltered.body.slice(0, -1)"
+            :key="rowIndex"
+          >
+            <td>{{ rowIndex + 1 }}</td>
+            <td v-for="(header, index) in tripsFiltered.header" :key="index">
+              <h4
+                
+                :style="{
+                  color: (() => {
+                    const value = row[header.field];
+                    if (
+                      [
+                        'ley_ag',
+                        'ley_pb',
+                        'ley_mn',
+                        'ley_fe',
+                        'ley_zn',
+                      ].includes(header.field)
+                    ) {
+                      return value < 3
+                        ? '#00B050'
+                        : value >= 3 && value < 10
+                        ? '#FF9900'
+                        : '#FF0000';
+                    } else {
+                      return '';
+                    }
+                  })(),
+                }"
+              >
+              {{
+                  typeof row[header.field] === "number"
+                    ? row[header.field].toFixed(0)
+                    : row[header.field]
+                }}
+               
+              </h4>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot v-if="tripFiltered.body.length > 0">
+          <tr>
+            <td colspan=""></td>
+            <td v-for="header in tripsFiltered.header" :key="header.field">
+              {{
+                typeof tripFiltered.body[tripFiltered.body.length - 1][header.field] === "number"
+                  ? tripFiltered.body[tripFiltered.body.length - 1][header.field].toFixed(2)
+                  : tripFiltered.body[tripFiltered.body.length - 1][header.field]
+              }}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
   </div>
+
 </template>
 
 <style lang="scss">
