@@ -172,7 +172,7 @@ const updateTravel = async () => {
           </div>
           <div class="mC-c-title-text">
             <h2>Completar campos</h2>
-            <h4>Rellenar información restante para terminar el viaje</h4>
+            <h4>Rellenar información restante del viaje</h4>
           </div>
         </div>
         <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -231,7 +231,10 @@ const updateTravel = async () => {
             <div class="count-item">
               <div class="count-info">
                 <img :src="getImagePath(item.dominio)" alt="" />
-                <span>{{ item.dominio }} {{ item.vagones }}</span>
+                <div class="c-info-text">
+                  <h5>{{ item.dominio }}</h5>
+                  <span> <strong>{{ item.vagones }} </strong> unidad(es)</span>
+                </div>
               </div>
             </div>
             <div class="count-item" v-if="!isCamion">
@@ -421,21 +424,29 @@ const updateTravel = async () => {
     gap: 0.5rem;
     width: 100%;
     .count-info {
+      width: 100%;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 1rem;
+      padding: .5rem 0 .5rem 0;
       img {
         width: 2.5rem;
         height: 2.5rem;
       }
-      span {
-        color: var(--black);
-        transition: 0.375s ease;
-        text-align: left;
-        font-size: clamp(6px, 8vw, 14px);
-        line-height: 1.2rem;
-        font-weight: 500;
+      .c-info-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        h5 {
+          font-size: clamp(6px, 8vw, 13.5px);
+          font-weight: 500;
+        }
+        span {
+          line-height: 1rem;
+          font-size: clamp(6px, 8vw, 11.5px);
+          color: var(--grey-2);
+        }
       }
     }
     .count-input {
