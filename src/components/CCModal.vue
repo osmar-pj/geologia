@@ -595,4 +595,6 @@ const isRelevantColumn = (key) => {
     }
   }
 }
+
+
 </style>

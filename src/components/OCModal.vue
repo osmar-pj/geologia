@@ -17,9 +17,10 @@ const data = ref(props.data);
 const isCamion = computed(() => data.value.carriage === "Camion");
 const isVagones = computed(() => data.value.carriage === "Vagones");
 const isSplitRequired = computed(() => data.value.splitRequired);
-const numberOfMaterials = isSplitRequired.value && data.value && data.value.materials
-  ? data.value.materials.length
-  : 1;
+const numberOfMaterials =
+  isSplitRequired.value && data.value && data.value.materials
+    ? data.value.materials.length
+    : 1;
 
 const dataToUpdate = ref([]);
 
@@ -80,7 +81,7 @@ onMounted(async () => {
 
 const dataPila = computed(() => {
   return store.state.pilaList.pilasToOreControl;
-})
+});
 
 const hideError = () => {
   showError.value = false;
@@ -97,14 +98,14 @@ const changeGibaForAll = () => {
 
 const getImagePath = (imageName) => {
   switch (imageName) {
-    case "POLIMETALICO":
-      return "/src/assets/img/i-polimetalico.svg";
-    case "ALABANDITA":
-      return "/src/assets/img/i-alabandita.svg";
-    case "DESMONTE":
-      return "/src/assets/img/i-desmonte.svg";
+    case "Polimetálico":
+      return "/src/assets/img/i-polimetalicoF.svg";
+    case "Ag/Alabandita":
+      return "/src/assets/img/i-alabanditaF.svg";
+    case "Ag/Carbonatos":
+      return "/src/assets/img/i-carbonatoF.svg";
     default:
-      return "/src/assets/img/i-carbonato.svg";
+      return "/src/assets/img/i-carbonatoF.svg";
   }
 };
 
@@ -139,7 +140,7 @@ const updateTravel = async () => {
 
       if (result.status === true) {
         console.log("Correcto");
-        
+
         await store.dispatch("get_listOControl");
         cerrarModal();
       } else {
@@ -157,7 +158,8 @@ const updateTravel = async () => {
 <template>
   <div class="modalCreate-backg">
     <form
-      class="mCreate-content mCreate-3 inner"
+      class="mCreate-content"
+      :class="{ 'mCreate-3': numberOfMaterials >= 2 }"
       :style="{
         userSelect: buttonClicked ? 'none' : 'auto',
         pointerEvents: buttonClicked ? 'none' : 'auto',
@@ -200,7 +202,7 @@ const updateTravel = async () => {
             <div v-else class="t-nulo"><IHelp /> Por completar...</div>
           </div>
         </div>
-        <div class="mC-b-giba" v-if="!isCamion">
+        <div class="mC-b-giba" v-if="!isCamion && isSplitRequired">
           <div
             v-for="(item, index) in dataToUpdate"
             :key="index"
@@ -247,10 +249,7 @@ const updateTravel = async () => {
                         id="tajo-radio"
                         checked
                       />
-                      <span class="radio-tile">
-                        <span class="radio-label">Tajo</span>
-                        <p class="radio-info">Abierto</p>
-                      </span>
+                      <span class="radio-title"> Tajo </span>
                     </label>
                     <label>
                       <input
@@ -262,10 +261,7 @@ const updateTravel = async () => {
                         id="avance-radio"
                         @change="item.tajo = 'AVANCE'"
                       />
-                      <span class="radio-tile">
-                        <span class="radio-label">Avance</span>
-                        <p class="radio-info">Subterránea</p>
-                      </span>
+                      <span class="radio-title"> Avance </span>
                     </label>
                   </div>
                 </div>
@@ -352,6 +348,7 @@ const updateTravel = async () => {
   justify-content: center;
   gap: 20px;
   .container-giba {
+    flex: 1 1 150px;
     padding: 15px 20px;
     border: 1px solid var(--grey-light-2);
     border-radius: 10px;
@@ -360,7 +357,7 @@ const updateTravel = async () => {
     .text-giba {
       color: var(--grey-2);
       font-size: clamp(6px, 8vw, 10px);
-      line-height: .8rem;
+      line-height: 0.8rem;
     }
   }
   .btn-change {
@@ -412,24 +409,25 @@ const updateTravel = async () => {
   flex: 1 1 150px;
   display: flex;
   align-items: center;
-  gap: 0.2rem;
+  justify-content: center;
+  gap: 1rem;
   flex-direction: column;
-  padding: 15px 20px;
-  border: 1px solid var(--grey-light-2);
-  border-radius: 10px;
+  padding: 0 1rem;
+  position: relative;
   .count-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    width: 100%;
     .count-info {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       img {
-        width: 5rem;
-        height: 3rem;
+        width: 2.5rem;
+        height: 2.5rem;
       }
       span {
         color: var(--black);
@@ -491,6 +489,21 @@ const updateTravel = async () => {
       }
     }
   }
+  &::before {
+    content: "";
+    width: 1px;
+    height: 50%;
+    background-color: var(--grey-light-2);
+    position: absolute;
+    right: -0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &:last-child {
+    &::before {
+      background-color: transparent;
+    }
+  }
 }
 .label-error {
   font-size: clamp(6px, 8vw, 12px);
@@ -511,7 +524,7 @@ const updateTravel = async () => {
 }
 
 .mCreate-3 {
-  max-width: 650px !important;
+  max-width: 550px !important;
 }
 
 .no-spinners::-webkit-inner-spin-button,

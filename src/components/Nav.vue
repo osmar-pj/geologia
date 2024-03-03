@@ -268,7 +268,7 @@ const logout = async () => {
       font-weight: 500;
       text-transform: uppercase;
       @include md {
-        font-size: clamp(7px, 8vw, 16px);
+        font-size: clamp(7px, 8vw, 14px);
         line-height: 1rem;
       }
     }
