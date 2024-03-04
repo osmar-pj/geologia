@@ -2,8 +2,8 @@
 import { Subject } from "rxjs";
 import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
-import CCModal from "../components/CCModal.vue";
-import MuestraModal from "../components/MuestraModal.vue";
+import ModalCC from "../components/ModalCC.vue";
+import ModalMuestra from "../components/ModalMuestra.vue";
 import Edit from "../icons/Edit.vue";
 import { formatDate, formatFixed } from "../libs/utils";
 import IList from "../icons/IList.vue";
@@ -122,18 +122,18 @@ const calcularCantidadPorEstado = (estado) => {
   return 0;
 };
 
-const showCCModal = ref(false);
-const showMuestraModal = ref(false);
+const showModalCC = ref(false);
+const showModalMuestra = ref(false);
 const modalData = ref(null);
 
-const openMuestraModal = (data) => {
+const openModalMuestra = (data) => {
   modalData.value = data;
-  showMuestraModal.value = true;
+  showModalMuestra.value = true;
 };
 
 const openModal = (data) => {
   modalData.value = data;
-  showCCModal.value = true;
+  showModalCC.value = true;
 };
 
 const formatColumnValue = (value, fn) => {
@@ -375,7 +375,7 @@ const formatColumnValue = (value, fn) => {
               v-if="slotProps.data.statusPila === 'Acumulando'"
               outlined
               class="item-btn table-btn-edit"
-              @click.prevent="openMuestraModal(slotProps.data)"
+              @click.prevent="openModalMuestra(slotProps.data)"
               :userModal="store.state.userModal"
               v-tooltip.bottom="{
                 value: 'Completar',
@@ -418,16 +418,16 @@ const formatColumnValue = (value, fn) => {
   </div>
 
   <Transition :duration="550" name="nested">
-    <MuestraModal
-      v-if="showMuestraModal"
-      @cerrarModal="showMuestraModal = false"
+    <ModalMuestra
+      v-if="showModalMuestra"
+      @cerrarModal="showModalMuestra = false"
       :data="modalData"
     />
   </Transition>
   <Transition :duration="550" name="nested">
-    <CCModal
-      v-if="showCCModal"
-      @cerrarModal="showCCModal = false"
+    <ModalCC
+      v-if="showModalCC"
+      @cerrarModal="showModalCC = false"
       :data="modalData"
     />
   </Transition>

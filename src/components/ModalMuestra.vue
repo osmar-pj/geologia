@@ -80,7 +80,7 @@ const updateTravel = async () => {
             </div>
             <div class="mC-c-title-text">
               <h3>Siguiente Proceso</h3>
-              <h4>Envia la Pila al siguiente proceso</h4>
+              <h4>Acciones para continuar el viaje</h4>
             </div>
           </div>
           <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -93,18 +93,18 @@ const updateTravel = async () => {
               <p>
                 ¿Está seguro que desea enviar la pila
                 <strong>"{{ data.pila }}"</strong>
-                a analizar?
+                para analizar?
               </p>
             </div>
             <div class="mC-b-text" v-if="props.data.typePila == 'Giba'">
               <p>
                 ¿Está seguro de enviar la Giba
                 <strong>"{{ data.pila }}"</strong>
-                a analizar o generar un codigo de tableta?
+                para analizar o generar un codigo de tableta?
               </p>
             </div>
             <div class="mC-imputs-item" v-if="props.data.typePila == 'Giba'">             
-              <label>Seleccione el tipo</label>
+              <!-- <label>Seleccione el tipo</label> -->
               <div class="radio-inputs">
                 <label>
                   <input
@@ -126,7 +126,7 @@ const updateTravel = async () => {
                     :value="true"
                     id="false"
                   />
-                  <span class="radio-title"> Código de tableta </span>
+                  <span class="radio-title"> Código tableta </span>
                 </label>
               </div>
             </div>

@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, inject, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
 import Edit from "../icons/Edit.vue";
-import OCModal from "../components/OCModal.vue";
+import ModalOC from "../components/ModalOC.vue";
 import {
   formatDate,
   formatFixed,
@@ -42,10 +42,10 @@ const excludedFields = [
 ];
 
 const modalData = ref(null);
-const showOCModal = ref(false);
+const showModalOC = ref(false);
 const openModal = (data) => {
   modalData.value = data;
-  showOCModal.value = true;
+  showModalOC.value = true;
 };
 
 const formatColumnValue = (value, fn, field, row) => {
@@ -280,9 +280,9 @@ const formatColumnValue = (value, fn, field, row) => {
     </DataTable>
   </div>
   <Transition :duration="550" name="nested">
-    <OCModal
-      v-if="showOCModal"
-      @cerrarModal="showOCModal = false"
+    <ModalOC
+      v-if="showModalOC"
+      @cerrarModal="showModalOC = false"
       :data="modalData"
     />
   </Transition>

@@ -272,6 +272,7 @@ const store = createStore({
           },
         })
         const data = await response.json()
+        console.log(data)
         commit("getPila", data)
         commit("loading", false)
       } catch (error) { commit("loading", false)}

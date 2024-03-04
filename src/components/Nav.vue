@@ -138,7 +138,8 @@ const logout = async () => {
       </div>
 
       <ul class="s-content-menu">
-        <details open
+        <details
+          open
           v-for="menuItem in menuItems"
           :key="menuItem.name"
           class="s-c-menu-details"
@@ -222,7 +223,15 @@ const logout = async () => {
             <p>Send the document for the sale of the cart to vycharste</p>
           </div>
         </div>
-      </div> -->
+      </div>  -->
+    </div>
+    <div class="s-content-welcome">
+      <div class="msg-i-item">
+        <img src="" alt="" />
+        <h4>Bienvenido</h4>
+
+        <p>Send the document for the sale of the cart to vycharste</p>
+      </div>
     </div>
     <div class="sidebar-footer">
       <div className="s-footer-logout">
@@ -416,6 +425,33 @@ const logout = async () => {
       }
       @include md {
         display: block;
+      }
+    }
+  }
+  .s-content-welcome {
+    height: 180px;
+    padding: 1rem 1.8rem;
+   
+    .msg-i-item {
+      height: 100%;
+      background-color: #1b1f22;
+      padding: 1.5rem;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    
+      h4 {
+        color: var(--white);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
+      }      
+      p {
+        margin-top: 0.8rem;
+        color: var(--grey-2);
+        font-size: clamp(5px, 8vw, 12px);
       }
     }
   }

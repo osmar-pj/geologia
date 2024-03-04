@@ -127,7 +127,7 @@ const createPila = async () => {
 
 <style lang="scss">
 .mC-imputs-more {
-  flex: 0 1 130px;
+  flex: 0 1 120px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

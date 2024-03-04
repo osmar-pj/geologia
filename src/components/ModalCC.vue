@@ -3,7 +3,7 @@ import Papa from "papaparse";
 import { ref, watch, defineProps, defineEmits } from "vue";
 import { useStore } from "vuex";
 import Success from "../components/Success.vue";
-import Edit from "../icons/Edit.vue";
+import ICSV from "../icons/ICSV.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const store = useStore();
@@ -288,11 +288,11 @@ const isRelevantColumn = (key) => {
         <div class="mC-c-header">
           <div class="mC-h-title">
             <div class="mC-c-title-icon">
-              <Edit />
+              <ICSV />
             </div>
             <div class="mC-c-title-text">
-              <h2>Completar leyes</h2>
-              <h4>Subir muestreo de pila</h4>
+              <h3>Completar leyes</h3>
+              <h4>Subir muestra de Stock Piles</h4>
             </div>
           </div>
           <span @click="cerrarModal" class="mC-h-close" type="button">
@@ -300,7 +300,7 @@ const isRelevantColumn = (key) => {
           </span>
         </div>
         <div class="mC-c-body">
-          <div
+          <!-- <div
             class="mC-b-text"
             v-if="
               props.data.typePila === 'Giba' && props.data.samples.length > 1
@@ -330,11 +330,11 @@ const isRelevantColumn = (key) => {
                   id="false"
                 />
                 <span class="radio-tile">
-                  <span class="radio-label">Código de tableta</span>
+                  <span class="radio-label">Código tableta</span>
                 </span>
               </label>
             </div>
-          </div>
+          </div> -->
           <div className="mC-b-imputs">
             <div class="table-excel">
               <div class="container-loader-files" v-if="!fileUploaded">

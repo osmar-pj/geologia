@@ -17,7 +17,7 @@ import IDesmonte from "../maps/IDesmonte.vue";
 import ICalendar from "../icons/ICalendar.vue";
 import IPanel from "../maps/IPanel.vue";
 import GeneratePDF from "../components/GeneratePDF.vue";
-import CanchaModal from "../components/CanchaModal.vue";
+import ModalCancha from "../components/ModalCancha.vue";
 import MapInfo from "../components/MapInfo.vue";
 import zoneCC from "../prueba/zoneCC.vue";
 import zoneC1 from "../prueba/zoneC1.vue";
@@ -701,7 +701,7 @@ const move = (e) => {
   <button class="btn-success btn-GP" @click.prevent="openModal()">
     Generar PDF
   </button>
-  <CanchaModal
+  <ModalCancha
     v-if="openCalendar"
     @cerrarModal="openCalendar = false"
     :data="dataModalCalendar"

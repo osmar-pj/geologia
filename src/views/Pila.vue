@@ -12,7 +12,7 @@ import IExport from "../icons/IExport.vue";
 const store = useStore();
 const socket = inject("socket");
 const pila$ = new Subject();
-const pilas = computed(() => store.state.pilaList)
+const pilas = computed(() => store.state.pilaList);
 const dt = ref();
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -22,9 +22,23 @@ onMounted(async () => {
 });
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-})
+});
 const excludedFields = [
   "mining",
+  "ley_ag",
+  "ley_fe",
+  "ley_mn",
+  "ley_pb",
+  "ley_zn",
+  "statusPila",
+  "ubication",
+  "pila",
+  "tonh",
+  "ton",
+  "travels",
+  "id_pila",
+  "stock",
+  "dominio"
 ];
 
 const modalData = ref(null);
@@ -57,28 +71,28 @@ const updatePilas = (pilasFound, data) => {
       pila.history = data[index].history;
       pila.date_abastecimiento = data[index].date_abastecimiento;
       pila.ubication = data[index].ubication;
-      pila.ley_ag = data[index].ley_ag
-      pila.ley_fe = data[index].ley_fe
-      pila.ley_mn = data[index].ley_mn
-      pila.ley_pb = data[index].ley_pb
-      pila.ley_zn = data[index].ley_zn
-      pila.tmh_ag = data[index].tmh_ag
-      pila.tmh_fe = data[index].tmh_fe
-      pila.tmh_mn = data[index].tmh_mn
-      pila.tmh_pb = data[index].tmh_pb
-      pila.tmh_zn = data[index].tmh_zn
-      pila.x = data[index].x
-      pila.y = data[index].y
-      pila.mining = data[index].mining
-      pila.dominio = data[index].dominio
+      pila.ley_ag = data[index].ley_ag;
+      pila.ley_fe = data[index].ley_fe;
+      pila.ley_mn = data[index].ley_mn;
+      pila.ley_pb = data[index].ley_pb;
+      pila.ley_zn = data[index].ley_zn;
+      pila.tmh_ag = data[index].tmh_ag;
+      pila.tmh_fe = data[index].tmh_fe;
+      pila.tmh_mn = data[index].tmh_mn;
+      pila.tmh_pb = data[index].tmh_pb;
+      pila.tmh_zn = data[index].tmh_zn;
+      pila.x = data[index].x;
+      pila.y = data[index].y;
+      pila.mining = data[index].mining;
+      pila.dominio = data[index].dominio;
       pila$.next(pila);
     } else {
       console.error(
         `No se pudo encontrar el elemento correspondiente en data para el índice ${index}.`
       );
     }
-  })
-}
+  });
+};
 
 socket.on("newPila", (data) => {
   store.commit("addDataPilaList", data);
@@ -125,7 +139,7 @@ const columns = ref([
       <span>| Dia terminado en Mina </span>
     </div>
   </div>
-  
+
   <div class="tableContainer">
     <DataTable
       v-model:filters="filters"
@@ -138,7 +152,14 @@ const columns = ref([
       currentPageReportTemplate="Página {currentPage} de {totalPages}"
       :header="false"
       :loading="store.state.loading"
-      :globalFilterFields="['pila','ubication','mining','tajo', 'dominio','turn']"
+      :globalFilterFields="[
+        'pila',
+        'ubication',
+        'mining',
+        'tajo',
+        'dominio',
+        'turn',
+      ]"
       dataKey="id"
     >
       <template #header>
@@ -153,7 +174,7 @@ const columns = ref([
         </div>
         <div>
           <button class="btn-success" @click="exportCSV($event)">
-             <IExport/> Exportar 
+            <IExport /> Exportar CSV
           </button>
         </div>
       </template>
@@ -180,7 +201,7 @@ const columns = ref([
             />
             <div class="t-name">
               <h4>
-                {{ slotProps.data.mining ? slotProps.data.mining : '--' }}
+                {{ slotProps.data.mining ? slotProps.data.mining : "--" }}
               </h4>
               <h5>
                 {{ slotProps.data.ubication }}
@@ -229,6 +250,41 @@ const columns = ref([
                 },
               ]"
             ></div>
+          </div>
+        </template>
+      </Column>
+      <Column header="Dominio" headerStyle="text-align: center;">
+        <template #body="slotProps">
+          <Skeleton v-if="store.state.loading" height="34px"></Skeleton>
+          <div v-else class="t-vehiculo">
+            <template
+              v-if="slotProps.data.dominio && slotProps.data.dominio.length > 0"
+            >
+              <template v-for="value in new Set(slotProps.data.dominio)">
+                <template v-if="typeof value === 'string'">
+                  <img
+                    v-if="value.includes('Polimetálico')"
+                    :src="'src/assets/img/i-polimetalicoF.svg'"
+                    alt=""
+                  />
+                  <img
+                    v-else-if="value.includes('Carbonato')"
+                    :src="'src/assets/img/i-carbonatoF.svg'"
+                    alt=""
+                  />
+                  <img
+                    v-else-if="value.includes('Alabandita')"
+                    :src="'src/assets/img/i-alabanditaF.svg'"
+                    alt=""
+                  />
+                </template>
+              </template>
+            </template>
+            <template v-else>
+              <h5 class="t-complet">
+                <img src="../assets/img/i-square.svg" alt="" />Comp..
+              </h5>
+            </template>
           </div>
         </template>
       </Column>
@@ -395,7 +451,7 @@ const columns = ref([
     border-radius: 5px;
     left: 0;
   }
-  &::before{   
+  &::before {
     position: absolute;
     left: 8px;
     top: 50%;
@@ -403,23 +459,22 @@ const columns = ref([
     z-index: 2;
     color: var(--white);
     font-size: 11px;
-    line-height: .8rem;
+    line-height: 0.8rem;
   }
 }
 
-.P-Acumulando::after{
-  
+.P-Acumulando::after {
   background: repeating-linear-gradient(
     -45deg,
-    #F05B5B,
-    #F05B5B 5px,
-    #E25556 5px,
-    #E25556 10px
+    #f05b5b,
+    #f05b5b 5px,
+    #e25556 5px,
+    #e25556 10px
   );
   --porcentaje-finalizado: 25%;
 }
- .P-Acumulando::before{
-  content:"20%";
+.P-Acumulando::before {
+  content: "20%";
   left: 5px;
   font-size: 8px;
 }
@@ -430,76 +485,72 @@ const columns = ref([
     -45deg,
     #ffbc58,
     #ffbc58 5px,
-    #F5B458 5px,
-    #F5B458 10px
+    #f5b458 5px,
+    #f5b458 10px
   );
 }
-.P-Analizando::before{
-  content:"40%";
+.P-Analizando::before {
+  content: "40%";
 }
 .P-waitCodeTableta::after {
   background-color: #64e0ff;
   --porcentaje-finalizado: 50%;
 }
-.P-waitCodeTableta::before{
-  content:"50%";
+.P-waitCodeTableta::before {
+  content: "50%";
 }
 
 .P-waitDateAbastecimiento::after {
- 
   background: repeating-linear-gradient(
     -45deg,
     #5d95ff,
     #5d95ff 5px,
-    #578CFF 5px,
-    #578CFF 10px
+    #578cff 5px,
+    #578cff 10px
   );
   --porcentaje-finalizado: 60%;
 }
-.P-waitDateAbastecimiento::before{
-  content:"60%";
+.P-waitDateAbastecimiento::before {
+  content: "60%";
 }
 
 .P-waitBeginDespacho::after {
   background: repeating-linear-gradient(
     -45deg,
-    #925FFF,
-    #925FFF 5px,
-    #8657FF 5px,
-    #8657FF 10px
+    #925fff,
+    #925fff 5px,
+    #8657ff 5px,
+    #8657ff 10px
   );
   --porcentaje-finalizado: 80%;
 }
-.P-waitBeginDespacho::before{
-  content:"80%";
-  
+.P-waitBeginDespacho::before {
+  content: "80%";
 }
 .P-Despachando::after {
   background-color: #00b670;
   --porcentaje-finalizado: 90%;
 }
-.P-Despachando::before{
-  content:"100%";
- ;
+.P-Despachando::before {
+  content: "100%";
 }
 .P-Finalizado::after {
   background: repeating-linear-gradient(
     -45deg,
-    #1FD9AD,
-    #1FD9AD 5px,
-    #1DCFB9 5px,
-    #1DCFB9 10px
+    #1fd9ad,
+    #1fd9ad 5px,
+    #1dcfb9 5px,
+    #1dcfb9 10px
   );
 
   --porcentaje-finalizado: 100%;
 }
 
-.P-Finalizado::before{
-  content:"100%";
+.P-Finalizado::before {
+  content: "100%";
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
 }
-
 
 @keyframes porc1 {
   0% {
@@ -513,4 +564,3 @@ const columns = ref([
   }
 }
 </style>
-

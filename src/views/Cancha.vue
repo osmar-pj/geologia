@@ -175,7 +175,7 @@ const columns = ref([
         </div>
         <div>
           <button class="btn-success" @click="exportCSV($event)">
-            <IExport /> Exportar
+            <IExport /> Exportar CSV
           </button>
           
         </div>

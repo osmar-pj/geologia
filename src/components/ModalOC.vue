@@ -171,7 +171,7 @@ const updateTravel = async () => {
             <Edit />
           </div>
           <div class="mC-c-title-text">
-            <h2>Completar campos</h2>
+            <h3>Completar campos</h3>
             <h4>Rellenar información restante del viaje</h4>
           </div>
         </div>
@@ -182,8 +182,8 @@ const updateTravel = async () => {
 
       <div class="mC-c-body">
         <div className="mC-b-info">
-          <div class="item-descrip" v-if="isVagones && isSplitRequired">
-            <div>Warning! Este viaje se debe dividir</div>
+          <div class="item-warning" v-if="isVagones && isSplitRequired">
+            <IHelp/> <span>Atención! Este <strong>viaje se dividirá</strong></span>
           </div>
           <h3 class="item-text">{{ data.operator }}</h3>
           <div class="item-descrip">
@@ -229,65 +229,63 @@ const updateTravel = async () => {
             class="container-count"
           >
             <div class="count-item">
-              <div class="count-info">
-                <img :src="getImagePath(item.dominio)" alt="" />
-                <div class="c-info-text">
-                  <h5>{{ item.dominio }}</h5>
-                  <span> <strong>{{ item.vagones }} </strong> unidad(es)</span>
-                </div>
+              <img :src="getImagePath(item.dominio)" alt="" />
+              <div class="c-info-text">
+                <h5>{{ item.dominio }}</h5>
+                <span>
+                  <strong>{{ item.vagones }} </strong> unidad(es)</span
+                >
               </div>
             </div>
-            <div class="count-item" v-if="!isCamion">
-              <div className="mC-b-imputs">
-                <div class="mC-imputs-item">
-                  <label>Seleccione Tipo</label>
-                  <div class="radio-inputs">
-                    <label>
-                      <input
-                        class="radio-input"
-                        type="radio"
-                        :name="'radio_' + index"
-                        v-model="item.type"
-                        value="TAJO"
-                        id="tajo-radio"
-                        checked
-                      />
-                      <span class="radio-title"> Tajo </span>
-                    </label>
-                    <label>
-                      <input
-                        class="radio-input"
-                        type="radio"
-                        :name="'radio_' + index"
-                        v-model="item.type"
-                        value="AVANCE"
-                        id="avance-radio"
-                        @change="item.tajo = 'AVANCE'"
-                      />
-                      <span class="radio-title"> Avance </span>
-                    </label>
-                  </div>
+            <div className="mC-b-imputs" v-if="!isCamion">
+              <div class="mC-imputs-item">
+                <!-- <label>Seleccione Tipo</label> -->
+                <div class="radio-inputs">
+                  <label>
+                    <input
+                      class="radio-input"
+                      type="radio"
+                      :name="'radio_' + index"
+                      v-model="item.type"
+                      value="TAJO"
+                      id="tajo-radio"
+                      checked
+                    />
+                    <span class="radio-title"> Tajo </span>
+                  </label>
+                  <label>
+                    <input
+                      class="radio-input"
+                      type="radio"
+                      :name="'radio_' + index"
+                      v-model="item.type"
+                      value="AVANCE"
+                      id="avance-radio"
+                      @change="item.tajo = 'AVANCE'"
+                    />
+                    <span class="radio-title"> Avance </span>
+                  </label>
                 </div>
-                <Transition name="fade" mode="out-in">
-                  <div class="mC-imputs-item" v-if="item.type === 'TAJO'">
-                    <label>Seleccione Tajo</label>
-                    <div class="imputs-i-input">
-                      <Dropdown
-                        placeholder="Seleccionar"
-                        class="p-dropdown-search"
-                        filter
-                        v-model="item.tajo"
-                        :options="dataTajo"
-                        optionLabel="name"
-                        optionValue="name"
-                      />
-                    </div>
-                    <span class="label-error" v-if="showError"
-                      >*Campo requerido</span
-                    >
-                  </div>
-                </Transition>
               </div>
+              <Transition name="fade" mode="out-in">
+                <div class="mC-imputs-item" v-if="item.type === 'TAJO'">
+                  <label>Seleccione Tajo</label>
+                  <div class="imputs-i-input">
+                    <Dropdown
+                      placeholder="Seleccionar"
+                      class="p-dropdown-search"
+                      filter
+                      v-model="item.tajo"
+                      :options="dataTajo"
+                      optionLabel="name"
+                      optionValue="name"
+                    />
+                  </div>
+                  <span class="label-error" v-if="showError"
+                    >*Campo requerido</span
+                  >
+                </div>
+              </Transition>
             </div>
             <div className="mC-b-imputs" v-if="isCamion">
               <div class="mC-imputs-item input-pila">
@@ -349,10 +347,10 @@ const updateTravel = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 3rem;
   .container-giba {
     flex: 1 1 150px;
-    padding: 15px 20px;
+    padding: 10px 20px;
     border: 1px solid var(--grey-light-2);
     border-radius: 10px;
     display: grid;
@@ -366,7 +364,7 @@ const updateTravel = async () => {
   .btn-change {
     position: absolute;
     color: var(--grey-2);
-    background-color: var(--grey-light-22);
+
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -384,6 +382,9 @@ const updateTravel = async () => {
     }
     &:active {
       transform: translate(-50%, -50%) scale(0.85);
+    }
+    &:hover {
+      background-color: var(--grey-light-22);
     }
   }
 }
@@ -418,85 +419,28 @@ const updateTravel = async () => {
   padding: 0 1rem;
   position: relative;
   .count-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
     width: 100%;
-    .count-info {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      padding: .5rem 0 .5rem 0;
-      img {
-        width: 2.5rem;
-        height: 2.5rem;
-      }
-      .c-info-text {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        h5 {
-          font-size: clamp(6px, 8vw, 13.5px);
-          font-weight: 500;
-        }
-        span {
-          line-height: 1rem;
-          font-size: clamp(6px, 8vw, 11.5px);
-          color: var(--grey-2);
-        }
-      }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0 0.5rem 0;
+    img {
+      width: 2.5rem;
+      height: 2.5rem;
     }
-    .count-input {
+    .c-info-text {
       display: flex;
-      justify-content: center;
-      align-items: center;
-
-      border: 1.5px solid var(--grey-light-2);
-      border-radius: 5px;
-      .input-number {
-        width: 35px;
-        height: 35px;
-        color: var(--black);
-        padding: 0;
-        text-align: center;
-        font-size: clamp(6px, 8vw, 14px);
-        border-radius: 0;
-        border: none;
+      flex-direction: column;
+      align-items: flex-start;
+      h5 {
+        font-size: clamp(6px, 8vw, 13.5px);
+        font-weight: 500;
       }
-      .button-number {
-        width: 35px;
-        height: 35px;
+      span {
+        line-height: 1rem;
+        font-size: clamp(6px, 8vw, 11.5px);
         color: var(--grey-2);
-        background-color: var(--grey-light-22);
-        padding: 0;
-        display: grid;
-        place-items: center;
-
-        svg {
-          fill: transparent;
-          color: var(--grey-2);
-          width: 1.2rem;
-          height: 1.2rem;
-          stroke-width: 2;
-        }
-        &:hover {
-          background-color: var(--primary);
-          svg {
-            color: var(--white);
-          }
-        }
-        &:active {
-          transform: scale(0.85);
-        }
-        &:nth-child(1) {
-          border-radius: 5px 0 0 5px;
-        }
-        &:nth-child(3) {
-          border-radius: 0 5px 5px 0;
-        }
       }
     }
   }
@@ -514,6 +458,28 @@ const updateTravel = async () => {
     &::before {
       background-color: transparent;
     }
+  }
+}
+
+.item-warning{
+  background-color: #fee2e2b4;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  span{
+    color: var(--red);
+    font-size: clamp(7px, 8vw, 12.5px);
+    line-height: .9rem;
+  }
+  svg {
+    fill: transparent;
+    color: var(--red);
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
   }
 }
 .label-error {
