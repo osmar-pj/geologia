@@ -153,11 +153,7 @@ const SendValues = async () => {
           </span>
         </div>
         <div class="mF-c-body">
-          <div>
-            <button class="btn-success" @click.prevent="SendValues()">
-          Guardar valores para PDF
-        </button>
-          </div>
+          
           <div class="mF-b-categories">
             <div class="categories-title">
               <ICategory /><span>

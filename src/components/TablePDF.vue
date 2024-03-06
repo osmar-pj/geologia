@@ -5,7 +5,7 @@ import { useStore } from "vuex";
 const store = useStore();
 const url = import.meta.env.VITE_API_URL;
 
-const props = defineProps(["lisA",'lisB', "mining"]);
+const props = defineProps(["lisA", "lisB", "mining"]);
 const emit = defineEmits();
 
 const trips = ref([]);
@@ -56,14 +56,17 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="line-pdf line-pdf" id="f-page">
-    <br><br><br>
+  <div class="line-pdf line-pdf-t" id="f-page">
     <div
       class="c-item-filtered config-content-table N-datatable"
       v-for="(trip, index) in trips"
       :key="index"
     >
-      <table class="table" style="width: 100%" v-if="!store.state.loading">
+      <table
+        class="table table-expo"
+        style="width: 100%"
+        v-if="!store.state.loading"
+      >
         <thead>
           <tr>
             <th v-for="(column, columnIndex) in trip.header" :key="columnIndex">
@@ -74,21 +77,20 @@ onMounted(async () => {
         <tbody>
           <tr v-for="(row, rowIndex) in trip.body" :key="rowIndex">
             <td v-for="(column, columnIndex) in trip.header" :key="columnIndex">
-              <h4 class="t-ley">
+              
                 {{
                   typeof row[column.field] === "number"
                     ? row[column.field].toFixed(2)
                     : row[column.field]
                 }}
-              </h4>
+            
             </td>
           </tr>
         </tbody>
       </table>
-      
+
       <div v-else>Loading...</div>
     </div>
-    <br><br><br>
   </div>
 </template>
 
@@ -100,9 +102,37 @@ onMounted(async () => {
   height: 800px;
   overflow: hidden;
   width: 100%;
-  .c-item-filtered {
-    display: flex;
-    height: 50%;
+}
+
+.c-item-filtered {
+  border: 1px solid var(--grey-light-2);
+  border-radius: 15px !important;
+  padding: 1rem !important;
+}
+
+.table-expo {
+  tbody tr {
+   
+    &:last-child {
+      background-color: #a3e3b1;
+      font-weight: 600;
+      font-size: clamp(6px, 8vw, 13.5px);
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+    }
+    
+      td {
+        padding: 15px 12px;
+
+        &:first-child {
+          border-radius: 8px 0px 0px 8px !important;
+        }
+        &:last-child {
+          border-radius: 0 8px 8px 0px !important;
+        }
+      }
   }
+  
 }
 </style>

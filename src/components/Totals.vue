@@ -135,7 +135,7 @@ const trips = computed(() => store.state.dataTripsPlanta);
                   ).length
                 }}
               </h1>
-              <small>pilas</small>
+              <small>Stockpile</small>
             </div>
           </div>
         </div>
@@ -163,7 +163,7 @@ const trips = computed(() => store.state.dataTripsPlanta);
                     .length
                 }}
               </h1>
-              <small>pilas</small>
+              <small>Stockpile</small>
             </div>
           </div>
         </div>

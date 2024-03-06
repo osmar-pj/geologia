@@ -80,7 +80,7 @@ setInterval(() => {
           <div id="pdf-content">
             <!-- Contenido de la caratula hoja -->
 
-            <div class="caratula line-pdf">
+            <div class="caratula">
               <div class="contenido-caratula">
                 <h3>{{ formattedDate }}</h3>
                 <h1>REPORTE</h1>
@@ -94,15 +94,12 @@ setInterval(() => {
               <h2>Cancha /Dominio Rango</h2>
               <TablePDF lisA="dominio" lisB='rango' />
             </div>
-            <div class="html2pdf__page-break"></div>
-
+            
             <div class="pdf-c-table line-pdf line-pdf" id="f-pdf-c-table">
               <h2>Cancha /Tipo - Rango</h2>
               <TablePDF lisA="type" lisB='rango' />
             </div>
-            <!-- Salto de página después de la primera hoja -->
-            <div class="html2pdf__page-break"></div>
-
+         
             
 
             <!-- Contenido de la segunda hoja -->
@@ -249,6 +246,15 @@ setInterval(() => {
 .line-pdf{
   border-bottom: 1px solid var(--grey-light-22);
 }
+
+.line-pdf-t{
+  border-bottom: 1px solid var(--grey-light-22);
+  height: auto;
+  display: grid;
+  gap: 2rem;
+
+}
+
 .pdf-c-table,
 .pdf-c-grafic {
   width: 297mm;

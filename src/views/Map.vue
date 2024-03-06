@@ -698,7 +698,7 @@ const move = (e) => {
   <h1>Pilas: {{ pilas.length }}</h1>
   <h1>Canvas: {{ canvas ? canvas.getObjects().length - 8 : 0 }}</h1>
   <Totals /> 
-  <button class="btn-success btn-GP" @click.prevent="openModal()">
+  <button class="btn-success btn-GeneraP" @click.prevent="openModal()">
     Generar PDF
   </button>
   <ModalCancha
@@ -863,5 +863,9 @@ const move = (e) => {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.02);
   top: 10px;
   right: 0;
+}
+.btn-GeneraP{
+  width: 150px;
+  margin-bottom: 1rem;
 }
 </style>
