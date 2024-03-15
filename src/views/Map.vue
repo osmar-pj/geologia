@@ -695,8 +695,7 @@ const move = (e) => {
 </script>
 
 <template>
-  <h1>Pilas: {{ pilas.length }}</h1>
-  <h1>Canvas: {{ canvas ? canvas.getObjects().length - 8 : 0 }}</h1>
+  
   <Totals /> 
   <button class="btn-success btn-GeneraP" @click.prevent="openModal()">
     Generar PDF
